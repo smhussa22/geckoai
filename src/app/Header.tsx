@@ -1,5 +1,6 @@
 // the header that appears on the top of each page w/ the description of the component
 import React from 'react';
+import geckoLogo from '/logo.svg';
 
 type descriptions = {
 
@@ -15,7 +16,7 @@ export default function Header({title, sub_title}: descriptions) {
     <>
 
     
-      <div className = "fixed w-full h-auto items-center bg-night flex flex-row gap-8 border-b-3 border-asparagus">
+      <div className = "fixed w-full h-auto items-center bg-night flex flex-row gap-8 border-b border-b-neutral-800">
       
         <div className="w-24 h-auto m-6"> 
 

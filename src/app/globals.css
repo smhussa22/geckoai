@@ -9,3 +9,15 @@
     --color-broccoli: #384f1f;
 
 }
+
+body{
+
+    @apply bg-night;
+
+}
+
+html{
+
+    scroll-behavior: smooth;
+
+}
