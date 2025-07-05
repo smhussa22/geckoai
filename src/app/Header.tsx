@@ -1,24 +1,30 @@
 // the header that appears on the top of each page w/ the description of the component
+'use client';
 import React from 'react';
-import geckoLogo from '/logo.svg';
+import { useState } from 'react';
 
-type descriptions = {
+// todo: need to import the logo as a component later to animate it 
+// import geckoLogo from '/logo.svg'; 
+
+type header_descriptions = {
 
   title: string;
   sub_title: string;
 
 }
 
-export default function Header({title, sub_title}: descriptions) {
+export default function Header({title, sub_title}: header_descriptions) {
+
+  const [isToggled, toggle] = useState(false);
 
   return (
 
     <>
 
     
-      <div className = "fixed w-full h-auto items-center bg-night flex flex-row gap-8 border-b border-b-neutral-800">
+      <div className = "fixed w-full h-auto items-center bg-night flex flex-row gap-8 border-b border-b-neutral-800 position-fixed">
       
-        <div className="w-24 h-auto m-6"> 
+        <div className="w-16 h-auto m-6"> 
 
           <img src="/logo.svg"/> 
 
@@ -31,7 +37,6 @@ export default function Header({title, sub_title}: descriptions) {
 
         </div>
 
-        
       </div>
 
     </>
