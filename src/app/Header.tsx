@@ -23,7 +23,7 @@ export default function Header({title, sub_title}: header_descriptions) {
     <>
 
     
-      <div className = "fixed w-full h-auto items-center bg-night flex flex-row gap-8 border-b border-b-neutral-800 position-fixed">
+      <div className = "fixed w-full h-auto items-center bg-night flex flex-row gap-8 border-b border-b-neutral-800 position-fixed pt-2 pb-2">
       
 
         <div className = "">
