@@ -11,7 +11,7 @@ export default function Home() {
       <div className = "flex h-screen">
         
         
-        <Sidebar children = ""/>
+        <Sidebar sidebar_items = "" sidebar_user_icon = "" sidebar_user_name = "GeckoAI User" sidebar_user_email = "geckoai@geckoai.com"/>
         
         
       
