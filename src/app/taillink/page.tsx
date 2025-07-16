@@ -8,10 +8,10 @@ export default function Home() {
     
     <>
 
-      <div>
+      <div className = "flex h-screen">
         
         
-        <Sidebar/>
+        <Sidebar children = ""/>
         
         
       

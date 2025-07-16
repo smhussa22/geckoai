@@ -20,7 +20,7 @@ export default function Sidebutton({button_icon, button_route} : button_props) {
 
     <>
 
-        <button className = "hover:bg-neutral-600 transition-all duration-400"
+        <button className = ""
         
           onClick={ 
           
