@@ -6,37 +6,53 @@ import Logo from './Logo';
 import TaillinkIcon from './TaillinkSVG';
 import Sidebutton from './Sidebutton';
 
-export default function Sidebar() {
+type sidebar_props = {
 
-  const [isToggled, toggle] = useState(true);
+  children: string;
+
+}
+
+export default function Sidebar({children}: sidebar_props) {
   
   return (
 
-    <div className="fixed h-full w-16 flex flex-col items-center gap-4 bg-night border-r border-neutral-800">
+    <>
 
-      {isToggled ? (
+      <aside className = "h-screen">
 
-        <>
-        
-          <Logo logo_className="w-18 h-18 p-3" />
-          <Sidebutton button_route = "/taillink" button_icon = {<TaillinkIcon svg_className="w-15 h-auto p-4" />}/>
+        <nav className = "h-full flex flex-col bg-night border-r border-r-neutral-800 shadow-sm">
 
-        </>
+          <div className = "pb-2 h-16 flex justify-between items-center gap-1"> 
 
-      ) : (
+            <button className = "p-1.5">
 
-        <>
-        
-          <p>test</p>
+              <Logo className = "w-12 p-1.5 hover:bg-neutral-600 rounded-lg"/>
+              
+            </button>
 
-        </>
+          </div>
 
-        
-      )}
+          <ul className = "flex-1"> 
+
+            { children }
+            
+          </ul>
+
+          <div className = "border-t border-t-neutral-800 flex p-3">
+
+
+
+
+          </div>
+
+        </nav>
     
+      </aside>
 
-    </div>
+    </>
 
   );
+
+  
   
 }
