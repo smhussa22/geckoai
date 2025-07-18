@@ -16,7 +16,7 @@ export default function Logo({className}: logo_dimensions) {
 
     <>
 
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 695.65589 588.25293" className={className}>
+      <svg viewBox="0 0 695.65589 588.25293" className={className}>
 
         <g transform="translate(-204.1176,-150.41709)" >
 
