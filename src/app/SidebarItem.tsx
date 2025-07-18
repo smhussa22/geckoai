@@ -18,9 +18,8 @@ export default function SidebarItem({button_text_color, button_icon, button_rout
   return ( 
 
     <>
-
       
-      <li className = {`relative flex font-semibold items-center my-2 rounded-md cursor-pointer transition-colors hover:bg-neutral-800`}> 
+      <li className = {`relative flex font-semibold items-center my-2 rounded-md cursor-pointer transition-colors`}> 
 
         
         {button_icon}

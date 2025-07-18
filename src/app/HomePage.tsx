@@ -6,8 +6,6 @@ export default function Home() {
 
     <>
 
-      <Header title = "TEST" sub_title = "TEST" />
-
     </>
 
   );
