@@ -3,7 +3,6 @@
 import React from 'react';
 import { useState } from 'react';
 
-
 // todo: need to import the logo as a component later to animate it 
 // import geckoLogo from '/logo.svg'; 
 
@@ -22,9 +21,7 @@ export default function Header({title, sub_title}: header_descriptions) {
 
     <>
 
-    
       <div className = "w-full h-20 items-center flex border-b border-b-neutral-800">
-      
 
         <div className = "p-3">
 
