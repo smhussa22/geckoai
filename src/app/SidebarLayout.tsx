@@ -1,14 +1,7 @@
-// logo as an svg component (i could not get webpack to work)
-"use client";
 import React from 'react';
-import { motion } from 'framer-motion';
-import { useState } from 'react';
-import Header from './Header';
 import Sidebar from './Sidebar';
-import Logo from './Logo';
 import SidebarItem from './SidebarItem';
 import { CalendarPlus, BrainCircuit, Settings, CircleQuestionMark } from 'lucide-react';
-
 
 export default function SidebarLayout() {
 
