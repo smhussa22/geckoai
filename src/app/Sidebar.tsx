@@ -5,6 +5,7 @@ import { useState } from 'react';
 import Logo from './Logo';
 import SidebarItem from './SidebarItem';
 import { MoreVertical } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 type sidebar_props = {
 
@@ -31,9 +32,9 @@ export default function Sidebar({sidebar_user_icon, sidebar_user_name, sidebar_u
           {/* make the logo the button to toggle side bar */}
           <div className = "h-16 flex justify-between items-center"> 
 
-            <button className = "p-1.5 cursor-pointer">
+            <button onMouseDown = {() => toggle_retract(!is_retracted)} className = "p-1.5 cursor-pointer">
 
-              <Logo className = "w-12 p-1.5 hover:bg-neutral-800 rounded-lg transition ease duration-200"/>
+              <Logo logo_color = {is_retracted ? "#698f3f" : "#384f1f"} className = "w-12 p-1.5 hover:bg-neutral-800 rounded-lg transition-colors duration-300"/>
               
             </button>
 
@@ -66,11 +67,16 @@ export default function Sidebar({sidebar_user_icon, sidebar_user_name, sidebar_u
               </div>
 
               {/* three dot icon taken from lucide react */}
-              <button className='cursor-pointer'>
+
+              <motion.div whileHover={{ scale: 1.1 }} transition={{ duration: 0.2 }}>
+
+                <button className='cursor-pointer'>
                 
-                <MoreVertical color='#698f3f' size={20} className="hover:bg-neutral-800 rounded-lg transition ease duration-200"/>
+                  <MoreVertical color='#698f3f' size={20} className="hover:bg-neutral-800 rounded-lg transition ease duration-200"/>
                 
-              </button>
+                </button>
+
+              </motion.div>
 
             </div>
 
