@@ -2,6 +2,7 @@
 'use client';
 import React, { useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
+import { motion } from 'framer-motion';
 
 type button_props = {
 
@@ -25,8 +26,9 @@ export default function SidebarItem({button_icon, button_route, button_text} : b
       
       <button onClick = {() => {router.push(`./${button_route}`)}} className = {`w-full flex font-semibold items-center my-2 gap-1 rounded-md cursor-pointer transition-colors duration-200 hover:bg-neutral-800`}> 
         
-        {button_icon(button_icon_color)}
-        <span className={`text-${is_page ? `asparagus` : `broccoli`} my-2 transition-colors duration-300 `}>{button_text}</span>
+        {button_icon(button_icon_color)} 
+        <motion.span animate = {{color: is_page ? `#698f3f` : `#384f1f`}} transition={{ duration: 0.1 }} className="my-2">{button_text}</motion.span>
+        
 
       </button>
     
