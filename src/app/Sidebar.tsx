@@ -6,8 +6,6 @@ import Logo from './Logo';
 import SidebarItem from './SidebarItem';
 import { MoreVertical } from 'lucide-react';
 
-
-
 type sidebar_props = {
 
   sidebar_user_icon: React.ReactNode; // to do: this will later accept a gmail icon from the user
@@ -18,6 +16,8 @@ type sidebar_props = {
 }
 
 export default function Sidebar({sidebar_user_icon, sidebar_user_name, sidebar_user_email, children}: sidebar_props) {
+
+  const [is_retracted, toggle_retract] = useState(false);
   
   return (
 
@@ -29,7 +29,7 @@ export default function Sidebar({sidebar_user_icon, sidebar_user_name, sidebar_u
         <nav className = "h-full flex flex-col bg-night border-r border-r-neutral-800 shadow-sm"> 
 
           {/* make the logo the button to toggle side bar */}
-          <div className = " h-16 flex justify-between items-center"> 
+          <div className = "h-16 flex justify-between items-center"> 
 
             <button className = "p-1.5 cursor-pointer">
 
@@ -61,7 +61,7 @@ export default function Sidebar({sidebar_user_icon, sidebar_user_name, sidebar_u
               <div className = "leading-4">
 
                 <h4 className = "text-asparagus">{sidebar_user_name}</h4>
-                <span className = "text-xs text-lime-900">{sidebar_user_email}</span>
+                <span className = "text-xs text-broccoli">{sidebar_user_email}</span>
 
               </div>
 

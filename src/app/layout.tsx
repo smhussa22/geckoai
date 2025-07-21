@@ -2,11 +2,12 @@ import type { Metadata } from "next";
 import "./globals.css";
 import SidebarLayout from "./SidebarLayout";
 import Header from "./Header";
+import { routeMetadata } from "./routeMetadata";
 
 export const metadata: Metadata = {
 
   title: "GeckoAI",
-  description: "A tool by Syed Maroof Hussain",
+  description: "A study tool by Syed Maroof Hussain",
 
 };
 

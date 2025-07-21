@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
 
   title: "GeckoAI - TailLink",
-  description: "Your semester planned seamlessly",
+  description: "Your semester, built seamlessly.",
 
 };
 
@@ -14,7 +14,6 @@ export default function taillink_page() {
     <>
 
       <head />
-    
     
     </>
   
