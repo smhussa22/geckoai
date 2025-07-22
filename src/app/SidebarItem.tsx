@@ -24,10 +24,10 @@ export default function SidebarItem({button_icon, button_route, button_text, is_
 
     <>
       
-      <motion.button animate = { {color: is_page ? `#698f3f` : `#384f1f`} } transition= { { duration: 0.01 } } onClick = { () => { router.push(`./${button_route}`) } } className = {`w-full transition-colors flex font-semibold items-center my-2 gap-1 rounded-md cursor-pointer hover:bg-neutral-800`}> 
+      <motion.button animate = { {color: is_page ? `#698f3f` : `#384f1f`} } transition= { { duration: 0.01 } } onClick = { () => { router.push(`./${button_route}`) } } className = {`overflow-hidden w-full transition-colors flex font-semibold items-center my-2 gap-1 rounded-md cursor-pointer hover:bg-neutral-800`}> 
         
         {button_icon}
-        {is_retracted ? <span className="my-2">{button_text}</span> : null}
+        {is_retracted ? <span className="">{button_text}</span> : null}
         
       </motion.button>
     

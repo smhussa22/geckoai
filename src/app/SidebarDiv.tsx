@@ -12,7 +12,7 @@ import { usePathname } from 'next/navigation';
 const item_icon_props = { // holding identical properties in an object and using ... to spread across all of required components
 
   size: 30,
-  className: 'p-0.5 ml-0.5',
+  className: 'p-0.5 ml-0.5 my-1',
   color: "currentColor"
 
 }
@@ -44,7 +44,7 @@ export default function SidebarDiv({sidebar_user_icon, sidebar_user_name, sideba
       <aside className = "h-screen"> {/* give it full viewport height */}
 
         {/* nav bar div; make it flex so the item list can take up the rest of the space*/}
-        <nav className = {`w-auto h-full flex flex-col bg-night border-r border-r-neutral-800 shadow-sm`}> 
+        <nav className = {`transition-ease duration-500 w-auto h-full flex flex-col bg-night border-r border-r-neutral-800 shadow-sm`}> 
 
           {/* make the logo the button to toggle side bar */}
           <div className = "h-16 flex justify-between items-center"> 
@@ -53,7 +53,7 @@ export default function SidebarDiv({sidebar_user_icon, sidebar_user_name, sideba
 
               <motion.div whileHover={{ scale: 1.1 }} transition={{ duration: 0.1 }}>
 
-                <Logo logo_color = {is_retracted ? "#698f3f" : "#384f1f"} className = "w-12 p-1.5 hover:bg-neutral-800 rounded-lg"/>
+                <Logo logo_color = {is_retracted ? "#698f3f" : "#384f1f"} className = {`${is_retracted ? `w-12` : `w-11`} p-1.5 hover:bg-neutral-800 rounded-lg`}/>
               
               </motion.div>
 
