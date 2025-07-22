@@ -9,7 +9,7 @@ import { motion } from 'framer-motion';
 import { CalendarPlus, BrainCircuit, Settings, CircleQuestionMark } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 
-const icon_props = { // holding identical properties in an object and using ... to spread across all of required components
+const item_icon_props = { // holding identical properties in an object and using ... to spread across all of required components
 
   size: 30,
   className: 'p-0.5 ml-0.5',
@@ -17,7 +17,7 @@ const icon_props = { // holding identical properties in an object and using ... 
 
 }
 
-const icon_motion_props = {
+const item_icon_motion_props = {
 
   whileHover: { scale: 1.02 },
   transition: { duration: 0.1 }
@@ -63,13 +63,13 @@ export default function SidebarDiv({sidebar_user_icon, sidebar_user_name, sideba
         
           <ul className = "flex-1 px-3"> {/* flex-1 makes this take up the rest of the space of the div*/} {/*TODO: make a mapping config for the sidebar items for easier scalability*/}
 
-            <motion.div {...icon_motion_props}> <SidebarItem button_icon={<CalendarPlus {...icon_props} />}  button_route="/taillink" button_text="TailLink" /> </motion.div>
-            <motion.div {...icon_motion_props}> <SidebarItem button_icon= {<BrainCircuit {...icon_props} />} button_route="/quizscale" button_text="QuizScale" /> </motion.div>
+            <motion.div {...item_icon_motion_props}> <SidebarItem button_icon={<CalendarPlus {...item_icon_props} />} is_retracted = {is_retracted} button_route="/taillink" button_text="TailLink" /> </motion.div>
+            <motion.div {...item_icon_motion_props}> <SidebarItem button_icon= {<BrainCircuit {...item_icon_props} />} is_retracted = {is_retracted} button_route="/quizscale" button_text="QuizScale" /> </motion.div>
             
             <hr className="my-3 border-neutral-800" />
             
-            <motion.div {...icon_motion_props}> <SidebarItem button_icon={<Settings {...icon_props} />} button_route="/settings" button_text="Settings" /> </motion.div>
-            <motion.div {...icon_motion_props}> <SidebarItem button_icon={<CircleQuestionMark {...icon_props} />} button_route="/help" button_text="Help" /> </motion.div>
+            <motion.div {...item_icon_motion_props}> <SidebarItem button_icon={<Settings {...item_icon_props} />} is_retracted = {is_retracted} button_route="/settings" button_text="Settings" /> </motion.div>
+            <motion.div {...item_icon_motion_props}> <SidebarItem button_icon={<CircleQuestionMark {...item_icon_props} />} is_retracted = {is_retracted} button_route="/help" button_text="Help" /> </motion.div>
 
           </ul>
 
@@ -82,7 +82,10 @@ export default function SidebarDiv({sidebar_user_icon, sidebar_user_name, sideba
 
             </div>
 
-            {/* div for the gmail name/email text */}
+            {
+            
+            is_retracted ? 
+
             <div className = "flex justify-between items-center w-40 ml-3">
 
               <div className = "leading-4">
@@ -91,8 +94,6 @@ export default function SidebarDiv({sidebar_user_icon, sidebar_user_name, sideba
                 <span className = "text-xs text-broccoli">{sidebar_user_email}</span>
 
               </div>
-
-              {/* three dot icon taken from lucide react */}
 
               <motion.div whileHover={{ scale: 1.1 }} transition={{ duration: 0.2 }}>
 
@@ -105,6 +106,12 @@ export default function SidebarDiv({sidebar_user_icon, sidebar_user_name, sideba
               </motion.div>
 
             </div>
+
+            : 
+            
+            null 
+            
+            }
 
           </div>
 
