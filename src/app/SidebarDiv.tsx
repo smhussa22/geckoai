@@ -1,0 +1,119 @@
+// the sidebar that has the toolbox of components/utilities. collapsible
+'use client';
+import React from 'react';
+import { useState } from 'react';
+import Logo from './Logo';
+import SidebarItem from './SidebarItem';
+import { MoreVertical } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { CalendarPlus, BrainCircuit, Settings, CircleQuestionMark } from 'lucide-react';
+import { usePathname } from 'next/navigation';
+
+const icon_props = { // holding identical properties in an object and using ... to spread across all of required components
+
+  size: 30,
+  className: 'p-0.5 ml-0.5',
+  color: "currentColor"
+
+}
+
+const icon_motion_props = {
+
+  whileHover: { scale: 1.02 },
+  transition: { duration: 0.1 }
+
+}
+
+type sidebar_props = {
+
+  sidebar_user_icon: React.ReactNode; // to do: this will later accept a gmail icon from the user
+  sidebar_user_name: string; // to do: name of the user's gmail account
+  sidebar_user_email: string; // to do: user's gmail
+
+}
+
+export default function SidebarDiv({sidebar_user_icon, sidebar_user_name, sidebar_user_email}: sidebar_props) {
+
+  const path_name = usePathname();
+  const [is_retracted, toggle_retract] = useState(false);
+
+  return (
+
+    <>
+
+      <aside className = "h-screen"> {/* give it full viewport height */}
+
+        {/* nav bar div; make it flex so the item list can take up the rest of the space*/}
+        <nav className = {`w-auto h-full flex flex-col bg-night border-r border-r-neutral-800 shadow-sm`}> 
+
+          {/* make the logo the button to toggle side bar */}
+          <div className = "h-16 flex justify-between items-center"> 
+
+            <button onMouseDown = {() => toggle_retract(!is_retracted)} className = "p-1.5 cursor-pointer">
+
+              <motion.div whileHover={{ scale: 1.1 }} transition={{ duration: 0.1 }}>
+
+                <Logo logo_color = {is_retracted ? "#698f3f" : "#384f1f"} className = "w-12 p-1.5 hover:bg-neutral-800 rounded-lg"/>
+              
+              </motion.div>
+
+            </button>
+
+          </div>
+        
+          <ul className = "flex-1 px-3"> {/* flex-1 makes this take up the rest of the space of the div*/} {/*TODO: make a mapping config for the sidebar items for easier scalability*/}
+
+            <motion.div {...icon_motion_props}> <SidebarItem button_icon={<CalendarPlus {...icon_props} />}  button_route="/taillink" button_text="TailLink" /> </motion.div>
+            <motion.div {...icon_motion_props}> <SidebarItem button_icon= {<BrainCircuit {...icon_props} />} button_route="/quizscale" button_text="QuizScale" /> </motion.div>
+            
+            <hr className="my-3 border-neutral-800" />
+            
+            <motion.div {...icon_motion_props}> <SidebarItem button_icon={<Settings {...icon_props} />} button_route="/settings" button_text="Settings" /> </motion.div>
+            <motion.div {...icon_motion_props}> <SidebarItem button_icon={<CircleQuestionMark {...icon_props} />} button_route="/help" button_text="Help" /> </motion.div>
+
+          </ul>
+
+          <div className = "border-t border-t-neutral-800 flex p-3">
+
+            {/* div for the gmail user icon */}
+            <div className="w-9 h-9 rounded-md overflow-hidden bg-neutral-800 flex items-center justify-center">
+            
+              {sidebar_user_icon}
+
+            </div>
+
+            {/* div for the gmail name/email text */}
+            <div className = "flex justify-between items-center w-40 ml-3">
+
+              <div className = "leading-4">
+
+                <h4 className = "text-asparagus">{sidebar_user_name}</h4>
+                <span className = "text-xs text-broccoli">{sidebar_user_email}</span>
+
+              </div>
+
+              {/* three dot icon taken from lucide react */}
+
+              <motion.div whileHover={{ scale: 1.1 }} transition={{ duration: 0.2 }}>
+
+                <button className='cursor-pointer'>
+                
+                  <MoreVertical color='#698f3f' size={20} className="hover:bg-neutral-800 rounded-lg transition ease duration-200"/>
+                
+                </button>
+
+              </motion.div>
+
+            </div>
+
+          </div>
+
+        </nav>
+    
+      </aside>
+
+    </>
+
+  );
+
+}

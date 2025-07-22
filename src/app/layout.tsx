@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import SidebarLayout from "./SidebarLayout";
+import Sidebar from './Sidebar';
 import Header from "./Header";
 import { routeMetadata } from "./routeMetadata";
 
@@ -21,7 +21,7 @@ export default function RootLayout({children}: { children: React.ReactNode; }) {
 
         <div className="flex h-screen">
 
-          <SidebarLayout/>
+          <Sidebar/>
           <Header title = "TailLink" sub_title= "Your semester, built seamlessly"/>
 
         </div>
