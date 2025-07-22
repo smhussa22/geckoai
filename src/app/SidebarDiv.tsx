@@ -53,7 +53,7 @@ export default function SidebarDiv({sidebar_user_icon, sidebar_user_name, sideba
 
               <motion.div whileHover={{ scale: 1.1 }} transition={{ duration: 0.1 }}>
 
-                <Logo logo_color = {is_retracted ? "#698f3f" : "#384f1f"} className = {`${is_retracted ? `w-12` : `w-11`} p-1.5 hover:bg-neutral-800 rounded-lg`}/>
+                <Logo logo_color = {is_retracted ? "#698f3f" : "#384f1f"} className = {`w-12 p-1.5 hover:bg-neutral-800 transition-ease duration-300 rounded-lg`}/>
               
               </motion.div>
 
