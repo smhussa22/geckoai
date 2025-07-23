@@ -18,6 +18,8 @@ export default function Logo({className, logo_color}: logo_dimensions) {
 
     <>
 
+      {/* @todo change the logo later */}
+
       <svg viewBox="0 0 695.65589 588.25293" className={className}>
 
         <g transform="translate(-204.1176,-150.41709)" >
