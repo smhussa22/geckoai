@@ -26,16 +26,16 @@ export default function SidebarItem({button_icon, button_route, button_text, is_
     <>
       
     
-        <motion.button data-tooltip-id={tooltip_id} data-tooltip-content={button_text} animate = { {color: is_page ? `#698f3f` : `#384f1f`} } transition= { { duration: 0 } } onClick = { () => { router.push(`./${button_route}`) } } className = {`data-tooltip-target overflow-hidden text-asparagus w-full transition-colors flex font-semibold items-center my-2 gap-1 rounded-md cursor-pointer hover:bg-neutral-800 `}> 
+      <motion.button data-tooltip-id={tooltip_id} data-tooltip-content={button_text} animate = { {color: is_page ? `#698f3f` : `#384f1f`} } transition= { { duration: 0 } } onClick = { () => { router.push(`./${button_route}`) } } className = {`data-tooltip-target overflow-hidden text-asparagus w-full transition-colors flex font-semibold items-center my-2 gap-1 rounded-md cursor-pointer hover:bg-neutral-800 `}> 
         
-          {button_icon}
-          {is_expanded ? <span className="">{button_text}</span> : null}
+        {button_icon}
+        {is_expanded ? <motion.span initial = { { opacity: 0 } } animate = {{ opacity: 1 }} transition = { { duration: 0.4 } } className="">{button_text}</motion.span> : null}
         
-        </motion.button>
+      </motion.button>
 
-        {/* @todo: make your own tooltip later*/}
-        
-        {!is_expanded && ( 
+      {/* @todo: make your own tooltip later*/}
+
+      {!is_expanded && ( 
 
         <Tooltip id={tooltip_id} place="left" opacity={1} style={{ marginLeft: `0.5rem`, backgroundColor: '#262626', padding: '0.4rem', borderRadius: '0.375rem', color: is_page ? `#698f3f` : `#384f1f`, transitionProperty: 'color', transitionDuration: '300ms'}} noArrow delayShow={0} delayHide={0}/>
 
