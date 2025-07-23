@@ -45,14 +45,14 @@ export default function SidebarDiv({sidebar_user_icon, sidebar_user_name, sideba
       <aside className = "h-screen"> {/* give it full viewport height */}
 
         {/* nav bar div; make it flex so the item list can take up the rest of the space*/}
-        <motion.nav className = {`transition-ease duration-500 w-auto h-full flex flex-col bg-night border-r border-r-neutral-800 shadow-sm`}> 
+        <motion.nav animate = { { width: is_expanded ? `14.5rem` : `3.75rem` } } transition = { { duration: 0.3 } } className = {`h-full flex flex-col bg-night border-r border-r-neutral-800 shadow-sm`}> 
 
           {/* make the logo the button to toggle side bar */}
           <div className = "h-16 flex justify-between items-center"> 
 
-            <button onMouseDown = {() => toggle_expand(!is_expanded)} className = "p-1.5 cursor-pointer">
+            <button onMouseDown = {() => toggle_expand(!is_expanded)} className = "ml-1.25 cursor-pointer">
 
-              <motion.div whileHover={{ scale: 1.1 }} transition={{ duration: 0.1 }}>
+              <motion.div whileHover={{ scale: 1.1 }} transition={{ duration: 0.1 }} >
 
                 <Logo logo_color = {is_expanded ? "#698f3f" : "#384f1f"} className = {`w-12 p-1.5 hover:bg-neutral-800 transition-ease duration-300 rounded-lg`}/>
               
@@ -77,7 +77,7 @@ export default function SidebarDiv({sidebar_user_icon, sidebar_user_name, sideba
           <div className = "border-t border-t-neutral-800 flex p-3">
 
             {/* div for the gmail user icon */}
-            <div className="w-9 h-9 rounded-md overflow-hidden bg-neutral-800 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-md overflow-hidden bg-neutral-800 flex items-center justify-center">
             
               {sidebar_user_icon}
 
