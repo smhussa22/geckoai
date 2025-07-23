@@ -13,9 +13,6 @@ export default function quizscale_page() {
 
     <>
 
-        <head />
-    
-    
     </>
   
   );

@@ -3,34 +3,42 @@
 import React, { useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
+import { Tooltip } from 'react-tooltip';
 
 type button_props = {
 
     button_icon: React.ReactNode; // the icon of the button
     button_route: string; // the page the button navigates to
     button_text: string; // the text/description of the button item
-    is_retracted: boolean;
+    is_expanded: boolean;
 
 } 
 
-export default function SidebarItem({button_icon, button_route, button_text, is_retracted} : button_props) {
+export default function SidebarItem({button_icon, button_route, button_text, is_expanded} : button_props) {
 
   const router = useRouter();
   const path_name = usePathname();
-
-  const is_page = (path_name == button_route); // if the route associated with the button is also the current page, it is that button's page
+  const is_page = (path_name === button_route); // if the route associated with the button is also the current page, it is that button's page
+  const tooltip_id = `tooltip-${button_text}`;  
 
   return ( 
 
     <>
       
-      <motion.button animate = { {color: is_page ? `#698f3f` : `#384f1f`} } transition= { { duration: 0.01 } } onClick = { () => { router.push(`./${button_route}`) } } className = {`overflow-hidden w-full transition-colors flex font-semibold items-center my-2 gap-1 rounded-md cursor-pointer hover:bg-neutral-800`}> 
-        
-        {button_icon}
-        {is_retracted ? <span className="">{button_text}</span> : null}
-        
-      </motion.button>
     
+        <motion.button data-tooltip-id={tooltip_id} data-tooltip-content={button_text} animate = { {color: is_page ? `#698f3f` : `#384f1f`} } transition= { { duration: 0 } } onClick = { () => { router.push(`./${button_route}`) } } className = {`data-tooltip-target overflow-hidden text-asparagus w-full transition-colors flex font-semibold items-center my-2 gap-1 rounded-md cursor-pointer hover:bg-neutral-800 `}> 
+        
+          {button_icon}
+          {is_expanded ? <span className="">{button_text}</span> : null}
+        
+        </motion.button>
+
+        {!is_expanded && (
+
+        <Tooltip id={tooltip_id} place="top" className="" delayShow={0}/>
+
+      )}
+
     </>
 
   );

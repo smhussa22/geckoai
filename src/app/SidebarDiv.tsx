@@ -17,6 +17,7 @@ const item_icon_props = { // holding identical properties in an object and using
 
 }
 
+
 const item_icon_motion_props = {
 
   whileHover: { scale: 1.02 },
@@ -35,7 +36,7 @@ type sidebar_props = {
 export default function SidebarDiv({sidebar_user_icon, sidebar_user_name, sidebar_user_email}: sidebar_props) {
 
   const path_name = usePathname();
-  const [is_retracted, toggle_retract] = useState(false);
+  const [is_expanded, toggle_expand] = useState(false);
 
   return (
 
@@ -44,16 +45,16 @@ export default function SidebarDiv({sidebar_user_icon, sidebar_user_name, sideba
       <aside className = "h-screen"> {/* give it full viewport height */}
 
         {/* nav bar div; make it flex so the item list can take up the rest of the space*/}
-        <nav className = {`transition-ease duration-500 w-auto h-full flex flex-col bg-night border-r border-r-neutral-800 shadow-sm`}> 
+        <motion.nav className = {`transition-ease duration-500 w-auto h-full flex flex-col bg-night border-r border-r-neutral-800 shadow-sm`}> 
 
           {/* make the logo the button to toggle side bar */}
           <div className = "h-16 flex justify-between items-center"> 
 
-            <button onMouseDown = {() => toggle_retract(!is_retracted)} className = "p-1.5 cursor-pointer">
+            <button onMouseDown = {() => toggle_expand(!is_expanded)} className = "p-1.5 cursor-pointer">
 
               <motion.div whileHover={{ scale: 1.1 }} transition={{ duration: 0.1 }}>
 
-                <Logo logo_color = {is_retracted ? "#698f3f" : "#384f1f"} className = {`w-12 p-1.5 hover:bg-neutral-800 transition-ease duration-300 rounded-lg`}/>
+                <Logo logo_color = {is_expanded ? "#698f3f" : "#384f1f"} className = {`w-12 p-1.5 hover:bg-neutral-800 transition-ease duration-300 rounded-lg`}/>
               
               </motion.div>
 
@@ -63,13 +64,13 @@ export default function SidebarDiv({sidebar_user_icon, sidebar_user_name, sideba
         
           <ul className = "flex-1 px-3"> {/* flex-1 makes this take up the rest of the space of the div*/} {/*TODO: make a mapping config for the sidebar items for easier scalability*/}
 
-            <motion.div {...item_icon_motion_props}> <SidebarItem button_icon={<CalendarPlus {...item_icon_props} />} is_retracted = {is_retracted} button_route="/taillink" button_text="TailLink" /> </motion.div>
-            <motion.div {...item_icon_motion_props}> <SidebarItem button_icon= {<BrainCircuit {...item_icon_props} />} is_retracted = {is_retracted} button_route="/quizscale" button_text="QuizScale" /> </motion.div>
+            <motion.div {...item_icon_motion_props}> <SidebarItem button_icon={<CalendarPlus {...item_icon_props} />}  is_expanded = {is_expanded} button_route="/taillink" button_text="TailLink" /> </motion.div>
+            <motion.div {...item_icon_motion_props}> <SidebarItem button_icon= {<BrainCircuit {...item_icon_props} />}  is_expanded = {is_expanded} button_route="/quizscale" button_text="QuizScale" /> </motion.div>
             
             <hr className="my-3 border-neutral-800" />
             
-            <motion.div {...item_icon_motion_props}> <SidebarItem button_icon={<Settings {...item_icon_props} />} is_retracted = {is_retracted} button_route="/settings" button_text="Settings" /> </motion.div>
-            <motion.div {...item_icon_motion_props}> <SidebarItem button_icon={<CircleQuestionMark {...item_icon_props} />} is_retracted = {is_retracted} button_route="/help" button_text="Help" /> </motion.div>
+            <motion.div {...item_icon_motion_props}> <SidebarItem button_icon={<Settings {...item_icon_props} />} is_expanded = {is_expanded} button_route="/settings" button_text="Settings" /> </motion.div>
+            <motion.div {...item_icon_motion_props}> <SidebarItem button_icon={<CircleQuestionMark {...item_icon_props} />}  is_expanded = {is_expanded} button_route="/help" button_text="Help" /> </motion.div>
 
           </ul>
 
@@ -84,7 +85,7 @@ export default function SidebarDiv({sidebar_user_icon, sidebar_user_name, sideba
 
             {
             
-            is_retracted ? 
+            is_expanded ? 
 
             <div className = "flex justify-between items-center w-40 ml-3">
 
@@ -115,10 +116,10 @@ export default function SidebarDiv({sidebar_user_icon, sidebar_user_name, sideba
 
           </div>
 
-        </nav>
+        </motion.nav>
     
       </aside>
-
+        
     </>
 
   );

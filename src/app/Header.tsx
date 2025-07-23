@@ -21,12 +21,12 @@ export default function Header({title, sub_title}: header_descriptions) {
 
     <>
 
-      <div className = "w-full h-20 items-center flex border-b border-b-neutral-800">
+      <div className = "w-full h-16 items-center flex border-b border-b-neutral-800">
 
-        <div className = "p-3">
+        <div className = "px-3">
 
-          <h1 className = "text-asparagus text-3xl font-main font-bold">{`${title}`}</h1>
-          <p className = "text-broccoli text-lg font-main">{`${sub_title}`}</p>
+          <h1 className = "text-asparagus text-2xl font-semibold">{`${title}`}</h1>
+          <p className = "text-broccoli ml-0.5">{`${sub_title}`}</p>
           
         </div>
 
