@@ -33,9 +33,11 @@ export default function SidebarItem({button_icon, button_route, button_text, is_
         
         </motion.button>
 
-        {!is_expanded && (
+        {/* @todo: make your own tooltip later*/}
+        
+        {!is_expanded && ( 
 
-        <Tooltip id={tooltip_id} place="top" className="" delayShow={0}/>
+        <Tooltip id={tooltip_id} place="left" opacity={1} style={{ marginLeft: `0.5rem`, backgroundColor: '#262626', padding: '0.4rem', borderRadius: '0.375rem', color: is_page ? `#698f3f` : `#384f1f`, transitionProperty: 'color', transitionDuration: '300ms'}} noArrow delayShow={0} delayHide={0}/>
 
       )}
 
