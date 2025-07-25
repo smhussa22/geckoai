@@ -3,7 +3,6 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 
-
 type logo_dimensions = {
 
   className: string;
@@ -12,7 +11,6 @@ type logo_dimensions = {
 }
 
 export default function Logo({className, logo_color}: logo_dimensions) {
-
 
   return (
 

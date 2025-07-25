@@ -16,7 +16,7 @@ type button_props = {
 
 } 
 
-export default function SidebarItem ({button_icon, button_route, button_text, is_expanded} : button_props) {
+const SidebarItem = ({button_icon, button_route, button_text, is_expanded} : button_props) => {
 
   const router = useRouter();
   const path_name = usePathname();
@@ -47,3 +47,5 @@ export default function SidebarItem ({button_icon, button_route, button_text, is
   );
 
 }
+
+export default React.memo(SidebarItem);
