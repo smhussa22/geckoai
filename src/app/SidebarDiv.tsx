@@ -1,13 +1,14 @@
 // the sidebar that has the toolbox of components/utilities. collapsible
 'use client';
 import React from 'react';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import Logo from './Logo';
 import SidebarItem from './SidebarItem';
 import { MoreVertical } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { CalendarPlus, BrainCircuit, Settings, CircleQuestionMark } from 'lucide-react';
 import { usePathname } from 'next/navigation';
+import Test from './SidebarItemTEST';
 
 const item_icon_props = { // holding identical properties in an object and using ... to spread across all of required components
 
@@ -16,7 +17,6 @@ const item_icon_props = { // holding identical properties in an object and using
   color: "currentColor"
 
 }
-
 
 const item_icon_motion_props = {
 
@@ -27,16 +27,25 @@ const item_icon_motion_props = {
 
 type sidebar_props = {
 
-  sidebar_user_icon: React.ReactNode; // to do: this will later accept a gmail icon from the user
   sidebar_user_name: string; // to do: name of the user's gmail account
   sidebar_user_email: string; // to do: user's gmail
 
 }
 
-export default function SidebarDiv({sidebar_user_icon, sidebar_user_name, sidebar_user_email}: sidebar_props) {
+const MemoizeTest = <CalendarPlus {...item_icon_props} />;
+
+
+
+export default function SidebarDiv({sidebar_user_name, sidebar_user_email}: sidebar_props) {
 
   const path_name = usePathname();
   const [is_expanded, toggle_expand] = useState(false);
+
+  const sidebarItemsTest = useMemo( () => [
+
+  {icon: MemoizeTest, route: '/taillink', text: "TailLink"}
+
+], []);
 
   return (
 
@@ -54,7 +63,7 @@ export default function SidebarDiv({sidebar_user_icon, sidebar_user_name, sideba
 
               <motion.div whileHover={{ scale: 1.1 }} transition={{ duration: 0.1 }} >
 
-                <Logo logo_color = {is_expanded ? "#698f3f" : "#384f1f"} className = {`w-12 p-1.5 hover:bg-neutral-800 transition-ease duration-300 rounded-lg`}/>
+                <Logo logo_color = {is_expanded ? "#698f3f" : "#384f1f"} className = "w-12 p-1.5 hover:bg-neutral-800 transition-ease duration-300 rounded-lg"/>
               
               </motion.div>
 
@@ -64,22 +73,27 @@ export default function SidebarDiv({sidebar_user_icon, sidebar_user_name, sideba
         
           <ul className = "flex-1 px-3"> {/* flex-1 makes this take up the rest of the space of the div*/} {/*TODO: make a mapping config for the sidebar items for easier scalability*/}
 
-            <motion.div {...item_icon_motion_props}> <SidebarItem button_icon={<CalendarPlus {...item_icon_props} />}  is_expanded = {is_expanded} button_route="/taillink" button_text="TailLink" /> </motion.div>
-            <motion.div {...item_icon_motion_props}> <SidebarItem button_icon= {<BrainCircuit {...item_icon_props} />}  is_expanded = {is_expanded} button_route="/quizscale" button_text="QuizScale" /> </motion.div>
+              <Test button_icon={<CalendarPlus {...item_icon_props} />} is_expanded = {is_expanded} button_route="/taillink" button_text="TailLink" />
+
+            {/*
+            
+            <motion.div {...item_icon_motion_props}> <SidebarItem button_icon={<CalendarPlus {...item_icon_props} />} is_expanded = {is_expanded} button_route="/taillink" button_text="TailLink" /> </motion.div>
+            <motion.div {...item_icon_motion_props}> <SidebarItem button_icon= {<BrainCircuit {...item_icon_props} />} is_expanded = {is_expanded} button_route="/quizscale" button_text="QuizScale" /> </motion.div>
             
             <hr className="my-3 border-neutral-800" />
             
             <motion.div {...item_icon_motion_props}> <SidebarItem button_icon={<Settings {...item_icon_props} />} is_expanded = {is_expanded} button_route="/settings" button_text="Settings" /> </motion.div>
             <motion.div {...item_icon_motion_props}> <SidebarItem button_icon={<CircleQuestionMark {...item_icon_props} />}  is_expanded = {is_expanded} button_route="/help" button_text="Help" /> </motion.div>
 
+            */}
+
           </ul>
 
           <div className = "border-t border-t-neutral-800 flex p-3">
 
-            {/* div for the gmail user icon */}
             <div className="w-8 h-8 rounded-md overflow-hidden bg-neutral-800 flex items-center justify-center">
             
-              {sidebar_user_icon}
+              <img src = "./logo.svg"/>
 
             </div>
 
@@ -89,20 +103,20 @@ export default function SidebarDiv({sidebar_user_icon, sidebar_user_name, sideba
 
             <div className = "flex justify-between items-center w-40 ml-3">
 
-              <div className = "leading-4">
+              <motion.div initial = { { opacity: 0 } } animate = {{ opacity: 1 }} transition = { { duration: 0.4 } } className = "leading-4">
 
                 <h4 className = "text-asparagus">{sidebar_user_name}</h4>
                 <span className = "text-xs text-broccoli">{sidebar_user_email}</span>
 
-              </div>
+              </motion.div>
 
-              <motion.div whileHover={{ scale: 1.1 }} transition={{ duration: 0.2 }}>
+              <motion.div initial = { { opacity: 0 } } animate = {{ opacity: 1 }} transition = { { duration: 0.4 } } >
 
-                <button className='cursor-pointer'>
+                <motion.button whileHover={{ scale: 1.1 }} transition={{ duration: 0.2 }} className='cursor-pointer'>
                 
                   <MoreVertical color='#698f3f' size={20} className="hover:bg-neutral-800 rounded-lg transition ease duration-200"/>
                 
-                </button>
+                </motion.button>
 
               </motion.div>
 
