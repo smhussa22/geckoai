@@ -7,8 +7,8 @@ import SidebarItem from './SidebarItem';
 import { MoreVertical } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { CalendarPlus, BrainCircuit, Settings, CircleQuestionMark } from 'lucide-react';
+import Test from './TestIcon';
 import { usePathname } from 'next/navigation';
-import Test from './SidebarItemTEST';
 
 const item_icon_props = { // holding identical properties in an object and using ... to spread across all of required components
 
@@ -32,20 +32,10 @@ type sidebar_props = {
 
 }
 
-const MemoizeTest = <CalendarPlus {...item_icon_props} />;
-
-
-
 export default function SidebarDiv({sidebar_user_name, sidebar_user_email}: sidebar_props) {
 
   const path_name = usePathname();
   const [is_expanded, toggle_expand] = useState(false);
-
-  const sidebarItemsTest = useMemo( () => [
-
-  {icon: MemoizeTest, route: '/taillink', text: "TailLink"}
-
-], []);
 
   return (
 
@@ -73,10 +63,7 @@ export default function SidebarDiv({sidebar_user_name, sidebar_user_email}: side
         
           <ul className = "flex-1 px-3"> {/* flex-1 makes this take up the rest of the space of the div*/} {/*TODO: make a mapping config for the sidebar items for easier scalability*/}
 
-              <Test button_icon={<CalendarPlus {...item_icon_props} />} is_expanded = {is_expanded} button_route="/taillink" button_text="TailLink" />
-
-            {/*
-            
+          
             <motion.div {...item_icon_motion_props}> <SidebarItem button_icon={<CalendarPlus {...item_icon_props} />} is_expanded = {is_expanded} button_route="/taillink" button_text="TailLink" /> </motion.div>
             <motion.div {...item_icon_motion_props}> <SidebarItem button_icon= {<BrainCircuit {...item_icon_props} />} is_expanded = {is_expanded} button_route="/quizscale" button_text="QuizScale" /> </motion.div>
             
@@ -85,7 +72,7 @@ export default function SidebarDiv({sidebar_user_name, sidebar_user_email}: side
             <motion.div {...item_icon_motion_props}> <SidebarItem button_icon={<Settings {...item_icon_props} />} is_expanded = {is_expanded} button_route="/settings" button_text="Settings" /> </motion.div>
             <motion.div {...item_icon_motion_props}> <SidebarItem button_icon={<CircleQuestionMark {...item_icon_props} />}  is_expanded = {is_expanded} button_route="/help" button_text="Help" /> </motion.div>
 
-            */}
+            
 
           </ul>
 
