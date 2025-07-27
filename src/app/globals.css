@@ -11,6 +11,24 @@
 
 }
 
+
+@layer utilities {
+
+  @keyframes fadein {
+
+    0% { opacity: 0 }
+    100% { opacity: 1 }
+
+  }
+
+  .animate-fadein {
+
+    animation: fadein 0.4s ease forwards;
+
+  }
+  
+}
+
 body{
 
     @apply bg-night;

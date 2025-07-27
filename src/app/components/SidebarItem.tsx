@@ -27,10 +27,10 @@ export default function SidebarItem ({button_icon, button_route, button_text, is
 
     <>
     
-      <motion.button data-tooltip-id={tooltip_id} data-tooltip-content={button_text} animate = { {color: is_page ? '#698f3f' : '#384f1f'} } transition= { { duration: 0 } } onClick = { () => { router.push(`./${button_route}`) } } className = "data-tooltip-target overflow-hidden text-asparagus w-full transition-colors flex font-semibold items-center my-2 gap-1 rounded-md cursor-pointer hover:bg-neutral-800"> 
+      <motion.button data-tooltip-id={tooltip_id} data-tooltip-content={button_text} animate = { {color: is_page ? '#698f3f' : '#384f1f'} } transition= { { duration: 0 } } onClick = { () => { router.push(`./${button_route}`) } } className = {`transition-transform duration-100 hover:scale-[1.05] data-tooltip-target overflow-hidden text-asparagus w-full flex font-semibold items-center my-2 gap-1 rounded-md cursor-pointer hover:bg-neutral-800`}> 
         
         {button_icon}
-        {is_expanded ? <motion.span initial = { { opacity: 0 } } animate = {{ opacity: 1 }} transition = { { duration: 0.4 } } className="">{button_text}</motion.span> : null}
+        {is_expanded ? <span className="opacity-0 animate-fadein transition-colors duration-300">{button_text}</span> : null}
         
       </motion.button>
 
