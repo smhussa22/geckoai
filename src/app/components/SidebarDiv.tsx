@@ -2,28 +2,21 @@
 'use client';
 import React from 'react';
 import { useState, useMemo } from 'react';
-import Logo from './Logo';
+import Logo from '../components/Logo';
 import SidebarItem from './SidebarItem';
 import { MoreVertical } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { CalendarPlus, BrainCircuit, Settings, CircleQuestionMark } from 'lucide-react';
-import Test from './TestIcon';
 import { usePathname } from 'next/navigation';
 
 const item_icon_props = { // holding identical properties in an object and using ... to spread across all of required components
 
   size: 30,
-  className: 'p-0.5 ml-0.5 my-1',
+  className: 'p-0.5 ml-0.5 my-1 transition-colors duration-300',
   color: "currentColor"
 
 }
 
-const item_icon_motion_props = {
-
-  whileHover: { scale: 1.02 },
-  transition: { duration: 0.1 }
-
-}
 
 type sidebar_props = {
 
@@ -49,13 +42,13 @@ export default function SidebarDiv({sidebar_user_name, sidebar_user_email}: side
           {/* make the logo the button to toggle side bar */}
           <div className = "h-16 flex justify-between items-center"> 
 
-            <button onMouseDown = {() => toggle_expand(!is_expanded)} className = "ml-1.25 cursor-pointer">
+            <button onClick = {() => toggle_expand(!is_expanded)} className = "ml-1.25 cursor-pointer">
 
-              <motion.div whileHover={{ scale: 1.1 }} transition={{ duration: 0.1 }} >
+              <div >
 
-                <Logo logo_color = {is_expanded ? "#698f3f" : "#384f1f"} className = "w-12 p-1.5 hover:bg-neutral-800 transition-ease duration-300 rounded-lg"/>
+                <Logo logo_color = {is_expanded ? "#698f3f" : "#384f1f"} className = "transition-transform duration-100 hover:scale-[1.1] w-12 p-1.5 hover:bg-neutral-800 rounded-lg"/>
               
-              </motion.div>
+              </div>
 
             </button>
 
@@ -64,15 +57,13 @@ export default function SidebarDiv({sidebar_user_name, sidebar_user_email}: side
           <ul className = "flex-1 px-3"> {/* flex-1 makes this take up the rest of the space of the div*/} {/*TODO: make a mapping config for the sidebar items for easier scalability*/}
 
           
-            <motion.div {...item_icon_motion_props}> <SidebarItem button_icon={<CalendarPlus {...item_icon_props} />} is_expanded = {is_expanded} button_route="/taillink" button_text="TailLink" /> </motion.div>
-            <motion.div {...item_icon_motion_props}> <SidebarItem button_icon= {<BrainCircuit {...item_icon_props} />} is_expanded = {is_expanded} button_route="/quizscale" button_text="QuizScale" /> </motion.div>
+            <SidebarItem button_icon={<CalendarPlus {...item_icon_props} />} is_expanded = {is_expanded} button_route="/taillink" button_text="TailLink" />
+            <SidebarItem button_icon= {<BrainCircuit {...item_icon_props} />} is_expanded = {is_expanded} button_route="/quizscale" button_text="QuizScale" /> 
             
             <hr className="my-3 border-neutral-800" />
             
-            <motion.div {...item_icon_motion_props}> <SidebarItem button_icon={<Settings {...item_icon_props} />} is_expanded = {is_expanded} button_route="/settings" button_text="Settings" /> </motion.div>
-            <motion.div {...item_icon_motion_props}> <SidebarItem button_icon={<CircleQuestionMark {...item_icon_props} />}  is_expanded = {is_expanded} button_route="/help" button_text="Help" /> </motion.div>
-
-            
+            <SidebarItem button_icon={<Settings {...item_icon_props} />} is_expanded = {is_expanded} button_route="/settings" button_text="Settings" /> 
+            <SidebarItem button_icon={<CircleQuestionMark {...item_icon_props} />}  is_expanded = {is_expanded} button_route="/help" button_text="Help" />
 
           </ul>
 
@@ -99,11 +90,11 @@ export default function SidebarDiv({sidebar_user_name, sidebar_user_email}: side
 
               <motion.div initial = { { opacity: 0 } } animate = {{ opacity: 1 }} transition = { { duration: 0.4 } } >
 
-                <motion.button whileHover={{ scale: 1.1 }} transition={{ duration: 0.2 }} className='cursor-pointer'>
+                <button className='cursor-pointer transition-transform duration-100 hover:scale-[1.1]'>
                 
-                  <MoreVertical color='#698f3f' size={20} className="hover:bg-neutral-800 rounded-lg transition ease duration-200"/>
+                  <MoreVertical color='#698f3f' size={20} className="hover:bg-neutral-800 rounded-lg"/>
                 
-                </motion.button>
+                </button>
 
               </motion.div>
 
