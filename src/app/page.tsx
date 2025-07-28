@@ -3,90 +3,83 @@ import React from 'react';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { auth } from '../lib/firebase';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
+import { FirebaseError } from "firebase/app";
+import Link from 'next/link'; 
+import {Eye, EyeOff} from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function HomePage() {
+
+  const[show_password, set_show_password] = useState(false);
   
-  const router = useRouter();
-
-  const [sign_in_email, set_sign_in_email] = useState('');
-  const [sign_in_password, set_sign_in_password] = useState('');
-  const [create_email, set_create_email] = useState('');
-  const [create_password, set_create_password] = useState('');
-  const [clicked, set_click] = useState(false);
-
-  const sign_in = async () => {
-
-    await signInWithEmailAndPassword(auth, sign_in_email, sign_in_password);
-    router.push('/taillink');
-
-  }
-
-  const create_account = async () => {
-
-     try{
-
-      await createUserWithEmailAndPassword(auth, create_email, create_password);
-
-     }catch(error){
-
-      console.log(error);
-
-     }
-    
-  }
- 
   return (
     
     <>
 
-          <div className="h-screen flex flex-col gap-1 p-1">
+          <div className="h-screen bg-broccoli flex relative z-0">
 
-            <h1 className='text-asparagus font-semibold'>Sign In</h1>
+            <div className='bg-night w-125 h-90 rounded-lg absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 shadow-2xl z-1'>
 
-            <div>
+              <div className='justify-items-center p-4'>
 
-              <label className='text-asparagus'>Enter Email: </label>
-              <input value = {sign_in_email} placeholder = "Email" id = "sign_in_email" onChange = {(e) => set_sign_in_email(e.target.value)} className = "w-20 bg-amber-50" type = "email" ></input>
+                <h1 className='text-asparagus text-2xl font-semibold'>Welcome back!</h1>
+                <h2 className='text-asparagus'>Log in to begin using GeckoAI!</h2>
+
+                <div>
+
+                  <h3 className='text-asparagus font-bold py-1'>Email:</h3>
+
+                  <div className='flex justify-center'>
+  
+                    <input type="email" className='focus:outline-none focus:ring-1 focus:ring-asparagus text-asparagus pl-2 h-10 bg-neutral-800 border-neutral-700 border rounded-lg w-1/1'/>
+
+                  </div>
+
+                  <h3 className='text-asparagus font-bold py-1'>Password:</h3>
+
+                  <div className='relative flex justify-center'>
+  
+                    <input type={show_password ? 'text' : 'password'} className='focus:outline-none focus:ring-1 focus:ring-asparagus text-asparagus pl-2 h-10 bg-neutral-800 border-neutral-700 border rounded-lg w-1/1'/>
+                   
+                    <AnimatePresence mode="wait" initial={false}>
+
+                      <motion.button key={show_password ? 'eye-off' : 'eye'} initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 5 }} transition={{ duration: 0.2 }} type = "button" onClick = { () => set_show_password(!show_password) } className="absolute right-3 top-1/2 -translate-y-1/2 text-asparagus" >
+
+                        {show_password ? <EyeOff color = {'#525252'} size={20} /> : <Eye color = {'#525252'} size={20} />}
+
+                      </motion.button>
+
+                    </AnimatePresence>
+
+                  </div>
+
+                  <div className='mt-1'>
+
+                    <Link href = "/" className="font-semibold text-sm text-asparagus hover:underline">Forgot your password?</Link>
+                  
+                  </div>
+
+                  <div className='mt-2'>
+
+                    <button className='hover:bg-night hover:text-broccoli transition-colors duration-150 bg-broccoli border border-neutral-800 cursor-pointer rounded-lg p-2 w-100 h-15 text-3xl font-bold text-night'>Log In</button>
+
+                  </div>
+
+                  <div className='mt-1'>
+
+                    <Link href = "/" className="font-semibold text-sm text-asparagus hover:underline">Register</Link>
+                  
+                  </div>
+
+                </div>
+              
+              </div>
 
             </div>
-    
-            <div>
-
-              <label className='text-asparagus'>Enter Password: </label>
-              <input value = {sign_in_password} placeholder = "Password" onChange = {(e) => set_sign_in_password(e.target.value)} className = "w-20 bg-amber-50" type = "password" ></input>
-
-            </div>
-
-            <button type = "submit" onClick = { sign_in } className={`${ clicked ? 'bg-green-500' : 'bg-amber-50'} cursor-pointer bg-amber-50 w-20 border-1 border-asparagus`}>Sign In</button>
-
-            <h1 className='text-red-600'>Invalid Credentials</h1>
-
-            <hr className='border-asparagus w-60'></hr>
-
-            <h1 className='text-asparagus font-semibold'>Create Account</h1>
-
-            <div>
-
-              <label className='text-asparagus'>Enter Email: </label>
-              <input value = {create_email} placeholder = "Email" onChange = {(e) => set_create_email(e.target.value)} className = "w-20 bg-amber-50" type = "email" ></input>
-
-            </div>
-    
-            <div>
-
-              <label className='text-asparagus'>Enter Password: </label>
-              <input value = {create_password} placeholder = "Email" onChange = {(e) => set_create_password(e.target.value)} className = "w-20 bg-amber-50" type = "password" ></input>
-
-            </div>
-
-            <button type = "submit" onClick = {create_account} className='cursor-pointer hover:bg-amber-100 bg-amber-50 w-20 border-1 border-asparagus'>Create</button>
-            <h1 className='text-red-600'>Invalid Credentials</h1>
-            <h1 className='text-green-600'>Account Created</h1>
 
           </div>
 
-    
     </>
 
   );
