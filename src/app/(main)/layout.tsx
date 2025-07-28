@@ -15,31 +15,23 @@ export default function RootLayout({children}: { children: React.ReactNode; }) {
 
   return (
 
-    <html lang="en">
+    <div className="flex h-screen">
 
-      <body>
+      <Sidebar/>
 
-        <div className="flex h-screen">
+        <div className = "flex flex-col flex-1">
 
-          <Sidebar/>
+          <Header title = "TailLink" sub_title= "Your semester, built seamlessly"/>
 
-          <div className = "flex flex-col flex-1">
+          <main className="flex-1 overflow-y-auto">
 
-            <Header title = "TailLink" sub_title= "Your semester, built seamlessly"/>
+            { children }
 
-            <main className="flex-1 overflow-y-auto">
-
-              { children }
-
-            </main>
-
-          </div>
+          </main>
 
         </div>
 
-      </body>
-
-    </html>
+    </div>
 
   );
 

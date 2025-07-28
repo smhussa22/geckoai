@@ -9,6 +9,9 @@ import { motion } from 'framer-motion';
 import { CalendarPlus, BrainCircuit, Settings, CircleQuestionMark } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 
+import TempLogOut from './TempLogoutButton';
+import { LogOut } from 'lucide-react';
+
 const item_icon_props = { // holding identical properties in an object and using ... to spread across all of required components
 
   size: 30,
@@ -64,6 +67,9 @@ export default function SidebarDiv({sidebar_user_name, sidebar_user_email}: side
             
             <SidebarItem button_icon={<Settings {...item_icon_props} />} is_expanded = {is_expanded} button_route="/settings" button_text="Settings" /> 
             <SidebarItem button_icon={<CircleQuestionMark {...item_icon_props} />}  is_expanded = {is_expanded} button_route="/help" button_text="Help" />
+
+            <TempLogOut button_icon={<LogOut size = {30} className = 'p-0.5 ml-0.5 my-1 transition-colors duration-300' color = "#00B8DB" />} is_expanded = {is_expanded} button_text = "Logout" />
+            
 
           </ul>
 
