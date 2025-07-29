@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import './globals.css';
+import '../globals.css';
 
 export const metadata: Metadata = {
 
@@ -14,7 +14,7 @@ export default function RootLayout({children}: { children: React.ReactNode; }) {
 
      <html lang="en">
 
-      <body>{children}</body>
+      <body className="backdrop-blur bg-cover bg-center" style={{ backgroundImage: 'url("/login_background.png")', }}>{children}</body>
       
     </html>
 

@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import { initializeApp, getApp } from "firebase/app";
+import { getAuth, GoogleAuthProvider, signOut, deleteUser, signInWithPopup, onAuthStateChanged } from "firebase/auth";
 
 const firebaseConfig = {
 
@@ -14,7 +14,58 @@ const firebaseConfig = {
 };
 
 export const app = initializeApp(firebaseConfig);
-export const auth = getAuth();
+export const provider = new GoogleAuthProvider();
+export const auth = getAuth(app);
 
+export const sign_up_with_google = async () => {
 
+  try{
+
+    const result = await signInWithPopup(auth, provider);
+
+    // gives google access token to access google api
+    const credential = GoogleAuthProvider.credentialFromResult(result);
+    const token = credential?.accessToken;
+    
+    // signed in user info
+    const user = result.user;
+
+    return {user, token};
+
+  }
+
+  catch(error: any){
+
+    const error_object = {
+
+      error_code: error.code,
+      error_message: error.message,
+      email: error.customData.email,
+      credential: GoogleAuthProvider.credentialFromError(error),
+      list: [
+
+        `Code: ${error.code}`,
+        `Message: ${error.messsage}`,
+
+      ]
+
+    }
+
+    throw error_object;
+
+  }
+
+};
+
+export const sign_out = async () => {
+
+  console.log("test");
+
+};
+
+export const delete_user = async () => {
+
+  console.log("test");
+
+};
 
