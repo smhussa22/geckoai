@@ -4,8 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { FaGoogle } from "react-icons/fa";
 import { FaApple } from "react-icons/fa";
-import { sign_up_with_google } from '@/lib/firebase';
-import { NutFill } from 'react-bootstrap-icons';
+import { sign_up_with_google } from '@/lib/firebase_auth';
 
 // @todo: make the background move with actual forests and animals lizard blink gecko blink ladybug jungle leaves ~ minagi
 
@@ -63,8 +62,11 @@ export default function HomePage() {
                     
                     </button>
 
-                    { error_object && <h1 className='text-red-700 font-semibold'>Log In Error: {error_object}</h1> }  
+                    <div>
 
+                        { error_object && <h1 className='text-red-700 font-semibold text-sm'>{error_object}</h1> }  
+
+                    </div>
                 </div>
               
               </div>
