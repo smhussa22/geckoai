@@ -44,8 +44,7 @@ export const sign_up_with_google = async () => {
       credential: GoogleAuthProvider.credentialFromError(error),
       list: [
 
-        `Code: ${error.code}`,
-        `Message: ${error.messsage}`,
+        `${error.message}`
 
       ]
 
@@ -59,7 +58,32 @@ export const sign_up_with_google = async () => {
 
 export const sign_out = async () => {
 
-  console.log("test");
+  try{
+
+     await signOut(auth);
+
+  }
+  
+  catch(error: any){
+
+    const error_object = {
+
+      error_code: error.code,
+      error_message: error.message,
+      email: error.customData.email,
+      credential: GoogleAuthProvider.credentialFromError(error),
+      list: [
+
+        `Code: ${error.code}`,
+        `Message: ${error.messsage}`,
+
+      ]
+
+    }
+
+    throw error_object;
+    
+  }
 
 };
 
