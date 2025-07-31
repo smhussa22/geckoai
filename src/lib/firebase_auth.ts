@@ -1,6 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp, getApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, signOut, deleteUser, signInWithPopup, onAuthStateChanged } from "firebase/auth";
+import { User, getAuth, GoogleAuthProvider, signOut, deleteUser, signInWithPopup, onAuthStateChanged, updateCurrentUser } from "firebase/auth";
+import { useEffect, useState } from "react";
 
 const firebaseConfig = {
 
@@ -42,6 +43,7 @@ export const sign_up_with_google = async () => {
       error_message: error.message,
       email: error.customData.email,
       credential: GoogleAuthProvider.credentialFromError(error),
+      user: auth.currentUser,
       list: [
 
         `${error.message}`
@@ -55,6 +57,32 @@ export const sign_up_with_google = async () => {
   }
 
 };
+
+export const useUser = () => { // hook to get user object
+
+  const [user, set_user] = useState<User | null>(null);
+
+  useEffect(() => {
+
+    const unsubscribe = onAuthStateChanged(auth, (current_user) => {
+
+      set_user(current_user);
+
+    });
+
+    return () => unsubscribe();
+
+  }, []);
+
+   if(user){
+
+    console.log(user);
+    
+  }
+
+  return user;
+
+}
 
 export const sign_out = async () => {
 

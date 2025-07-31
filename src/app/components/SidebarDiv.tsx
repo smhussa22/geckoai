@@ -8,6 +8,7 @@ import { MoreVertical } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { CalendarPlus, BrainCircuit, Settings, CircleQuestionMark } from 'lucide-react';
 import { usePathname } from 'next/navigation';
+import { useUser } from '@/lib/firebase_auth';
 
 const item_icon_props = { // holding identical properties in an object and using ... to spread across all of required components
 
@@ -18,17 +19,11 @@ const item_icon_props = { // holding identical properties in an object and using
 }
 
 
-type sidebar_props = {
-
-  sidebar_user_name: string; // to do: name of the user's gmail account
-  sidebar_user_email: string; // to do: user's gmail
-
-}
-
-export default function SidebarDiv({sidebar_user_name, sidebar_user_email}: sidebar_props) {
+export default function SidebarDiv() {
 
   const path_name = usePathname();
   const [is_expanded, toggle_expand] = useState(false);
+  const user = useUser();
 
   return (
 
@@ -65,49 +60,8 @@ export default function SidebarDiv({sidebar_user_name, sidebar_user_email}: side
             <SidebarItem button_icon={<Settings {...item_icon_props} />} is_expanded = {is_expanded} button_route="/settings" button_text="Settings" /> 
             <SidebarItem button_icon={<CircleQuestionMark {...item_icon_props} />}  is_expanded = {is_expanded} button_route="/help" button_text="Help" />
             
-
           </ul>
 
-          <div className = "border-t border-t-neutral-800 flex p-3">
-
-            <div className="w-8 h-8 rounded-md overflow-hidden bg-neutral-800 flex items-center justify-center">
-            
-              <img src = "./logo.svg"/>
-
-            </div>
-
-            {
-            
-            is_expanded ? 
-
-            <div className = "flex justify-between items-center w-40 ml-3">
-
-              <motion.div initial = { { opacity: 0 } } animate = {{ opacity: 1 }} transition = { { duration: 0.4 } } className = "leading-4">
-
-                <h4 className = "text-asparagus">{sidebar_user_name}</h4>
-                <span className = "text-xs text-broccoli">{sidebar_user_email}</span>
-
-              </motion.div>
-
-              <motion.div initial = { { opacity: 0 } } animate = {{ opacity: 1 }} transition = { { duration: 0.4 } } >
-
-                <button className='cursor-pointer transition-transform duration-100 hover:scale-[1.1]'>
-                
-                  <MoreVertical color='#698f3f' size={20} className="hover:bg-neutral-800 rounded-lg"/>
-                
-                </button>
-
-              </motion.div>
-
-            </div>
-
-            : 
-            
-            null 
-            
-            }
-
-          </div>
 
         </motion.nav>
     
