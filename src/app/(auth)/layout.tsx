@@ -8,15 +8,15 @@ export const metadata: Metadata = {
 
 };
 
-export default function RootLayout({children}: { children: React.ReactNode; }) {
+export default function AuthLayout({children}: { children: React.ReactNode; }) {
 
   return (
 
-     <html lang="en">
+     <div className="auth-layout flex items-center justify-center h-screen bg-night">
 
-      <body className="backdrop-blur bg-cover bg-center" style={{ backgroundImage: 'url("/login_background.png")', }}>{children}</body>
+      {children}
       
-    </html>
+    </div>
 
   );
 

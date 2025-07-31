@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 // @todo: make the background move with actual forests and animals lizard blink gecko blink ladybug jungle leaves ~ minagi
 
-export default function log_in_page() {
+export default function LogInPage() {
 
   const[show_password, set_show_password] = useState(false);
   
