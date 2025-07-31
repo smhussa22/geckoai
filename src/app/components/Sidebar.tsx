@@ -13,6 +13,6 @@ const gmail_user_icon = () => {
 
 export default function Sidebar(){
 
-    return( <> <SidebarDiv sidebar_user_name="GeckoAI User" sidebar_user_email="geckoai@geckoai.com"/></> );
+    return( <> <SidebarDiv /> </> );
 
 }

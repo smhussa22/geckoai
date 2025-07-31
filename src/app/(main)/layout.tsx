@@ -3,7 +3,6 @@ import Sidebar from '../components/Sidebar';
 import Header from "../components/Header";
 import '../globals.css';
 import 'react-tooltip/dist/react-tooltip.css';
-
 export const metadata: Metadata = {
 
   title: "GeckoAI",
@@ -25,9 +24,9 @@ export default function RootLayout({children}: { children: React.ReactNode; }) {
 
             <div className = "flex flex-col flex-1">
 
-              <Header title = "TailLink" sub_title= "Your semester, built seamlessly"/>
+              <Header />
 
-                <main className="flex-1 overflow-y-auto">
+                <main className="relative flex-1 overflow-y-auto">
 
                   { children }
 
