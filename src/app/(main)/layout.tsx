@@ -3,6 +3,7 @@ import Sidebar from '../components/Sidebar';
 import Header from "../components/Header";
 import '../globals.css';
 import 'react-tooltip/dist/react-tooltip.css';
+
 export const metadata: Metadata = {
 
   title: "GeckoAI",
@@ -14,9 +15,6 @@ export default function RootLayout({children}: { children: React.ReactNode; }) {
 
   return (
 
-    <html lang="en">
-
-      <body>
 
         <div className="flex h-screen">
 
@@ -36,9 +34,6 @@ export default function RootLayout({children}: { children: React.ReactNode; }) {
 
         </div>
 
-      </body>
-
-    </html>
 
   );
 
