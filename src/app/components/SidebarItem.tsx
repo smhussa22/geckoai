@@ -9,36 +9,36 @@ import { useMemo } from 'react';
 
 type button_props = {
 
-    button_icon: React.ReactNode; // the icon of the button
-    button_route: string; // the page the button navigates to
-    button_text: string; // the text/description of the button item
-    is_expanded: boolean;
+    buttonIcon: React.ReactNode; 
+    buttonRoute: string; 
+    buttonText: string; 
+    isExpanded: boolean;
 
 } 
 
-export default function SidebarItem ({button_icon, button_route, button_text, is_expanded} : button_props) {
+export default function SidebarItem ({buttonIcon, buttonRoute, buttonText, isExpanded} : button_props) {
 
   const router = useRouter();
-  const path_name = usePathname();
-  const is_page = (path_name === button_route); // if the route associated with the button is also the current page, it is that button's page
-  const tooltip_id = `tooltip-${button_text}`;  
+  const pathName = usePathname();
+  const isPage = (pathName === buttonRoute); 
+  const tooltipId = `tooltip-${buttonText}`;  
 
   return ( 
 
     <>
     
-      <motion.button data-tooltip-id={tooltip_id} data-tooltip-content={button_text} animate = { {color: is_page ? '#698f3f' : '#384f1f'} } transition= { { duration: 0 } } onClick = { () => { router.push(`./${button_route}`) } } className = {`transition-transform duration-100 hover:scale-[1.05] data-tooltip-target overflow-hidden text-asparagus w-full flex font-semibold items-center my-2 gap-1 rounded-md cursor-pointer hover:bg-neutral-800`}> 
+      {/* @todo remove unnecessary framer motion */}
+
+      <motion.button data-tooltip-id={tooltipId} data-tooltip-content={buttonText} animate = { {color: isPage ? '#698f3f' : '#384f1f'} } transition= { { duration: 0 } } onClick = { () => { router.push(`./${buttonRoute}`) } } className = {`transition-transform duration-100 hover:scale-[1.05] data-tooltip-target overflow-hidden text-asparagus w-full flex font-semibold items-center my-2 gap-1 rounded-md cursor-pointer hover:bg-neutral-800`}> 
         
-        {button_icon}
-        {is_expanded ? <span className="opacity-0 animate-fadein transition-colors duration-300">{button_text}</span> : null}
+        {buttonIcon}
+        {isExpanded ? <span className="opacity-0 animate-fadein transition-colors duration-300">{buttonText}</span> : null}
         
       </motion.button>
 
-      {/* @todo: make your own tooltip later*/}
+      {!isExpanded && ( 
 
-      {!is_expanded && ( 
-
-        <Tooltip id={tooltip_id} place="left" opacity={1} style={{ marginLeft: '0.5rem', backgroundColor: '#262626', padding: '0.4rem', borderRadius: '0.375rem', color: is_page ? '#698f3f' : '#384f1f', transitionProperty: 'color', transitionDuration: '300ms'}} noArrow delayShow={0} delayHide={0}/>
+        <Tooltip id={tooltipId} place="left" opacity={1} style={{ marginLeft: '0.5rem', backgroundColor: '#262626', padding: '0.4rem', borderRadius: '0.375rem', color: isPage ? '#698f3f' : '#384f1f', transitionProperty: 'color', transitionDuration: '300ms'}} noArrow delayShow={0} delayHide={0}/>
 
       )}
 
