@@ -7,7 +7,7 @@ export const metadata: Metadata = {
 
 };
 
-export default function settings_page() {
+export default function SettingsPage() {
 
   return (
 

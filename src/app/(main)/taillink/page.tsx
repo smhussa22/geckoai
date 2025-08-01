@@ -7,7 +7,7 @@ export const metadata: Metadata = {
 
 };
 
-export default function taillink_page() {
+export default function TailLinkPage() {
 
   return (
 

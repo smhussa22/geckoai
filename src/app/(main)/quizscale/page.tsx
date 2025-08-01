@@ -7,7 +7,7 @@ export const metadata: Metadata = {
 
 };
 
-export default function quizscale_page() {
+export default function QuizScalePage() {
 
   return (
 

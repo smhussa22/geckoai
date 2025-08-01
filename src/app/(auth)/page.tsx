@@ -1,35 +1,10 @@
 'use client';
 import React from 'react';
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { FaGoogle } from "react-icons/fa";
 import { FaApple } from "react-icons/fa";
-import { sign_up_with_google } from '@/lib/firebase_auth';
-
-// @todo: make the background move with actual forests and animals lizard blink gecko blink ladybug jungle leaves ~ minagi
 
 export default function HomePage() {
 
-  const [show_password, set_show_password] = useState(false);
-  const [error_object, set_error_object] = useState< string[] | null >(null);
-  const router = useRouter();
-
-  const google_login = async () => {
-
-    try{
-
-        const {user, token} = await sign_up_with_google();
-        set_error_object(null);
-        router.push('/taillink');
-
-    }catch(error: any){
-
-        console.error("Google Login Failed: ", error);
-        set_error_object(error.list);
-        
-    }
-
-  }
 
   return (
     
@@ -47,7 +22,7 @@ export default function HomePage() {
 
                   <div className=''>
 
-                    <button onClick = { google_login } className='my-3 hover:bg-night hover:text-broccoli transition-colors duration-150 bg-broccoli border border-neutral-800 cursor-pointer rounded-lg p-2 w-100 h-15 text-3xl font-bold text-night flex items-center justify-center gap-4'>
+                    <button className='my-3 hover:bg-night hover:text-broccoli transition-colors duration-150 bg-broccoli border border-neutral-800 cursor-pointer rounded-lg p-2 w-100 h-15 text-3xl font-bold text-night flex items-center justify-center gap-4'>
   
                         <FaGoogle />
                         Log In With Gmail
@@ -62,11 +37,6 @@ export default function HomePage() {
                     
                     </button>
 
-                    <div>
-
-                        { error_object && <h1 className='text-red-700 font-semibold text-sm'>{error_object}</h1> }  
-
-                    </div>
                 </div>
               
               </div>

@@ -7,7 +7,7 @@ export const metadata: Metadata = {
 
 };
 
-export default function help_page() {
+export default function HelpPage() {
 
   return (
 
