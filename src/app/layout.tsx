@@ -1,3 +1,6 @@
+import { UserProvider } from "./contexts/UserContext";
+import  Script from 'next/script';
+
 export default function RootLayout({children}: { children: React.ReactNode; }) {
 
   return (
@@ -6,8 +9,10 @@ export default function RootLayout({children}: { children: React.ReactNode; }) {
 
         <body>
 
-            <script src="https://accounts.google.com/gsi/client" async></script>
+          <UserProvider>
+            <Script src="https://accounts.google.com/gsi/client" async strategy="afterInteractive"></Script>
             {children}
+          </UserProvider>
 
         </body>
 

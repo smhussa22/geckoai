@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { routeMetadata } from '../routeMetadata';
 import { Tooltip } from 'react-tooltip';
+import { useUser } from '../contexts/UserContext';
 
 export default function Header() {
 
@@ -13,7 +14,7 @@ export default function Header() {
   const metadata = routeMetadata[metadataKey];
 
   const [logOutMenu, toggleLogOutMenu] = useState(false);
-
+  const {user, handleGoogleLogOut} = useUser();
 
   return (
 

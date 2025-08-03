@@ -1,8 +1,28 @@
-import { useEffect } from "react";
+import { useUser } from "@/app/contexts/UserContext";
 
 export const handleCredentialResponse = (response: any) => {
 
-    console.log("Encoded JWT ID token: " + response.credential);
+    if(!response || !response.credential){
+
+        console.log("Server responded with no token");
+        return;
+    
+    }
+
+    localStorage.setItem('googleJWT', response.credential);
+
+    const userObject = JSON.parse(atob(response.credential.split('.')[1]));
+    console.log(userObject);
+
+    const userInfo = {
+
+        picture: userObject.picture,
+        name: userObject.given_name,
+        lastName: userObject.family_name
+
+    }
+
+    console.log(userInfo);
 
 }
 
