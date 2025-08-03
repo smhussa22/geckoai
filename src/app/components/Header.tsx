@@ -14,7 +14,7 @@ export default function Header() {
   const metadata = routeMetadata[metadataKey];
 
   const [logOutMenu, toggleLogOutMenu] = useState(false);
-  const {user, handleGoogleLogOut} = useUser();
+  const {user, GoogleLogIn, GoogleLogOut } = useUser();
 
   return (
 
@@ -33,9 +33,9 @@ export default function Header() {
 
           <button className = 'bg-asparagus px-5 font-semibold rounded-md cursor-pointer'> Upgrade </button>
           
-          <button onClick = { () => toggleLogOutMenu(!logOutMenu) } data-tooltip-id = "gmailIcon" className = 'cursor-pointer overflow-hidden data-tooltip-target bg-neutral-800 w-12 aspect-square rounded-full'>
+          <button onClick = { () => { toggleLogOutMenu(!logOutMenu); } } data-tooltip-id = "gmailIcon" className = 'cursor-pointer overflow-hidden data-tooltip-target bg-neutral-800 w-12 aspect-square rounded-full'>
 
-            <img src = "logo.svg"/>
+            <img src = {`${user?.picture}`}/>
 
           </button>
 
@@ -48,8 +48,8 @@ export default function Header() {
           <div className= 'flex flex-col text-asparagus'>
           
             <h1 className='text-ghost'>Google Account</h1>
-            <h1 className='text-asparagus'>User Name</h1>
-            <h1 className='text-asparagus'>User Email</h1>
+            <h1 className='text-asparagus'>{user?.name}</h1>
+            <h1 className='text-asparagus'>{user?.email}</h1>
             
           </div>
 
