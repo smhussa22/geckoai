@@ -1,49 +1,58 @@
-// the sidebar that has the toolbox of components/utilities. collapsible
 'use client';
-import React, { useState } from 'react';
+import React from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Tooltip } from 'react-tooltip';
-import { useMemo } from 'react';
+import SidebarIcon from './SidebarIcon';
 
+type ButtonProps = {
 
-type button_props = {
+  buttonIcon: React.ReactNode;
+  buttonRoute: string;
+  buttonText: string;
+  isExpanded: boolean;
 
-    buttonIcon: React.ReactNode; 
-    buttonRoute: string; 
-    buttonText: string; 
-    isExpanded: boolean;
+};
 
-} 
-
-export default function SidebarItem ({buttonIcon, buttonRoute, buttonText, isExpanded} : button_props) {
+export default function SidebarItem({ buttonIcon, buttonRoute, buttonText, isExpanded }: ButtonProps) {
 
   const router = useRouter();
   const pathName = usePathname();
-  const isPage = (pathName === buttonRoute); 
-  const tooltipId = `tooltip-${buttonText}`;  
+  const isPage = pathName === buttonRoute;
+  const tooltipId = `tooltip-${buttonText}`;
 
-  return ( 
+  return (
 
     <>
-    
-      {/* @todo remove unnecessary framer motion */}
 
-      <motion.button data-tooltip-id={tooltipId} data-tooltip-content={buttonText} animate = { {color: isPage ? '#698f3f' : '#384f1f'} } transition= { { duration: 0 } } onClick = { () => { router.push(`./${buttonRoute}`) } } className = {`transition-transform duration-100 hover:scale-[1.05] data-tooltip-target overflow-hidden text-asparagus w-full flex font-semibold items-center my-2 gap-1 rounded-md cursor-pointer hover:bg-neutral-800`}> 
+      <motion.button data-tooltip-id={tooltipId} data-tooltip-content={buttonText} onClick={() => router.push(buttonRoute)} className={` overflow-hidden w-full flex items-center my-2 gap-1 rounded-md cursor-pointer font-semibold transition-all duration-300 hover:scale-[1.05] hover:bg-neutral-800 ${isPage ? 'text-[#698f3f]' : 'text-[#384f1f]'}`}>
         
-        {buttonIcon}
-        {isExpanded ? <span className="opacity-0 animate-fadein transition-colors duration-300">{buttonText}</span> : null}
-        
+        <SidebarIcon icon={buttonIcon} />
+
+        <AnimatePresence mode="wait">
+
+          {isExpanded && (
+
+            <motion.span key="text" initial={{ opacity: 0, width: 0 }} animate={{ opacity: 1, width: 'auto' }} exit={{ opacity: 0, width: 0 }} transition={{ duration: 0.3 }} className="overflow-hidden whitespace-nowrap ml-2" >
+            
+              {buttonText}
+            
+            </motion.span>
+          
+          )}
+
+        </AnimatePresence>
+
       </motion.button>
 
-      {!isExpanded && ( 
+      {!isExpanded && (
 
-        <Tooltip id={tooltipId} place="left" opacity={1} style={{ marginLeft: '0.5rem', backgroundColor: '#262626', padding: '0.4rem', borderRadius: '0.375rem', color: isPage ? '#698f3f' : '#384f1f', transitionProperty: 'color', transitionDuration: '300ms'}} noArrow delayShow={0} delayHide={0}/>
+        <Tooltip id={tooltipId} place="left" opacity={1} style={{ marginLeft: '0.5rem', backgroundColor: '#262626', padding: '0.4rem', borderRadius: '0.375rem', color: isPage ? '#698f3f' : '#384f1f', transition: 'color 0.3s' }} noArrow delayShow={0} delayHide={0} />
 
       )}
 
     </>
 
   );
-
+  
 }

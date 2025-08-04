@@ -7,6 +7,8 @@ import { routeMetadata } from '../routeMetadata';
 import { Tooltip } from 'react-tooltip';
 import { useUser } from '../contexts/UserContext';
 import AccountDropDown from './AccountDropdown';
+
+// @todo: add text and subtext animation. use indexing to play a downroll animation if user clicked from an above element and vice versa
 export default function Header() {
 
   const pathName = usePathname();
