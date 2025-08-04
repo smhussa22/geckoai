@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { routeMetadata } from '../routeMetadata';
 import { Tooltip } from 'react-tooltip';
 import { useUser } from '../contexts/UserContext';
-
+import AccountDropDown from './AccountDropdown';
 export default function Header() {
 
   const pathName = usePathname();
@@ -41,21 +41,7 @@ export default function Header() {
 
         </div>
 
-        {!logOutMenu &&
-        
-          <Tooltip id="gmailIcon" place="bottom" opacity={1} style={{backgroundColor: '#262626', borderRadius: '0.375rem'}} noArrow delayShow={0} delayHide={0}>
-
-          <div className= 'flex flex-col text-asparagus'>
-          
-            <h1 className='text-ghost'>Google Account</h1>
-            <h1 className='text-asparagus'>{user?.name}</h1>
-            <h1 className='text-asparagus'>{user?.email}</h1>
-            
-          </div>
-
-          </Tooltip>
-
-        }
+        <AccountDropDown/>
 
       </div>
 

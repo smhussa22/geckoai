@@ -9,8 +9,8 @@ export default function RootLayout({children}: { children: React.ReactNode; }) {
 
         <body>
 
+          <Script src="https://accounts.google.com/gsi/client" async strategy="afterInteractive"></Script>
           <UserProvider>
-            <Script src="https://accounts.google.com/gsi/client" async strategy="afterInteractive"></Script>
             {children}
           </UserProvider>
 

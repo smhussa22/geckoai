@@ -3,109 +3,93 @@ import { createContext, useState, useEffect, useContext } from 'react';
 
 interface User {
 
-    name: string;
-    email: string;
-    picture: string;
+  name: string;
+  firstName: string;
+  email: string;
+  picture: string;
 
 }
 
 interface UserContextType {
 
-    user: User | null,
-    GoogleLogIn: () => void;
-    GoogleLogOut: () => void;
+  user: User | null;
+  firstName: string | null;
+  GoogleLogIn: () => void;
+  GoogleLogOut: () => void;
 
 }
 
 const UserContext = createContext<UserContextType>({
 
-    user: null,
-    GoogleLogIn: () => {},
-    GoogleLogOut: () => {}
+  user: null,
+  firstName: null,
+  GoogleLogIn: () => {},
+  GoogleLogOut: () => {},
 
 });
 
-export const UserProvider = ({children}: {children: React.ReactNode}) => {
+export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
-    const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [firstName, setFirstName] = useState<string | null>(null);
 
-    useEffect(() => {
+  useEffect(() => {
 
-        const token = localStorage.getItem('googleJWT');
-        if (!token) return;
+    const token = localStorage.getItem('googleJWT');
 
-        try{
+    if (!token) return console.error("Could not fetch token");
 
-            const userObject = JSON.parse(atob(token.split('.')[1]));
-            
-            setUser({
+    const userObject = JSON.parse(atob(token.split('.')[1]));
 
-                picture: userObject.picture,
-                name: userObject.name,
-                email: userObject.email
+    setUser({
 
-            });
+      name: userObject.name,
+      firstName: userObject.given_name,
+      email: userObject.email,
+      picture: userObject.picture,
 
-        }
-        catch(error: any){
+    });
 
-            console.error(error);
+    setFirstName(userObject.given_name);
 
-        }
+  }, []);
 
-    }, []);
+  const GoogleLogIn = () => {
 
-    const GoogleLogIn = () => {
+    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!;
 
-        const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!;
+    if (!clientId || !(window as any).google) return console.error("Could not fetch client ID or Google script");
 
-        if(!clientId) return console.error("Google Client ID is inaccessible.");
+    (window as any).google.accounts.id.initialize({
 
-        (window as any).google.accounts.id.initialize({
+        client_id: clientId,
+        callback: (response: any) => {
 
-            client_id: clientId,
-            callback: (response: any) => {
+        if (!response || !response?.credential) return console.error("Could not fetch response or it's credential");
 
-                if (!response || !response.credential) return null;
+        localStorage.setItem('googleJWT', response.credential);
+        window.location.href = "/taillink"; 
 
-                localStorage.setItem('googleJWT', response.credential);
+    },
+      ux_mode: "redirect",
+      login_uri: "http://localhost:3000/taillink", 
 
-                const userObject = JSON.parse(atob(response.credential.split('.')[1]));
+    });
 
-                const userInfo = {
+    (window as any).google.accounts.id.prompt();
+    console.log(user);
 
-                    picture: userObject.picture,
-                    name: userObject.name,
-                    email: userObject.email
+  };
 
-                };
+  const GoogleLogOut = () => {
 
-                setUser(userInfo);
+    localStorage.removeItem("googleJWT");
+    setUser(null);
+    setFirstName(null);
 
-            }      
+  };
 
-        });
-
-        (window as any).google.accounts.id.prompt();
-
-    }
-
-    const GoogleLogOut = () => {
-
-        localStorage.removeItem('googleJWT');
-        setUser(null);
-
-    }
-
-    return (
-
-        <UserContext.Provider value = {{ user, GoogleLogIn, GoogleLogOut}}>
-
-            {children}
-
-        </UserContext.Provider>
-
-    );
+  return (<UserContext.Provider value={{ user, firstName, GoogleLogIn, GoogleLogOut }}> {children} </UserContext.Provider>);
 
 };
 
