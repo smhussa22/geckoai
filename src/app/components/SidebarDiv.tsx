@@ -1,7 +1,7 @@
 // the sidebar that has the toolbox of components/utilities. collapsible
 'use client';
 import React from 'react';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import Logo from '../components/Logo';
 import SidebarItem from './SidebarItem';
 import { motion } from 'framer-motion';
@@ -16,11 +16,19 @@ const itemIconProps = { // holding identical properties in an object and using .
 
 }
 
+const staticIcons = {
 
+  calendar: <CalendarPlus {...itemIconProps} />,
+  brain: <BrainCircuit {...itemIconProps} />,
+  settings: <Settings {...itemIconProps} />,
+  help: <CircleQuestionMark {...itemIconProps} />,
+
+}
 export default function SidebarDiv() {
 
   const pathName = usePathname();
   const [isExpanded, toggleExpand] = useState(false);
+  const iconsRef = useRef(staticIcons);
 
   return (
 
@@ -46,16 +54,16 @@ export default function SidebarDiv() {
 
           </div>
         
-          <ul className = "flex-1 px-3"> {/* flex-1 makes this take up the rest of the space of the div*/} {/*TODO: make a mapping config for the sidebar items for easier scalability*/}
+          <ul className = "flex-1 px-3 py-4"> {/* flex-1 makes this take up the rest of the space of the div*/} {/*TODO: make a mapping config for the sidebar items for easier scalability*/}
 
-          
-            <SidebarItem buttonIcon={<CalendarPlus {...itemIconProps} />} isExpanded = {isExpanded} buttonRoute="/taillink" buttonText="TailLink" />
-            <SidebarItem buttonIcon= {<BrainCircuit {...itemIconProps} />} isExpanded = {isExpanded} buttonRoute="/quizscale" buttonText="QuizScale" /> 
+            <SidebarItem buttonIcon={iconsRef.current.calendar} isExpanded={isExpanded} buttonRoute="/taillink" buttonText="TailLink" />
+            <SidebarItem buttonIcon={iconsRef.current.brain} isExpanded={isExpanded} buttonRoute="/quizscale" buttonText="QuizScale" />
             
             <hr className="my-3 border-neutral-800" />
-            
-            <SidebarItem buttonIcon={<Settings {...itemIconProps} />} isExpanded = {isExpanded} buttonRoute="/settings" buttonText="Settings" /> 
-            <SidebarItem buttonIcon={<CircleQuestionMark {...itemIconProps} />}  isExpanded = {isExpanded} buttonRoute="/help" buttonText="Help" />
+
+            <SidebarItem buttonIcon={iconsRef.current.settings} isExpanded={isExpanded} buttonRoute="/settings" buttonText="Settings" />
+            <SidebarItem buttonIcon={iconsRef.current.help} isExpanded={isExpanded} buttonRoute="/help" buttonText="Help" />
+          
             
           </ul>
 

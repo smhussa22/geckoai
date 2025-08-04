@@ -17,11 +17,6 @@ export default function TailLinkPage() {
 
         <div className='bg-night rounded-lg shadow-md'>
 
-          <div className='justify-items-center p-4'>
-
-         
-              
-          </div>
 
         </div>
 
