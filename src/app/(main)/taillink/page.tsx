@@ -13,6 +13,20 @@ export default function TailLinkPage() {
 
     <>
 
+      <div className="flex relative z-0 overflow-hiddenz">
+
+        <div className='bg-night rounded-lg shadow-md'>
+
+          <div className='justify-items-center p-4'>
+
+         
+              
+          </div>
+
+        </div>
+
+      </div>
+
     </>
   
   );
