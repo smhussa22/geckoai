@@ -1,15 +1,15 @@
 "use client";
 import React from "react";
 
-interface SidebarIconProps {
+interface IconProps {
 
   icon: React.ReactNode;
 
 }
 
-const SidebarIcon = React.memo(
+const Icon = React.memo(
 
-  function SidebarIcon({ icon }: SidebarIconProps) {
+  function SidebarIcon({ icon }: IconProps) {
     
     return <div className="inline-flex">{icon}</div>;
 
@@ -19,4 +19,4 @@ const SidebarIcon = React.memo(
 
 );
 
-export default SidebarIcon;
+export default Icon;
