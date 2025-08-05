@@ -24,7 +24,7 @@ export default function RootLayout({children}: { children: React.ReactNode; }) {
 
               <Header />
 
-                <main className="relative flex-1 overflow-y-auto">
+                <main className="relative flex-1 overflow-y-auto p-4">
 
                   { children }
 

@@ -3,7 +3,7 @@ import React from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Tooltip } from 'react-tooltip';
-import SidebarIcon from './SidebarIcon';
+import Icon from './Icon';
 
 type ButtonProps = {
 
@@ -27,7 +27,7 @@ export default function SidebarItem({ buttonIcon, buttonRoute, buttonText, isExp
 
       <motion.button data-tooltip-id={tooltipId} data-tooltip-content={buttonText} onClick={() => router.push(buttonRoute)} className={` overflow-hidden w-full flex items-center my-2 gap-1 rounded-md cursor-pointer font-semibold transition-all duration-300 hover:scale-[1.05] hover:bg-neutral-800 ${isPage ? 'text-[#698f3f]' : 'text-[#384f1f]'}`}>
         
-        <SidebarIcon icon={buttonIcon} />
+        <Icon icon={buttonIcon} />
 
         <AnimatePresence mode="wait">
 
@@ -47,7 +47,7 @@ export default function SidebarItem({ buttonIcon, buttonRoute, buttonText, isExp
 
       {!isExpanded && (
 
-        <Tooltip id={tooltipId} place="left" opacity={1} style={{ marginLeft: '0.5rem', backgroundColor: '#262626', padding: '0.4rem', borderRadius: '0.375rem', color: isPage ? '#698f3f' : '#384f1f', transition: 'color 0.3s' }} noArrow delayShow={0} delayHide={0} />
+        <Tooltip id={tooltipId} place="left" opacity={1} style={{ marginLeft: '0.5rem', backgroundColor: '#262626', padding: '0.4rem', borderRadius: '0.375rem', color: isPage ? '#698f3f' : '#384f1f', transition: 'color 0.3s', zIndex: 50 }} noArrow delayShow={0} delayHide={0} />
 
       )}
 
