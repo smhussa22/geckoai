@@ -1,7 +1,6 @@
+import React from 'react';
 import type { Metadata } from "next";
-import DashboardButton from '@/app/components/DashboardButton';
-import { BiCloudUpload } from "react-icons/bi";
-import { IoCalendarClearOutline } from "react-icons/io5";
+import TailLinkPage from '@/app/components/TailLinkPage';
 
 export const metadata: Metadata = {
 
@@ -10,18 +9,14 @@ export const metadata: Metadata = {
 
 };
 
-export default function TailLinkPage() {
+export default function TailLink() {
+
 
   return (
 
     <>
 
-      <h1 className="text-asparagus text-3xl font-semibold">Calendar Tools</h1>
-  
-        <DashboardButton name="Create Calendar" description = "Create a new calendar"/>
-
-      <h1 className="text-asparagus text-3xl font-semibold">Select Calendars</h1>
-      
+      <TailLinkPage/>
 
     </>
   
