@@ -37,7 +37,7 @@ export default function SidebarDiv() {
       <aside className = "h-screen"> 
 
         {/* @todo remove unnecessary framer motion */}
-        <motion.nav animate = { { width: isExpanded ? `14.5rem` : `3.75rem` } } transition = { { duration: 0.3 } } className = {`h-full flex flex-col bg-night border-r border-r-neutral-800 shadow-sm`}> 
+        <motion.nav animate = { { width: isExpanded ? `14.5rem` : `3.75rem` } } transition = { { duration: 0.3 } } className = {`h-full flex flex-col bg-night border-r border-r-neutral-800 shadow-md`}> 
 
           {/* make the logo the button to toggle side bar */}
           <div className = "h-16 flex justify-between items-center"> 

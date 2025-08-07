@@ -1,9 +1,7 @@
 'use client';
 import React from 'react';
 import { FaGoogle } from "react-icons/fa";
-import { LuInfo } from "react-icons/lu";
 import { useUser } from '../contexts/UserContext';
-import { Tooltip } from 'react-tooltip';
 
 export default function HomePage() {
 
@@ -13,7 +11,7 @@ export default function HomePage() {
 
     <div className="h-screen flex relative z-0">
       
-      <div className=' bg-night rounded-lg absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 shadow-md z-1'>
+      <div className='outline-neutral-800 outline  bg-night rounded-lg absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 shadow-md z-1'>
         
         <div className='justify-items-center p-7'>
           
@@ -26,19 +24,10 @@ export default function HomePage() {
 
           </button>
 
-          <Tooltip id="info" place="right" opacity={1} style={{ marginLeft: '0.5rem', backgroundColor: '#262626', padding: '0.4rem', color: '#698f3f', borderRadius: '0.375rem', transitionProperty: 'color', transitionDuration: '300ms'}} noArrow delayShow={0} delayHide={0}>
-
-            GeckoAI v1.0 is only compatible with Google accounts.
-
-          </Tooltip>
+          <h1 className='text-broccoli text-sm hover:text-asparagus transition-colors duration-200 cursor-default'>GeckoAI is currently only compatible with Google accounts.</h1>
 
         </div>
 
-        <div className="flex flex-row gap-2 items-center transition-colors duration-300 group">
-    
-          <LuInfo size={30} data-tooltip-id="info" className="text-broccoli group-hover:text-asparagus transition-colors duration-300"/>
-
-        </div>
 
       </div>
 

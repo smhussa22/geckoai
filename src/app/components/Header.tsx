@@ -22,7 +22,8 @@ export default function Header() {
 
     <>
 
-      <div className = "w-full items-center flex border-b border-b-neutral-800 px-4 py-3">
+      {/* @todo: fix header & sidebar shadow overlap */}
+      <div className = "w-full items-center flex border-b shadow-md z-2 border-b-neutral-800 px-4 py-3">
 
         <div className=''>
 
@@ -33,7 +34,7 @@ export default function Header() {
       
         <div className='flex gap-6 ml-auto'>
 
-          <button className = 'bg-asparagus px-5 font-semibold rounded-md cursor-pointer'> Upgrade </button>
+          <button className = 'bg-asparagus px-5 font-semibold rounded-md shadow-md cursor-pointer'> Upgrade </button>
           
           <button onClick = { () => { toggleLogOutMenu(!logOutMenu); } } data-tooltip-id = "gmailIcon" className = 'cursor-pointer overflow-hidden data-tooltip-target bg-neutral-800 w-12 aspect-square rounded-full'>
 
