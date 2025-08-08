@@ -1,31 +1,30 @@
 import { UserProvider } from "./contexts/UserContext";
-import Script from 'next/script';
-import Logo from 'public/logo.svg';
-export default function RootLayout({children}: { children: React.ReactNode; }) {
+import Script from "next/script";
 
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
 
     <html lang="en">
 
-        <head>
+      <head>
 
-          <title>GeckoAI</title>
-          <link rel = "icon" type = "image/x-icon" href = "logo.svg"/>
+        <title>GeckoAI</title>
+        <link rel="icon" type="image/svg+xml" href="/logo.svg" />
 
-        </head>
+      </head>
 
-        <body>
+      <body>
+        <Script src="https://accounts.google.com/gsi/client" async strategy="afterInteractive" />
 
-          <Script src="https://accounts.google.com/gsi/client" async strategy="afterInteractive"></Script>
-          <UserProvider>
-            {children}
-          </UserProvider>
+        <UserProvider>
 
-        </body>
+          {children}
 
+        </UserProvider>
+
+      </body>
 
     </html>
 
   );
-
 }

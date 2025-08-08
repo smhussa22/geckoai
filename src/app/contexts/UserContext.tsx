@@ -1,5 +1,6 @@
 'use client';
 import { createContext, useState, useEffect, useContext } from 'react';
+import { useRouter } from "next/navigation";
 
 interface User {
 
@@ -32,6 +33,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
   const [user, setUser] = useState<User | null>(null);
   const [firstName, setFirstName] = useState<string | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
 
@@ -86,6 +88,16 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     localStorage.removeItem("googleJWT");
     setUser(null);
     setFirstName(null);
+
+    (window as any)?.google?.accounts?.id?.disableAutoSelect?.();
+
+    if (user?.email) {
+
+      (window as any)?.google?.accounts?.id?.revoke?.(user.email, () => {});
+
+    }
+
+    router.replace('/');
 
   };
 
