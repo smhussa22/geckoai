@@ -14,94 +14,84 @@ interface User {
 interface UserContextType {
 
   user: User | null;
-  firstName: string | null;
   GoogleLogIn: () => void;
-  GoogleLogOut: () => void;
+  GoogleLogOut: () => Promise<void>;
+  isLoading: boolean;
 
 }
 
 const UserContext = createContext<UserContextType>({
 
   user: null,
-  firstName: null,
+  isLoading: true,
   GoogleLogIn: () => {},
-  GoogleLogOut: () => {},
+  GoogleLogOut: async () => {},
 
 });
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
   const [user, setUser] = useState<User | null>(null);
-  const [firstName, setFirstName] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
 
-    const token = localStorage.getItem('googleJWT');
+    (
+      
+      async () => {
 
-    if (!token) return console.error("Could not fetch token");
+        try{ 
 
-    const userObject = JSON.parse(atob(token.split('.')[1]));
+          const response = await fetch('');
 
-    setUser({
 
-      name: userObject.name,
-      firstName: userObject.given_name,
-      email: userObject.email,
-      picture: userObject.picture,
 
-    });
+        }
 
-    setFirstName(userObject.given_name);
+        catch {
+
+
+
+        } 
+
+        finally {
+
+
+
+        }
+
+      })();
 
   }, []);
 
   const GoogleLogIn = () => {
 
-    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!;
+    const oAuth2 = (window as any)?.google?.accounts?.oauth2;
+    if(!oAuth2) return console.error("GIS Failed");
 
-    if (!clientId || !(window as any).google) return console.error("Could not fetch client ID or Google script");
+    const codeClient = oAuth2.initCodeClient({
 
-    (window as any).google.accounts.id.initialize({
+      client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!,
+      scope: 'openid email profile https://www.googleapis.com/auth/calendar',
+      ux_mode: 'redirect',
+      prompt: 'consent',
+      redirect_uri: `${process.env.NEXT_PUBLIC_BASE_URL!}/api/auth/google/callback`
 
-        client_id: clientId,
-        callback: (response: any) => {
-
-        if (!response || !response?.credential) return console.error("Could not fetch response or it's credential");
-
-        localStorage.setItem('googleJWT', response.credential);
-        window.location.href = "/taillink"; 
-
-    },
-      ux_mode: "redirect",
-      login_uri: "http://localhost:3000/taillink", 
 
     });
 
-    (window as any).google.accounts.id.prompt();
-    console.log(user);
+    codeClient.requestCode();
 
   };
 
   const GoogleLogOut = () => {
 
-    localStorage.removeItem("googleJWT");
-    setUser(null);
-    setFirstName(null);
 
-    (window as any)?.google?.accounts?.id?.disableAutoSelect?.();
-
-    if (user?.email) {
-
-      (window as any)?.google?.accounts?.id?.revoke?.(user.email, () => {});
-
-    }
-
-    router.replace('/');
 
   };
 
-  return (<UserContext.Provider value={{ user, firstName, GoogleLogIn, GoogleLogOut }}> {children} </UserContext.Provider>);
+  return ( <UserContext.Provider value={{ user, isLoading, GoogleLogIn, GoogleLogOut }}> {children} </UserContext.Provider> );
 
 };
 

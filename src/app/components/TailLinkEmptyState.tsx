@@ -9,10 +9,10 @@ export default function TailLinkEmptyState() {
 
         <>
 
-            <div className="flex flex-col items-center absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-full gap-20">
+            <div className="flex flex-col items-center absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-full gap-2">
 
-                <TbCalendarQuestion size = {250} color="#698f3f" />
-                <span className="text-asparagus font-semibold text-7xl">Click on a calendar to get started</span>
+                <TbCalendarQuestion size = {75} color="#404040" />
+                <span className="text-neutral-700 font-semibold text-xl">Click on a calendar to get started</span>
 
             </div>
 
