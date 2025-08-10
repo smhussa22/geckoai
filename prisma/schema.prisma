@@ -5,17 +5,36 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-
   provider = "prisma-client-js"
   output   = "../src/generated/prisma"
-
 }
 
 datasource db {
-
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model User {
+
+  id        String   @id // no uuid/cuid; give google sub to this
+  email     String   @unique
+  name      String?
+  firstName String?
+  picture   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  sessions  Session[] // array; user can have multiple sessions
 
 }
 
+model Session {
 
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id])
+  accessToken  String   // api access token
+  refreshToken String?
+  expiresAt    DateTime // access token expiry
+  createdAt    DateTime @default(now())
+
+}
