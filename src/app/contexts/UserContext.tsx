@@ -15,7 +15,7 @@ interface UserContextType {
 
   user: User | null;
   GoogleLogIn: () => void;
-  GoogleLogOut: () => Promise<void>;
+  GoogleLogOut: () => void;
   isLoading: boolean;
 
 }
@@ -35,59 +35,13 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
-  useEffect(() => {
-
-    (
-      
-      async () => {
-
-        try{ 
-
-          const response = await fetch('');
-
-
-
-        }
-
-        catch {
-
-
-
-        } 
-
-        finally {
-
-
-
-        }
-
-      })();
-
-  }, []);
-
   const GoogleLogIn = () => {
 
-    const oAuth2 = (window as any)?.google?.accounts?.oauth2;
-    if(!oAuth2) return console.error("GIS Failed");
-
-    const codeClient = oAuth2.initCodeClient({
-
-      client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!,
-      scope: 'openid email profile https://www.googleapis.com/auth/calendar',
-      ux_mode: 'redirect',
-      prompt: 'consent',
-      redirect_uri: `${process.env.NEXT_PUBLIC_BASE_URL!}/api/auth/google/callback`
-
-
-    });
-
-    codeClient.requestCode();
 
   };
 
   const GoogleLogOut = () => {
-
-
+    
 
   };
 
