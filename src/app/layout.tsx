@@ -2,6 +2,8 @@ import { UserProvider } from "./contexts/UserContext";
 import Script from "next/script";
 import './globals.css'
 
+// @todo make an actual landing page not just the dashboard/login
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
 
@@ -15,6 +17,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
 
       <body>
+        
         <Script src="https://accounts.google.com/gsi/client" async strategy="afterInteractive" />
 
         <UserProvider>
