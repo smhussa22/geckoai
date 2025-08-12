@@ -11,11 +11,10 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = env("PRISMA_MIGRATION_DATABASE_URL")
 }
 
 model User {
-
   id        String   @id // no uuid/cuid; give google sub to this
   email     String   @unique
   name      String?
@@ -23,18 +22,17 @@ model User {
   picture   String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  sessions  Session[] // array; user can have multiple sessions
 
+  token GoogleToken?
 }
 
-model Session {
-
-  id           String   @id @default(cuid())
-  userId       String
-  user         User     @relation(fields: [userId], references: [id])
-  accessToken  String   // api access token
+model GoogleToken {
+  userId       String   @id
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken  String
   refreshToken String?
-  expiresAt    DateTime // access token expiry
+  scope        String?
   createdAt    DateTime @default(now())
-
+  expiresAt    DateTime
+  updatedAt    DateTime @updatedAt
 }

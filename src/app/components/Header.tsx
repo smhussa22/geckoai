@@ -38,7 +38,7 @@ export default function Header() {
 
           <button onClick={() => setLogOutMenu(!logOutMenu)} data-tooltip-id="gmailIcon" className="cursor-pointer overflow-hidden bg-neutral-800 w-12 aspect-square rounded-full" type="button">
           
-            <img src={user?.picture ?? ''} alt="Profile" />
+            <img src={user?.picture} alt="Profile" />
           
           </button>
         
