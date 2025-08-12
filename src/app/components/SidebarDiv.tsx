@@ -7,6 +7,7 @@ import SidebarItem from './SidebarItem';
 import { motion } from 'framer-motion';
 import { CalendarPlus, BrainCircuit, Settings, CircleQuestionMark } from 'lucide-react';
 import { usePathname } from 'next/navigation';
+import { IoChatbubblesOutline } from "react-icons/io5";
 
 const itemIconProps = { // holding identical properties in an object and using ... to spread across all of required components
 
@@ -16,12 +17,15 @@ const itemIconProps = { // holding identical properties in an object and using .
 
 }
 
+// @todo switch to react icons
+
 const staticIcons = {
 
   calendar: <CalendarPlus {...itemIconProps} />,
   brain: <BrainCircuit {...itemIconProps} />,
   settings: <Settings {...itemIconProps} />,
   help: <CircleQuestionMark {...itemIconProps} />,
+  chat: <IoChatbubblesOutline {...itemIconProps} />
 
 }
 export default function SidebarDiv() {
@@ -63,7 +67,6 @@ export default function SidebarDiv() {
 
             <SidebarItem buttonIcon={iconsRef.current.settings} isExpanded={isExpanded} buttonRoute="/settings" buttonText="Settings" />
             <SidebarItem buttonIcon={iconsRef.current.help} isExpanded={isExpanded} buttonRoute="/help" buttonText="Help" />
-          
             
           </ul>
 

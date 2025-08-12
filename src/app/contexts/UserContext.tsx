@@ -1,6 +1,6 @@
 'use client';
 import { createContext, useState, useEffect, useContext } from 'react';
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 interface User {
 
@@ -14,38 +14,90 @@ interface User {
 interface UserContextType {
 
   user: User | null;
+  loading: boolean;
   GoogleLogIn: () => void;
-  GoogleLogOut: () => void;
-  isLoading: boolean;
+  GoogleLogOut: () => Promise<void>;
 
 }
 
 const UserContext = createContext<UserContextType>({
 
   user: null,
-  isLoading: true,
+  loading: true,
   GoogleLogIn: () => {},
-  GoogleLogOut: async () => {},
+  GoogleLogOut: async () => {}
 
 });
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
   const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const pathName = usePathname();
+
+  useEffect(() => {
+
+    const fetchUser = async () => {
+
+      try {
+
+        const res = await fetch('/api/me', { credentials: 'include' });
+
+        if (res.ok) {
+
+          const userData = await res.json();
+
+          if (userData) {
+
+            setUser(userData);
+
+          }
+
+        }
+
+      } 
+      catch (error) {
+
+        console.error('Failed to fetch user:', error);
+
+      } 
+      finally {
+
+        setLoading(false);
+
+      }
+
+    };
+
+    fetchUser();
+    
+  }, []);
 
   const GoogleLogIn = () => {
-
-
-  };
-
-  const GoogleLogOut = () => {
     
+    const next = encodeURIComponent('/taillink');
+    window.location.href = `/api/auth/google?next=${next}`;
 
   };
 
-  return ( <UserContext.Provider value={{ user, isLoading, GoogleLogIn, GoogleLogOut }}> {children} </UserContext.Provider> );
+  const GoogleLogOut = async () => {
+
+    await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+    setUser(null);
+    router.replace('/');
+
+  };
+
+  return (
+
+    <UserContext.Provider value={{ user, loading, GoogleLogIn, GoogleLogOut }}>
+
+      {children}
+
+    </UserContext.Provider>
+
+  );
 
 };
 
