@@ -19,6 +19,7 @@
     { "id": 17, "text": "The darker green we use is known in our codebase as 'broccoli.'" },
     { "id": 18, "text": "Customize GeckoAI's appearance in the settings menu." },
     { "id": 19, "text": "You can learn more about GeckoAI's programming by visiting the help menu." },
-    { "id": 20, "text": "GeckoAI is entrusted by students at dozens of different universities!" }
+    { "id": 20, "text": "GeckoAI is entrusted by students at dozens of different universities!" },
+    { "id": 21, "text": "The source code for this project is available on GitHub, see the help menu." }
     
 ]
