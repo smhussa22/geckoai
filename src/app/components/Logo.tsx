@@ -1,9 +1,12 @@
+"use client";
 import React from "react";
 import { motion } from "framer-motion";
 
 type LogoProps = {
+
   className?: string;
-  logoColor: string; // broccoli color or whatever you pass in
+  logoColor: string;
+
 };
 
 export default function Logo({ className, logoColor }: LogoProps) {
