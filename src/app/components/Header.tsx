@@ -6,6 +6,9 @@ import { Tooltip } from 'react-tooltip';
 import { useUser } from '../contexts/UserContext';
 import AccountDropDown from './AccountDropdown';
 
+
+import AdminTestButton from './AdminTestButton';
+
 export default function Header() {
 
   const pathName = usePathname();
@@ -29,6 +32,8 @@ export default function Header() {
         </div>
 
         <div className="flex gap-6 ml-auto">
+
+          <AdminTestButton/>
 
           <button className="bg-asparagus px-5 font-semibold rounded-md shadow-md cursor-pointer">
 
