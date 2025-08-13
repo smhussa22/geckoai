@@ -36,7 +36,7 @@ export default function Loading() {
           
           <div className="flex gap-6">
 
-            <IconWithLink href = "/serverstatus" icon = {<GrSatellite size={25}/>} text="Server Status" color="asparagus" hover="broccoli"/>
+            <IconWithLink href = "/server-status" icon = {<GrSatellite size={25}/>} text="Server Status" color="asparagus" hover="broccoli"/>
             <IconWithLink href = "/contact" icon = {<FiMessageCircle size={25}/>} text="Contact Us" color="asparagus" hover="broccoli"/>
 
           </div>

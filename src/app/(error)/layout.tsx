@@ -1,12 +1,5 @@
-import type { Metadata } from "next";
+
 import '../globals.css';
-
-export const metadata: Metadata = {
-
-  title: "GeckoAI",
-  description: "A study tool by Syed Maroof Hussain",
-
-};
 
 export default function AuthLayout({children}: { children: React.ReactNode; }) {
 

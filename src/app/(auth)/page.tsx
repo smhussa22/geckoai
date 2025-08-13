@@ -2,37 +2,80 @@
 import React from 'react';
 import { FaGoogle } from "react-icons/fa";
 import { useUser } from '../contexts/UserContext';
+import Link from 'next/link';
 
+// @todo add sliding logo reveal animation
 export default function HomePage() {
+  const { GoogleLogIn } = useUser();
 
-  const {GoogleLogIn} = useUser(); 
-  
   return (
 
-    <div className="h-screen flex relative z-0">
-      
-      <div className='outline-neutral-800 outline  bg-night rounded-lg absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 shadow-md z-1'>
-        
-        <div className='justify-items-center p-7'>
-          
-          <h1 className='text-asparagus text-2xl font-semibold'>Welcome back!</h1>
-          <h2 className='text-asparagus'>Continue with your Gmail to begin using GeckoAI!</h2>
+    <div className="h-screen overflow-hidden flex items-center justify-center relative">
 
-          <button onClick={GoogleLogIn} className='my-3 hover:bg-night hover:text-broccoli transition-colors duration-150 bg-broccoli border border-neutral-800 cursor-pointer rounded-lg w-100 h-15 text-3xl font-bold text-night flex items-center justify-center gap-4'>
+      <div className="pointer-events-none absolute inset-0" />
+
+      <div className="w-full max-w-md relative">
+
+        <div className="bg-neutral-900/65 border border-neutral-800 rounded-2xl shadow-xl p-6">
+        
+          <div className="text-center space-y-1">
+        
+            <h1 className="text-asparagus text-3xl font-semibold">Welcome back!</h1>
+
+            <p className="text-neutral-400 text-sm">
+
+              Continue with Google to start planning and quizzing faster.
+
+            </p>
+
+          </div>
+
+          <ul className="mt-4 space-y-1 text-sm text-neutral-400">
             
-            <FaGoogle /> Continue With Google
+            <li>• Sync hundreds of events to your Google Calendar</li>
+            <li>• Create interactive quizzes from your study materials</li>
+            <li>• Save chats and preferences across devices</li>
+
+          </ul>
+
+          <hr className="my-5 h-px border-neutral-800"/>
+
+
+          <button
+            onClick={GoogleLogIn}
+            className="w-full inline-flex items-center justify-center gap-2 rounded-lg border border-neutral-800 bg-broccoli text-night font-semibold py-3 hover:bg-night hover:text-broccoli transition-colors"
+          >
+
+            <FaGoogle className="text-lg" /> Continue with Google
 
           </button>
 
-          <h1 className='text-broccoli text-sm hover:text-asparagus transition-colors duration-200 cursor-default'>GeckoAI is currently only compatible with Google accounts.</h1>
+          <p className="mt-3 text-center text-xs text-neutral-500">
+
+            GeckoAI currently supports Google accounts only.
+
+          </p>
 
         </div>
 
+
+        <div className="mt-4 flex items-center justify-center gap-4 text-xs text-neutral-500">
+
+          <Link href="/terms" className="hover:text-asparagus">Terms</Link>
+
+          <span>•</span>
+
+          <Link href="/privacy-policy" className="hover:text-asparagus">Privacy</Link>
+
+          <span>•</span>
+
+          <Link href="/support" className="hover:text-asparagus">Support</Link>
+
+        </div>
 
       </div>
 
     </div>
 
   );
-  
 }
