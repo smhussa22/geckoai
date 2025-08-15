@@ -6,7 +6,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
 
     <div className="flex h-screen bg-night">
       
-      <section className="relative z-1 bg-neutral-900 hidden md:flex flex-1 flex-col p-8 ">
+      <section className="relative z-1 bg-[url('/layered-blobs-haikei.svg')] bg-cover bg-center hidden md:flex flex-1 flex-col p-8 ">
 
         <div className="mb-6">
 

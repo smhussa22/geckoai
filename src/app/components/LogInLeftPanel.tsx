@@ -36,7 +36,6 @@ export default function LogInLeftPanel() {
                 <ServerStatusIndicator/>
             
             </div>
-
             
         </>
 
