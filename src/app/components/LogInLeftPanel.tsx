@@ -6,17 +6,18 @@ export default function LogInLeftPanel() {
 
     return (
 
+        
         <>
 
-            <div className='flex text-center items-center relative gap-4'>
+            <div className='flex text-center items-center relative gap-3'>
 
-                <Logo logoColor = "#698f3f" className = "w-22"/>
+                <Logo logoColor = "#698f3f" className = "drop-shadow-xl/50 w-22"/>
 
-                <h1 className="text-6xl font-extrabold bg-clip-text text-transparent"
+                <h1 className="drop-shadow-xl/50 text-7xl font-extrabold bg-clip-text text-transparent"
                 style={{
                 backgroundImage: `
                 radial-gradient(circle at top left, #698f3f, transparent),
-                radial-gradient(circle at bottom right, #384f1f, transparent),
+                radial-gradient(circle at bottom right, #484f1f, transparent),
                 radial-gradient(circle at 70% 30%, #698f3f, transparent),
                 radial-gradient(circle at 30% 70%, #384f1f, transparent)
                 `,
@@ -31,11 +32,12 @@ export default function LogInLeftPanel() {
                 GeckoAI
 
                 </h1>
-
+        
                 <ServerStatusIndicator/>
             
             </div>
-        
+
+            
         </>
 
     );
