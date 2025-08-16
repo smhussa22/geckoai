@@ -21,7 +21,7 @@ export default function CreateCalendarPage({ onClose }: { onClose?: () => void }
 
     return (
         <>
-            <div className='flex items-center relative'>
+            <div className='drop-shadow-xl/50 flex items-center relative'>
                 
                 <h1 className="text-asparagus text-2xl font-semibold whitespace-nowrap"> Create Calendar </h1>
 
