@@ -22,11 +22,11 @@ export default function CalendarButton({ onClick, name, icon, backgroundColor, t
     style={{ backgroundColor: backgroundColor, color: textColor }}
     >
 
-      <div className="flex flex-row p-1 w-full">
+      <div className="flex flex-row p-1 w-full items-center">
     
         <span className="shrink-0">{icon}</span>
         <span
-        className="ml-1 min-w-0 block overflow-hidden whitespace-nowrap text-ellipsis font-semibold"
+        className="ml-1 tracking-tighter text-xl min-w-0 block overflow-hidden whitespace-nowrap text-ellipsis font-semibold"
         title={name}
         >
       

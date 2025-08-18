@@ -15,7 +15,8 @@ export default function CalendarList() {
 
       .then((data) => {
 
-        setItems(data.items || []);
+        setItems(data.calendars.items || []);
+        console.log(data.defaultTimeZone);
 
       })
 
@@ -32,7 +33,7 @@ export default function CalendarList() {
 
           key={c.id}
           name={c.summary || "Unnamed Calendar"}
-          icon={<CgCalendar size={25} />}
+          icon={<CgCalendar size={35} />}
           backgroundColor={c.backgroundColor || "#ffffff"}
           textColor={c.foregroundColor || "#000000"}
 

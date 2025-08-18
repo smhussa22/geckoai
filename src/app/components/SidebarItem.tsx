@@ -47,7 +47,7 @@ export default function SidebarItem({ buttonIcon, buttonRoute, buttonText, isExp
 
       {!isExpanded && (
 
-        <Tooltip id={tooltipId} place="left" opacity={1} style={{ marginLeft: '0.5rem', backgroundColor: '#262626', padding: '0.4rem', borderRadius: '0.375rem', color: isPage ? '#698f3f' : '#384f1f', transition: 'color 0.3s', zIndex: 50 }} noArrow delayShow={0} delayHide={0} />
+        <Tooltip id={tooltipId} place="left" opacity={1} style={{ marginLeft: '0.5rem', backgroundColor: '#262626', padding: '0.4rem', borderRadius: '0.375rem', color: isPage ? '#698f3f' : '#384f1f', transition: 'color 0.3s', letterSpacing: '-0.05em', zIndex: 50, }} noArrow delayShow={0} delayHide={0} />
 
       )}
 

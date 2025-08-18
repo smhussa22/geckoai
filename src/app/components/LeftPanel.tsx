@@ -22,7 +22,7 @@ export default function LeftPanel() {
   
                 <div className="flex flex-row items-center relative">
   
-                    <h1 className="text-asparagus font-bold text-2xl">Calendars</h1>
+                    <h1 className="text-asparagus font-bold text-2xl tracking-tighter">Calendars</h1>
 
                     <button onClick={() => toggleIsOpen(!isOpen)} className='absolute right-0'>
 
@@ -37,7 +37,7 @@ export default function LeftPanel() {
                     spellCheck={false} 
                     autoCorrect="off" 
                     placeholder="Search calendars" 
-                    className="p-1 bg-neutral-800 text-asparagus placeholder-neutral-600 rounded-md border border-neutral-700 focus:outline-none focus:ring-1 focus:ring-broccoli" 
+                    className="tracking-tighter p-1 bg-neutral-800 text-asparagus placeholder-neutral-600 rounded-md border border-neutral-700 focus:outline-none focus:ring-1 focus:ring-broccoli" 
                     type="text" 
                 />
 
