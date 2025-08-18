@@ -34,6 +34,8 @@ export default function SidebarDiv() {
   const [isExpanded, toggleExpand] = useState(false);
   const iconsRef = useRef(staticIcons);
 
+  // @todo: add tracking tighter when it doesnt cover up the text slightly
+  
   return (
 
     <>

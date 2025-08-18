@@ -22,7 +22,7 @@ export default function Header() {
 
     <>
       
-      <div className="relative w-full items-center flex border-b shadow-md z-10 border-b-neutral-800 px-4 py-3">
+      <div className="tracking-tighter relative w-full items-center flex border-b shadow-md z-10 border-b-neutral-800 px-4 py-3">
 
         <div>
 
@@ -35,7 +35,7 @@ export default function Header() {
 
           <AdminTestButton/>
 
-          <button className="bg-asparagus px-5 font-semibold rounded-md shadow-md cursor-pointer">
+          <button className="tracking-tighter bg-asparagus px-5 font-semibold rounded-md shadow-md cursor-pointer">
 
             Upgrade
 
@@ -55,9 +55,9 @@ export default function Header() {
 
           <Tooltip id="gmailIcon" place="bottom" opacity={1} style={{ backgroundColor: '#262626', borderRadius: '0.375rem' }} noArrow delayShow={0} delayHide={0}>
             
-            <div className="flex flex-col text-asparagus">
+            <div className="flex flex-col tracking-tighter text-asparagus">
             
-              <h1 className="text-ghost">Google Account</h1>
+              <h1 className="text-ghost ">Google Account</h1>
               <h1 className="text-asparagus">{user?.name}</h1>
               <h1 className="text-asparagus">{user?.email}</h1>
             

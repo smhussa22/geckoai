@@ -10,7 +10,7 @@ export default function AccountDropDown({ open }: { open: boolean }) {
   if (!open) return null;
 
   return (
-    <div className="p-4 flex gap-3 flex-col items-center bg-ghost rounded-md border border-neutral-400 absolute top-24 right-3 z-10">
+    <div className="tracking-tighter p-4 flex gap-3 flex-col items-center bg-ghost rounded-md border border-neutral-400 absolute top-24 right-3 z-10">
 
       <h1 className="text-sm font-medium">{user?.email}</h1>
 
