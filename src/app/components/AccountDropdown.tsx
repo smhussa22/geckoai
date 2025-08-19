@@ -16,7 +16,7 @@ export default function AccountDropDown({ open }: { open: boolean }) {
 
       <img src={user?.picture ?? ""} alt="" className="rounded-full w-22 h-auto" />
 
-      <h1 className="text-xl">Hello, <span className="font-medium text-xl">{user?.firstName}!</span></h1>
+      <h1 className="text-xl">Hello, <span className="tracking-tighter font-medium text-xl">{user?.firstName}!</span></h1>
 
       <button onClick={GoogleLogOut} className="hover:bg-gray-300 flex flex-row items-center w-full transition-colors duration-150 border border-neutral-400 p-1.5 cursor-pointer rounded-md text-night">
 

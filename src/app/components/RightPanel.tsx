@@ -15,9 +15,9 @@ export default function RightPanel({activeCalendar}: PanelProps) {
 
         <>
 
-            <div className="border border-neutral-800 shadow-md rounded-md relative h-full flex-1">
+            <div className="border border-neutral-800 shadow-md rounded-md relative h-full flex-1 p-3">
         
-                {activeCalendar ? <ChatContent/> : <EmptyState/>}
+                {!activeCalendar ? <ChatContent/> : <EmptyState/>}
 
             </div>
 
