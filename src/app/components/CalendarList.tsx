@@ -1,49 +1,127 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import CalendarButton from "./CalendarButton";
 import { CgCalendar } from "react-icons/cg";
 
+type Calendar = {
+
+  id: string;
+  summary?: string;
+  backgroundColor?: string;
+  foregroundColor?: string;
+
+};
+
+// @todo add an option to let users refetch if it fails.
+
 export default function CalendarList() {
 
-  const [items, setItems] = useState([]);
+  const [items, setItems] = useState<Calendar[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   useEffect(() => {
 
-    fetch("/api/calendars")
+    (async () => {
 
-      .then((res) => res.json())
+      try {
 
-      .then((data) => {
+        const res = await fetch("/api/calendars", { cache: "no-store" });
+        const data = await res.json();
 
-        setItems(data.calendars.items || []);
-        console.log(data.defaultTimeZone);
+        if (!res.ok) throw new Error(data?.error || res.statusText);
 
-      })
+        setItems(data?.calendars?.items || []);
 
-      .catch(console.error);
+      } 
+      catch (error: any) {
+
+        console.error(error);
+        setItems([]);
+
+      } 
+      finally {
+
+        setLoading(false);
+
+      }
+
+    })();
 
   }, []);
 
+  const filtered = useMemo(() => {
+
+    const searchLower = search.trim().toLowerCase();
+    if (!searchLower) return items;
+
+    return items.filter((calendar) =>
+
+      (calendar.summary || calendar.id).toLowerCase().includes(searchLower)
+
+    );
+
+  }, [items, search]);
+
+  const handleSelect = (id: string) => {
+    
+    setSelectedId((prev) => (prev === id ? null : id));
+
+  }
+
   return (
-    <div className="py-1 flex flex-col gap-1 rounded-md">
 
-      {items.map((c: any) => (
+    <>
 
-        <CalendarButton
+      <input
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        autoCapitalize="off"
+        spellCheck={false}
+        autoCorrect="off"
+        placeholder="Search calendars…"
+        className="tracking-tighter p-1 bg-neutral-800 text-asparagus placeholder-neutral-600 rounded-md border border-neutral-700 focus:outline-none focus:ring-1 focus:ring-broccoli w-full"
+        type="text"
+      />
 
-          key={c.id}
-          name={c.summary || "Unnamed Calendar"}
-          icon={<CgCalendar size={35} />}
-          backgroundColor={c.backgroundColor || "#ffffff"}
-          textColor={c.foregroundColor || "#000000"}
+      <div className="pr-1.5 mt-0.5 min-h-0 flex-1 overflow-y-auto">
 
-        />
-        
+        {loading ? (
 
-      ))}
+          <p className="text-neutral-400">Loading…</p>
 
-    </div>
+        ) : filtered.length === 0 ? (
+
+          <p className="text-neutral-500 tracking-tighter text-sm">No calendars match “{search}”.</p>
+
+        ) : (
+
+          <div className="py-1 flex flex-col gap-1 rounded-md">
+
+            {filtered.map((calendar) => (
+
+              <CalendarButton
+                key={calendar.id}
+                name={calendar.summary || "Unnamed Calendar"}
+                icon={<CgCalendar size={30} />}
+                backgroundColor={calendar.backgroundColor || "transparent"}
+                textColor={calendar.foregroundColor || "#e5e5e5"}
+                selected={selectedId === calendar.id}
+                onClick={() => handleSelect(calendar.id)}
+              />
+
+            ))}
+
+          </div>
+
+        )}
+
+      </div>
+
+    </>
 
   );
 
 }
+
