@@ -130,7 +130,7 @@ export default function CreateCalendarPage({ onClose }: { onClose?: () => void }
           autoCapitalize="off"
           spellCheck={false}
           autoCorrect="off"
-          maxLength={200}
+          maxLength={50}
           className={`w-full bg-neutral-800 rounded-md p-3 pt-5 text-neutral-200 placeholder-white outline-none border-b-2 transition-colors h-24 resize-none ${
             descVal ? "border-asparagus" : descFocused ? "border-neutral-700" : "border-transparent"
           }`}

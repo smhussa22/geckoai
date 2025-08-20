@@ -19,6 +19,7 @@ export default function LeftPanel() {
     return (
 
         <>
+
             <div className="border border-neutral-800 shadow-md rounded-md h-full w-64 p-2 flex flex-col gap-1">
   
                 <div className="flex flex-row items-center relative">
