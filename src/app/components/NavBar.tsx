@@ -17,8 +17,19 @@ export default function NavBar() {
       label: "Support",
       items: [
         { label: "Help Center", href: "/support" },
-        { label: "Contact", href: "/support/contact" },
-        { label: "Status", href: "/status" },
+        { label: "Contact", href: "/contact" },
+        { label: "Server Status", href: "/status" },
+        { label: "Privacy Policy", href: "/privacy-policy" },
+        { label: "Terms of Service", href: "/terms" },
+      ],
+    },
+
+    {
+      id: "resources",
+      label: "Resources",
+      items: [
+        { label: "Developer Logs", href: "/support" },
+        { label: "Source Code & Technologies", href: "/technologies"},
       ],
     },
 
@@ -94,6 +105,7 @@ export default function NavBar() {
                 place="bottom"
                 offset={4}
                 noArrow
+                opacity={100}
                 className="!bg-asparagus !p-2 !rounded-lg !shadow-xl"
 
               >
