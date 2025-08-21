@@ -69,19 +69,22 @@ export default function CreateCalendarPage({ onClose }: { onClose?: () => void }
 
     <>
 
-      <div className="flex items-center relative">
-
-        <h1 className="text-asparagus text-2xl font-semibold whitespace-nowrap">Create Calendar</h1>
-
-        <button onClick={onClose} className="text-neutral-700 absolute right-0 transition-colors duration-200 hover:text-neutral-600">
-
-          <BsXCircle size={25} />
-
-        </button>
-
-      </div>
-
-      <h1 className="text-broccoli text-sm whitespace-nowrap">Conveniently create a Google Calendar.</h1>
+      <div className="flex relative">
+      
+              <div>
+      
+                <h1 className="text-2xl font-bold tracking-tighter text-asparagus">Create Calendar</h1>
+                <h2 className="mb-2 font-semibold tracking-tighter text-broccoli">Conveniently create a new Google calendar.</h2>
+      
+              </div>
+      
+              <button onClick={onClose} className="absolute right-0 text-neutral-700 mb-5 transition-colors duration-200 hover:text-neutral-600">
+              
+                <BsXCircle size={25} />
+              
+              </button>
+      
+            </div>
 
       <div className="relative mt-4">
 
@@ -95,7 +98,7 @@ export default function CreateCalendarPage({ onClose }: { onClose?: () => void }
           autoCapitalize="off"
           spellCheck={false}
           autoCorrect="off"
-          maxLength={50}
+          maxLength={500}
           className={`w-full bg-neutral-800 rounded-md p-3 pt-5 text-neutral-200 placeholder-white outline-none border-b-2 transition-all ${
             nameError ? "border-red-700" : nameVal ? "border-asparagus" : nameFocused ? "border-neutral-700" : "border-transparent"
           }`}
@@ -111,7 +114,7 @@ export default function CreateCalendarPage({ onClose }: { onClose?: () => void }
 
           )}
 
-          <Tooltip id="asterisk" place="right" opacity={1} style={{ marginLeft: "0.5rem", backgroundColor: "#131112", padding: "0.4rem", borderRadius: "0.375rem", color: "#b91c1c", border: "1px solid #292524", zIndex: 50 }} noArrow />
+          <Tooltip id="asterisk" place="right" opacity={1} style={{ marginLeft: "0.5rem", backgroundColor: "#131112", padding: "0.4rem", borderRadius: "0.375rem", color: "#b91c1c", zIndex: 50 }} noArrow />
 
         </label>
 
