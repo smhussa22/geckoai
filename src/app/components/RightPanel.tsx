@@ -2,14 +2,11 @@
 import React from 'react';
 import EmptyState from './TailLinkEmptyState';
 import ChatContent from './TailLinkChat';
+import { useCalendar } from '../contexts/SelectedCalendarContext';
 
-type PanelProps = {
+export default function RightPanel() {
 
-    activeCalendar: false;
-
-}
-
-export default function RightPanel({activeCalendar}: PanelProps) {
+    const { calendar } = useCalendar();
 
     return (
 
@@ -17,7 +14,7 @@ export default function RightPanel({activeCalendar}: PanelProps) {
 
             <div className="border border-neutral-800 shadow-md rounded-md relative h-full flex-1 p-3">
         
-                {!activeCalendar ? <ChatContent/> : <EmptyState/>}
+                {calendar? <ChatContent name = {calendar.summary} description = {calendar.description} isPrimary = {calendar.primary}/> : <EmptyState/>}
 
             </div>
 

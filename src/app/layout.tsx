@@ -1,6 +1,8 @@
 import { UserProvider } from "./contexts/UserContext";
+import { CalendarProvider } from './contexts/SelectedCalendarContext';
 import Script from "next/script";
 import './globals.css'
+import { Calendar } from "lucide-react";
 
 // @todo make an actual landing page not just the dashboard/login
 
@@ -22,7 +24,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         <UserProvider>
 
-          {children}
+          <CalendarProvider>
+
+            {children}
+
+          </CalendarProvider>
 
         </UserProvider>
 
