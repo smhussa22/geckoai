@@ -6,6 +6,8 @@ import CalendarList from './CalendarList';
 import PopUp from './Popup';
 import CreateCalendarPage from './CreateCalendarPopup';
 
+// @todo: make page refresh after calendar token expries
+
 export default function LeftPanel() {
 
     const [isOpen, toggleIsOpen] = useState(false);

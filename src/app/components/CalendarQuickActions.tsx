@@ -29,7 +29,7 @@ export default function CalendarQuickActions({ isPrimary, onCreateEvent, onSearc
 
         </button>
 
-        <button className={`${base} bg-cyan-600 hover:text-cyan-600 hover:bg-night`} onClick={onSearchEvents}>
+        <button className={`${base} bg-cyan-700 hover:text-cyan-700 hover:bg-night`} onClick={onSearchEvents}>
 
             <LuCalendarSearch size={32} />
             Search Events
