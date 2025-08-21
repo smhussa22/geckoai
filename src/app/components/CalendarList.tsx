@@ -2,15 +2,8 @@
 import React, { useEffect, useMemo, useState } from "react";
 import CalendarButton from "./CalendarButton";
 import { CgCalendar } from "react-icons/cg";
-
-type Calendar = {
-
-  id: string;
-  summary?: string;
-  backgroundColor?: string;
-  foregroundColor?: string;
-
-};
+import { useCalendar } from "../contexts/SelectedCalendarContext";
+import type { Calendar } from "../contexts/SelectedCalendarContext";
 
 // @todo add an option to let users refetch if it fails.
 
@@ -19,7 +12,7 @@ export default function CalendarList() {
   const [items, setItems] = useState<Calendar[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const { calendar, setCalendar } = useCalendar();
 
   useEffect(() => {
 
@@ -64,11 +57,12 @@ export default function CalendarList() {
 
   }, [items, search]);
 
-  const handleSelect = (id: string) => {
-    
-    setSelectedId((prev) => (prev === id ? null : id));
+  const handleSelect = (calendar: Calendar) => {
 
-  }
+    setCalendar(prev => (prev?.id === calendar.id ? null : calendar));
+
+  };
+
 
   return (
 
@@ -103,12 +97,12 @@ export default function CalendarList() {
 
               <CalendarButton
                 key={calendar.id}
-                name={calendar.summary || "Unnamed Calendar"}
+                name={calendar.summary}
                 icon={<CgCalendar size={30} />}
-                backgroundColor={calendar.backgroundColor || "transparent"}
-                textColor={calendar.foregroundColor || "#e5e5e5"}
-                selected={selectedId === calendar.id}
-                onClick={() => handleSelect(calendar.id)}
+                backgroundColor={calendar.backgroundColor || "#ffffff"}
+                textColor={calendar.foregroundColor || "#000000"}
+                selected={calendar?.id === calendar.id}
+                onClick={() => handleSelect(calendar)}
               />
 
             ))}

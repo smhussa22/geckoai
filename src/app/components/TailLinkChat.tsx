@@ -25,9 +25,8 @@ type TailLinkChatProps = {
 
 type Panel = | "create" | "search" | "settings" | "delete" | "clear" | null;
 
-export default function TailLinkChat({ name = "Calendar Name", description = "There are fifty characters in this large sentence.", isPrimary, className = "" }: TailLinkChatProps) {
-
-    isPrimary = true;
+export default function TailLinkChat({ name, description, isPrimary, className = "" }: TailLinkChatProps) {
+    
     const [openPanel, setOpenPanel] = useState<Panel>(null);
     const toggle = (panel: Exclude<Panel, null>) => setOpenPanel((currentPanel) =>  currentPanel === panel ? null : panel );
     const close = () => setOpenPanel(null);
