@@ -51,7 +51,7 @@ export default function NavBar() {
 
   return (
 
-    <nav className={`w-full h-fit border-b p-4 sticky top-0 z-50 border-b-neutral-800 ${scrolled ? "backdrop-blur-md" : "bg-transparent"}`}>
+    <nav className={`w-full h-fit border-b p-4 sticky top-0 z-50 border-b-neutral-800 ${scrolled ? "backdrop-blur" : "bg-transparent"}`}>
 
       <div className="grid grid-cols-3 items-center">
 
@@ -68,7 +68,7 @@ export default function NavBar() {
 
             <li key={label}>
 
-              <Link href={toPath(label)} className={`font-bold rounded-md px-3 py-1 transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-broccoli select-none text-asparagus hover:bg-asparagus hover:text-night`}>
+              <Link href={toPath(label)} className={`font-bold rounded-md px-3 py-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-broccoli select-none text-asparagus hover:bg-asparagus hover:text-night`}>
                 {label}
               </Link>
 
@@ -78,9 +78,9 @@ export default function NavBar() {
 
           {dropDownLinks.map((dropDown) => (
 
-            <li key={dropDown.id} className="relative inline-block after:content-[''] after:absolute after:left-0 after:top-full after:w-full after:h-2">
+            <li key={dropDown.id} className="relative inline-block">
 
-              <Link href={`/${dropDown.label.toLowerCase()}`} data-tooltip-id={dropDown.id} onMouseEnter={() => setOpenId(dropDown.id)} className={`font-bold group flex items-center gap-0.5 cursor-pointer rounded-md px-3 py-1 transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-broccoli select-none ${openId === dropDown.id ? "bg-asparagus text-night" : "text-asparagus hover:bg-asparagus hover:text-night"}`}>
+              <Link href={`/${dropDown.label.toLowerCase()}`} data-tooltip-id={dropDown.id} onMouseEnter={() => setOpenId(dropDown.id)} className={`font-bold group flex items-center gap-0.5 cursor-pointer rounded-md px-3 py-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-broccoli select-none ${openId === dropDown.id ? "bg-asparagus text-night" : "text-asparagus hover:bg-asparagus hover:text-night"}`}>
                 
                 {dropDown.label}
 
@@ -107,9 +107,11 @@ export default function NavBar() {
                 noArrow
                 opacity={100}
                 className="!bg-asparagus !p-2 !rounded-lg !shadow-xl"
+                delayShow={0}
+                delayHide={0}
 
               >
-                <div id={dropDown.id} onMouseEnter={() => setOpenId(dropDown.id)} onMouseLeave={() => setOpenId((cur) => (cur === dropDown.id ? null : cur))} className="min-w-[12rem]">
+                <div id={dropDown.id} onMouseEnter={() => setOpenId(dropDown.id)} onMouseLeave={() => setOpenId((cur) => (cur === dropDown.id ? null : cur))} className="w-fit">
 
                   <ul className="flex flex-col">
 

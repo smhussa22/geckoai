@@ -59,7 +59,7 @@ export default function CalendarList() {
 
   const handleSelect = (calendar: Calendar) => {
 
-    setCalendar(prev => (prev?.id === calendar.id ? null : calendar));
+    setCalendar(prev => (prev?.id === calendar.id ? prev : calendar));
 
   };
 
