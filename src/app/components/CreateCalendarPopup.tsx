@@ -19,7 +19,7 @@ export default function CreateCalendarPage({ onClose }: { onClose?: () => void }
 
   const nameError = nameTouched && !nameVal.trim();
 
-  async function handleCreate() {
+  const handleCreate = async () => {
 
     setErrorMsg(null);
 
@@ -55,7 +55,7 @@ export default function CreateCalendarPage({ onClose }: { onClose?: () => void }
 
     } catch (e: any) {
 
-      setErrorMsg(e?.message || "Failed to create calendar");
+      setErrorMsg(e?.message || "Failed to create calendar.");
 
     } finally {
 
