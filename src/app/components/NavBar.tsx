@@ -1,7 +1,6 @@
 // app/components/NavBar.tsx
 "use client";
 import React, { useEffect, useState } from "react";
-import Logo from "./Logo";
 import Link from "next/link";
 import { Tooltip } from "react-tooltip";
 import { RiArrowDropUpLine, RiArrowDropDownLine } from "react-icons/ri";
@@ -57,7 +56,7 @@ export default function NavBar() {
 
         <Link href="/" className={`flex items-center gap-2 text-asparagus`}>
 
-          <Logo logoColor={"#698f3f"} className="w-12 h-12" />
+          <img src = "/logoAnimated.svg" alt = "GeckoAI Logo" className="h-12 w-12"/>
           <h1 className="tracking-tighter text-4xl font-extrabold">GeckoAI</h1>
 
         </Link>

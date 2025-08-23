@@ -5,9 +5,11 @@ import { useState, useRef } from 'react';
 import Logo from '../components/Logo';
 import SidebarItem from './SidebarItem';
 import { motion } from 'framer-motion';
-import { CalendarPlus, BrainCircuit, Settings, CircleQuestionMark } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { IoChatbubblesOutline } from "react-icons/io5";
+import { TbCalendarShare } from "react-icons/tb";
+import { LuBrainCircuit, LuSettings } from "react-icons/lu";
+import { RxQuestionMarkCircled } from "react-icons/rx";
 
 const itemIconProps = { // holding identical properties in an object and using ... to spread across all of required components
 
@@ -21,10 +23,10 @@ const itemIconProps = { // holding identical properties in an object and using .
 
 const staticIcons = {
 
-  calendar: <CalendarPlus {...itemIconProps} />,
-  brain: <BrainCircuit {...itemIconProps} />,
-  settings: <Settings {...itemIconProps} />,
-  help: <CircleQuestionMark {...itemIconProps} />,
+  calendar: <TbCalendarShare {...itemIconProps} />,
+  brain: <LuBrainCircuit {...itemIconProps} />,
+  settings: <LuSettings {...itemIconProps} />,
+  help: <RxQuestionMarkCircled {...itemIconProps} />,
   chat: <IoChatbubblesOutline {...itemIconProps} />
 
 }

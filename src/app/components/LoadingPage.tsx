@@ -1,9 +1,7 @@
 "use client";
 import React from "react";
-import { useRef } from "react";
 import Logo from "./Logo";
 import IconWithLink from "./IconWithLink";
-import Icon from "./Icon";
 import { GrSatellite } from "react-icons/gr";
 import { FiMessageCircle } from "react-icons/fi";
 import RandomFact from './RandomFact';
@@ -22,8 +20,8 @@ export default function Loading() {
     
       <div className="h-screen w-screen flex flex-col items-center gap-2 justify-center relative ">
       
-          <Icon icon={<Logo logoColor="#698f3f" className="mb-2 w-30 h-30 animate-bounce"/>}></Icon>
-        
+          <img src = "/logoAnimated.svg" alt = "GeckoAI Logo" draggable={false} className="mb-2 w-30 h-30 animate-bounce"/>
+          
           <div className="rounded-md border-2 mb-2 shadow-md border-neutral-800 p-2">
 
             <h1 className="text-broccoli font-bold">Did You Know</h1>
