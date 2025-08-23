@@ -1,5 +1,4 @@
 import React from 'react';
-import Logo from './Logo';
 import ServerStatusIndicator from './ServerStatusIndicator';
 
 export default function LogInLeftPanel() {
@@ -11,8 +10,7 @@ export default function LogInLeftPanel() {
 
             <div className='flex text-center items-center relative gap-3'>
 
-                <Logo logoColor = "#698f3f" className = "drop-shadow-xl/50 w-22"/>
-
+                <img src = "/logoAnimated.svg" alt = "GeckoAI Logo" draggable = {false} className="drop-shadow-xl/50 w-22"/>
                 <h1 className="drop-shadow-xl/50 text-7xl font-extrabold bg-clip-text text-transparent"
                 style={{
                 backgroundImage: `
