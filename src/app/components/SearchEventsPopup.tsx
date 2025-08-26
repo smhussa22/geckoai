@@ -1,202 +1,312 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { BsXCircle, BsX } from "react-icons/bs";
 import { TbCalendarDot } from "react-icons/tb";
+import { useCalendar } from "../contexts/SelectedCalendarContext";
 
 type EventItem = {
-
-    id: string;
-    name: string;
-    description: string;
-    backgroundColor: string;
-    textColor: string;
-
+  id: string;
+  name: string;
+  description: string;
+  start?: string | null;
+  end?: string | null;
 };
 
-const initialEvents: EventItem[] = [
-
-    { id: "1", name: "Design Sync", description: "Discuss the event card layout and colors.", backgroundColor: "#a78bfa", textColor: "#0b0f0a" },
-    { id: "2", name: "Sprint Planning", description: "Finalize scope for Sprint 14 and assign owners.", backgroundColor: "#38bdf8", textColor: "#0b0f0a" },
-    { id: "3", name: "QA Triage", description: "Review open bugs and set priorities for fixes.", backgroundColor: "#22c55e", textColor: "#0b0f0a" },
-
-];
-
 export default function SearchEventsPopup({ onClose }: { onClose?: () => void }) {
+  
+  const { calendar } = useCalendar();
 
-	const [activeTab, setActiveTab] = useState<"all" | "upcoming" | "past">("all");
-	const [search, setSearch] = useState("");
-	const [events, setEvents] = useState<EventItem[]>(initialEvents);
-	const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+  const [activeTab, setActiveTab] = useState<"all" | "upcoming" | "past">("all");
+  const [search, setSearch] = useState("");
+  const [events, setEvents] = useState<EventItem[]>([]);
+  const [expandedIds, setExpandedIds] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [deletingIds, setDeletingIds] = useState<string[]>([]);
 
-	const filtered = events.filter((e) => {
+  const fetchedRef = useRef(false);
 
-      if (!search.trim()) return true;
-      const q = search.toLowerCase();
-      return e.name.toLowerCase().includes(q) || e.description.toLowerCase().includes(q);
+  useEffect(() => {
 
-	});
+    if (fetchedRef.current) return;
+    if (!calendar?.id) return;
 
-	const toggleExpand = (id: string) => {
+    fetchedRef.current = true;
 
-      setExpandedIds((prev) => {
+    (async () => {
 
-        const next = new Set(prev);
-        next.has(id) ? next.delete(id) : next.add(id);
-        return next;
+      setLoading(true);
+      setErrorMsg(null);
 
-      });
+      try {
 
-	};
+        const queryParams = new URLSearchParams({
 
-  const removeEvent = (id: string) => {
+            scope: "all",
+            singleEvents: "true",
+            orderBy: "startTime",
 
-		setEvents((prev) => prev.filter((e) => e.id !== id));
+        });
 
-	  setExpandedIds((prev) => {
+        const response = await fetch(`/api/calendars/${encodeURIComponent(calendar.id)}/events?${queryParams}`);
+        if (!response.ok) { throw new Error(`Error: ${response.status}`); }
 
-        const next = new Set(prev);
-        next.delete(id);
-        return next;
+        const req = await response.json();
 
-		});
+        const items = Array.isArray(req.items) ? req.items : [];
 
-	};
+        const mapped: EventItem[] = items.map((ev: any) => ({
 
-    return (
+          id: ev.id,
+          name: ev.summary || "Untitled",
+          description: ev.description || "",
+          start: ev?.start?.dateTime || ev?.start?.date || null,
+          end: ev?.end?.dateTime || ev?.end?.date || null,
 
-      <div className="w-full space-y-4">
+        }));
 
-        <div className="flex relative">
+          setEvents(mapped);
 
-          <div>
+      } 
+      catch (error: any) {
 
-            <h1 className="text-2xl font-bold tracking-tighter text-cyan-700">Search Events</h1>
-            <h2 className="font-semibold tracking-tighter text-cyan-800">Search the events in this calendar.</h2>
+        setErrorMsg(error.message || "Failed to load events.");
 
-          </div>
+      } 
+      finally {
 
-          <button onClick={onClose} className="absolute right-0 text-neutral-700 transition-colors duration-200 hover:text-neutral-600">
+        setLoading(false);
 
-            <BsXCircle size={25} />
+      }
 
-          </button>
+    })();
 
-        </div>
+  }, [calendar?.id]);
 
-        <div className="inline-flex gap-2 rounded-lg bg-neutral-800 p-1">
+  const toMs = (iso?: string | null) => {
 
-          <button
-            onClick={() => setActiveTab("all")}
-            className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${activeTab === "all" ? "bg-neutral-700 text-white" : "text-neutral-300 hover:text-white hover:bg-neutral-700/50"}`}
-          >
+      if (!iso) return NaN;
+      const t = new Date(iso).getTime();
+      return Number.isFinite(t) ? t : NaN;
 
-            All
+  };
 
-          </button>
+  const nowMs = Date.now();
 
-          <button
+  const filtered = useMemo(() => {
 
-            onClick={() => setActiveTab("upcoming")}
-            className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${activeTab === "upcoming" ? "bg-neutral-700 text-white" : "text-neutral-300 hover:text-white hover:bg-neutral-700/50"}`}
-          
-          >
+    const byTab = events.filter((e) => {
 
-            Upcoming
+      if (activeTab === "all") return true;
+      const startMs = toMs(e.start);
+      return activeTab === "upcoming" ? startMs >= nowMs : startMs < nowMs;
+      
+    });
 
-          </button>
+    if (!search.trim()) return byTab;
 
-          <button
+    const q = search.toLowerCase();
 
-            onClick={() => setActiveTab("past")}
-            className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${activeTab === "past" ? "bg-neutral-700 text-white" : "text-neutral-300 hover:text-white hover:bg-neutral-700/50"}`}
-          
-          >
+    return byTab.filter((e) => {
 
-            Past
+      const name = (e.name || "").toLowerCase();
+      const desc = (e.description || "").toLowerCase();
+      return name.includes(q) || desc.includes(q);
 
-          </button>
+    });
 
-        </div>
+  }, [events, activeTab, search, nowMs]);
+
+  const toggleExpand = (id: string) => {
+
+    setExpandedIds((prev) => {
+
+      if (prev.includes(id)) return prev.filter(existingId => existingId !== id);
+      else return [...prev, id];
+      
+    });
+
+  };
+
+  const handleDelete = async (e: React.MouseEvent, id?: string) => {
+
+    e.stopPropagation();
+    if (!calendar?.id) {
+
+      setErrorMsg("No calendar selected.");
+      return;
+
+    }
+    if (!id) {
+
+      setErrorMsg("Missing event id.");
+      return;
+
+    }
+
+    console.log(`Attempting to delete event: ${id} from calendar: ${calendar.id}`);
+    
+    setErrorMsg(null);
+    setDeletingIds((prev) => prev.includes(id) ? prev : [...prev, id]);
+
+    const snapshot = events;
+
+    setEvents((cur) => cur.filter((ev) => ev.id !== id));
+    setExpandedIds((cur) => cur.filter(existingId => existingId !== id));
+
+    try {
+
+      const url = `/api/calendars/${encodeURIComponent(calendar.id)}/events/${encodeURIComponent(id)}?sendUpdates=none`;
+      
+      console.log(`DELETE request to: ${url}`);
+      
+      const res = await fetch(url, { method: "DELETE" });
+      
+      console.log(`DELETE response status: ${res.status}`);
+
+      if (!res.ok) {
+
+        let errorData;
+
+        try {
+
+          errorData = await res.json();
+          console.log("Error response body:", errorData);
+
+        } catch {
+
+          console.log("Could not parse error response as JSON");
+
+        }
+
+        setErrorMsg(`${res!.status}`);
+
+        setEvents(snapshot);
+        
+        return;
+
+      }
+
+      console.log(`Event ${id} successfully deleted from Google Calendar`);
+      
+    } 
+    catch (error: any) {
+
+      console.error("Network/fetch error:", error);
+      setEvents(snapshot);
+      setErrorMsg(error!.message || "Failed to delete event. Please try again.");
+
+    } 
+    finally {
+
+      setDeletingIds((prev) => prev.filter(existingId => existingId !== id));
+      
+    }
+
+  };
+
+  return (
+
+    <div className="w-full space-y-4">
+
+      <div className="flex relative">
 
         <div>
 
-          <input
-
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            autoCapitalize="off"
-            spellCheck={false}
-            autoCorrect="off"
-            placeholder="Search calendars…"
-            className="tracking-tighter p-2 bg-neutral-800 text-asparagus placeholder-neutral-600 rounded-md border border-neutral-700 focus:outline-none focus:ring-1 focus:ring-broccoli w-full"
-            type="text"
-
-          />
+          <h1 className="text-2xl font-bold tracking-tighter text-cyan-700">Search Events</h1>
+          <h2 className="font-semibold tracking-tighter text-cyan-800">Search the events in this calendar.</h2>
 
         </div>
 
-        <div className="rounded-xl border border-neutral-800 bg-neutral-900 p-2">
+        <button onClick={onClose} className="absolute right-0 text-neutral-700 transition-colors duration-200 hover:text-neutral-600">
 
-          {filtered.length === 0 ? (
+          <BsXCircle size={25} />
 
-            <div className="text-neutral-400 text-sm tracking-tight p-2">No events found.</div>
+        </button>
 
-          ) : (
-            
-            <div className="flex flex-col gap-1">
+      </div>
 
-              {filtered.map((ev) => {
+      <div className="inline-flex gap-2 rounded-lg bg-neutral-800 p-1">
 
-                const expanded = expandedIds.has(ev.id);
+        <button onClick={() => setActiveTab("all")} className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${ activeTab === "all" ? "bg-neutral-700 text-white" : "text-neutral-300 hover:text-white hover:bg-neutral-700/50"}`}>
+        
+          All
+        
+        </button>
+        
+        <button onClick={() => setActiveTab("upcoming")} className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${ activeTab === "all" ? "bg-neutral-700 text-white" : "text-neutral-300 hover:text-white hover:bg-neutral-700/50"}`}>
+        
+          Upcoming
+        
+        </button>
+        
+        <button onClick={() => setActiveTab("past")} className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${ activeTab === "all" ? "bg-neutral-700 text-white" : "text-neutral-300 hover:text-white hover:bg-neutral-700/50"}`}>
 
-                return (
+          Past
 
-                  <div key={ev.id} className="relative">
+        </button>
 
-                    <button
+      </div>
 
-                      onClick={() => toggleExpand(ev.id)}
-                      className="w-full rounded-md border transition-opacity duration-150 hover:opacity-95 text-left"
-                      style={{ backgroundColor: ev.backgroundColor, color: ev.textColor, borderColor: "rgba(0,0,0,0.2)" }}
+      <div>
 
-                    >
+        <input
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        autoCapitalize="off"
+        spellCheck={false}
+        autoCorrect="off"
+        placeholder="Search events…"
+        className="tracking-tighter p-2 bg-neutral-800 text-asparagus placeholder-neutral-600 rounded-md border border-neutral-700 focus:outline-none focus:ring-1 focus:ring-broccoli w-full"
+        type="text"
+        />
 
-                      <div className="p-2">
+      </div>
 
-                        <div className="flex items-start gap-2">
+      <div className="rounded-xl border border-neutral-800 bg-neutral-900 p-2">
+        
+        {loading ? (
+          <div className="text-neutral-400 text-sm tracking-tight p-2">Loading…</div>
+        ) : errorMsg ? (
+          <div className="text-red-400 text-sm tracking-tight p-2">{errorMsg}</div>
+        ) : filtered.length === 0 ? (
+          <div className="text-neutral-400 text-sm tracking-tight p-2">No events found.</div>
+        ) : (
 
-                          <span className="h-5 w-5 shrink-0 flex items-center justify-center">
+          <div className="flex flex-col gap-1">
 
-                            <TbCalendarDot size={18} />
+            {filtered.map((event) => {
 
-                          </span>
+              const expanded = expandedIds.includes(event.id);
+              const isDeleting = deletingIds.includes(event.id);
 
-                          <div className="min-w-0">
+              return (
 
-                            <div
+                <div key={event.id} className="relative">
 
-                              className={`tracking-tighter font-semibold leading-tight ${expanded ? "" : "overflow-hidden whitespace-nowrap text-ellipsis"}`}
-                              title={ev.name}
-                              style={{ color: ev.textColor }}
+                  <button onClick={() => toggleExpand(event.id)} className="w-full rounded-md border border-neutral-800 bg-neutral-800 text-neutral-100 transition-opacity duration-150 hover:opacity-95 text-left">
 
-                            >
+                    <div className="p-2">
+                    
+                      <div className="flex items-start gap-2">
+                    
+                        <span className="h-5 w-5 shrink-0 flex items-center justify-center text-neutral-200">
+                    
+                          <TbCalendarDot size={18} />
+                    
+                        </span>
 
-                              {ev.name}
+                        <div className="min-w-0">
+                    
+                          <div className={`tracking-tighter font-semibold leading-tight ${ expanded ? "" : "overflow-hidden whitespace-nowrap text-ellipsis"}`}>
 
-                            </div>
+                            {event.name}
 
-                            <div
+                          </div>
 
-                              className={`text-sm leading-snug transition-[max-height,opacity,margin] duration-200 ease-out ${
-                                expanded ? "max-h-40 opacity-100 mt-1" : "max-h-0 opacity-0 -mt-1"
-                              }`}
-                              style={{ color: ev.textColor }}
+                          <div className={`text-sm text-neutral-200/90 leading-snug transition-[max-height,opacity,margin] duration-200 ease-out ${ expanded ? "max-h-40 opacity-100 mt-1" : "max-h-0 opacity-0 -mt-1" }`}>
 
-                            >
-
-                              {ev.description}
-
-                            </div>
+                            {event.description || "No description."}
 
                           </div>
 
@@ -204,34 +314,35 @@ export default function SearchEventsPopup({ onClose }: { onClose?: () => void })
 
                       </div>
 
-                    </button>
+                    </div>
 
-                    <button
+                  </button>
 
-                      onClick={() => removeEvent(ev.id)}
-                      className="absolute right-1 top-1 rounded-md p-1 transition-colors"
-                      style={{ color: ev.textColor, backgroundColor: "rgba(0,0,0,0.08)" }}
+                  <button
+                  onClick={(e) => handleDelete(e, event.id)}
+                  disabled={isDeleting}
+                  className="absolute right-1 top-1 rounded-md p-1 text-neutral-200 bg-neutral-900/40 hover:bg-neutral-900/60 disabled:opacity-50 transition-colors"
+                  title={isDeleting ? "Deleting…" : "Remove from list"}
+                  >
 
-                    >
+                    <BsX size={18} />
 
-                      <BsX size={18} />
+                  </button>
 
-                    </button>
+                </div>
 
-                  </div>
+              );
 
-                );
+            })}
 
-              })}
+          </div>
 
-            </div>
-
-          )}
-
-        </div>
+        )}
 
       </div>
 
-    );
+    </div>
+
+  );
 
 }
