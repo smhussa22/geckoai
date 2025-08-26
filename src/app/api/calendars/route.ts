@@ -5,6 +5,8 @@ import { jwtVerify } from "jose";
 import { prisma } from "@/app/lib/prisma";
 
 const sessionSecret = new TextEncoder().encode(process.env.SESSION_SECRET!);
+const defaultIcon = "user";
+const defaultBackground = "#698f3f";
 
 export async function GET() { 
 
@@ -24,10 +26,24 @@ export async function GET() {
             headers: { Authorization: `Bearer ${googleToken.accessToken}`}
 
         });
-
         if (!calendarListResponse.ok) return NextResponse.json( { error: "METHOD: Calendars/GET, ERROR: Calendar Fetch Error"}, { status: calendarListResponse.status });
 
         const calendarListData = await calendarListResponse.json();
+
+        const items = (calendarListData && calendarListData.items ? calendarListData.items : []);
+        const ids = items.map( (cal: any) => cal.id as string);
+
+        const prefs = ids.length > 0 ? 
+
+            await prisma.calendar.findMany({
+
+                where: { ownerId: userId, googleId: { in: ids } },
+                select: { googleId: true, icon: true, color: true, defaultVisibility: true };
+
+             }) : [];
+
+        
+
         console.log("METHOD: Calendars/GET, MESSAGE: Fetched data from Google Calendar API:", calendarListData);
 
         const timeZoneResponse = await fetch("https://www.googleapis.com/calendar/v3/users/me/settings/timezone", 

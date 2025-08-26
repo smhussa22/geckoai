@@ -9,6 +9,9 @@ const CalendarSettingsPopup = ({ onClose }: { onClose?: () => void }) => {
     const [calendarName, setCalendarName] = useState("");
 	const [calendarDescription, setCalendarDescription] = useState("");
 	const [visibility, setVisibility] = useState<"default" | "public" | "private">("default");
+	const defaultBackgroundColor = "#698f3f";
+	const defaultTextColor = "#000000";
+	const defaultIcon = "user";
 
 	const iconChoices = [
 
@@ -24,7 +27,6 @@ const CalendarSettingsPopup = ({ onClose }: { onClose?: () => void }) => {
 	];
 
 	const [selectedIconKey, setSelectedIconKey] = useState(iconChoices[0].key);
-
 	const [colorHex, setColorHex] = useState("#ffffff");
 
 	return (
