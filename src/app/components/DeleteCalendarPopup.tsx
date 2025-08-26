@@ -4,7 +4,7 @@ import { BsXCircle } from "react-icons/bs";
 import { AiFillDelete } from "react-icons/ai";
 import { useCalendar } from "../contexts/SelectedCalendarContext";
 
-export default function CreateEventPopup({ onClose }: { onClose?: () => void }) {
+export default function DeleteEventPopup({ onClose }: { onClose?: () => void }) {
 
 	const { calendar, setCalendar } = useCalendar();
 	const [confirmText, setConfirmText] = useState("");
@@ -35,7 +35,6 @@ export default function CreateEventPopup({ onClose }: { onClose?: () => void }) 
 
 		try {
 
-			const encodedId = encodeURIComponent(calendar.id);
 			const response = await fetch("/api/calendars", {
 
       			method: "DELETE",

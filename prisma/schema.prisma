@@ -24,6 +24,8 @@ model User {
   updatedAt DateTime @updatedAt
 
   token GoogleToken?
+  calendars Calendar[]
+
 }
 
 model GoogleToken {
@@ -36,3 +38,42 @@ model GoogleToken {
   expiresAt    DateTime
   updatedAt    DateTime @updatedAt
 }
+
+model Calendar {
+  id                     String      @id @default(cuid())
+  ownerId                String
+  owner                  User        @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  name                   String
+  description            String?
+  icon                   String?
+  color                  String? 
+  defaultVisibility      CalendarVisibility  @default(PRIVATE) 
+  isPublic               Boolean     @default(false)   
+  publicId               String?     @unique          
+  createdAt              DateTime    @default(now())
+  updatedAt              DateTime    @updatedAt
+  events                 Event[]
+  @@index([ownerId])
+}
+
+enum CalendarVisibility {
+  DEFAULT
+  PUBLIC
+  PRIVATE
+}
+
+model Event {
+  id          String      @id @default(cuid())
+  calendarId  String
+  calendar    Calendar    @relation(fields: [calendarId], references: [id], onDelete: Cascade)
+  name        String
+  description String?
+  start       DateTime
+  end         DateTime
+  visibility  CalendarVisibility  @default(DEFAULT)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  @@index([calendarId, start])
+}
+
+
