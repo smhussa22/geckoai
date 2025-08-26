@@ -41,6 +41,7 @@ model GoogleToken {
 
 model Calendar {
   id                     String      @id @default(cuid())
+  googleId               String
   ownerId                String
   owner                  User        @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   name                   String
