@@ -186,7 +186,7 @@ export default function CreateEventPopup({ onClose }: { onClose?: () => void }) 
 
   	return (
 
-    	<div className="w-full" data-user-email={user?.email || ""}>
+    	<div className="w-fit" data-user-email={user?.email || ""}>
 
       		<div className="flex relative">
 
@@ -215,7 +215,7 @@ export default function CreateEventPopup({ onClose }: { onClose?: () => void }) 
 			autoCapitalize="off"
 			spellCheck={false}
 			autoCorrect="off"
-			maxLength={120}
+			maxLength={40}
 			className="w-full mr-2 bg-transparent text-xl text-asparagus font-semibold outline-none border-b-2 pb-2 transition-colors border-neutral-700 focus:border-neutral-600"
 			/>
 
@@ -236,8 +236,8 @@ export default function CreateEventPopup({ onClose }: { onClose?: () => void }) 
 			autoCapitalize="off"
 			spellCheck={false}
 			autoCorrect="off"
-			maxLength={1000}
-			className="w-full rounded-md bg-neutral-800 px-3 py-2 text-sm placeholder-neutral-500 text-ghost outline-none border-b-2 transition-colors h-24 resize-y border-transparent focus:border-neutral-700"
+			maxLength={50}
+			className="w-full rounded-md bg-neutral-800 px-3 py-2 text-sm placeholder-neutral-500 text-ghost outline-none border-b-2 transition-colors resize-none border-transparent focus:border-neutral-700"
 			/>
 
 		</div>

@@ -5,8 +5,14 @@ import { jwtVerify } from "jose";
 import { prisma } from "@/app/lib/prisma";
 
 const sessionSecret = new TextEncoder().encode(process.env.SESSION_SECRET!);
-const defaultIcon = "user";
-const defaultBackground = "#698f3f";
+const defaults = {
+
+    listIcon: "user",
+    listBackgroundColor: "#698f3f"
+
+
+};
+
 
 export async function GET() { 
 
@@ -30,20 +36,36 @@ export async function GET() {
 
         const calendarListData = await calendarListResponse.json();
 
-        const items = (calendarListData && calendarListData.items ? calendarListData.items : []);
-        const ids = items.map( (cal: any) => cal.id as string);
+        const googleCalendars = calendarListData && calendarListData.items ? calendarListData.items : [];
+        const googleCalendarIds = googleCalendars.map((cal: any) => cal.id as string);
 
-        const prefs = ids.length > 0 ? 
-
+        const userCalendarPreferences = googleCalendarIds.length > 0 ? 
             await prisma.calendar.findMany({
-
-                where: { ownerId: userId, googleId: { in: ids } },
-                select: { googleId: true, icon: true, color: true, defaultVisibility: true };
-
-             }) : [];
-
         
+                where: { ownerId: userId, googleId: { in: googleCalendarIds } },
+                select: { googleId: true, name: true, description: true, color: true, icon: true, defaultVisibility: true },
+      
+            }) : [];
 
+        const preferencesByGoogleId = new Map( userCalendarPreferences.map((pref) => [pref.googleId, pref] ) );
+
+        const mergedCalendars = googleCalendars.map((googleCal: any) => {
+        
+            const pref = preferencesByGoogleId.get(googleCal.id);
+
+            return {
+                
+                ...googleCal,
+                summary: googleCal.summaryOverride ?? googleCal.summary ?? pref?.name ?? googleCal.id,
+                description: pref?.description ?? googleCal.description ?? "",
+                backgroundColor: pref?.color ?? googleCal.backgroundColor ?? defaults.listBackgroundColor,
+                iconKey: pref?.icon ?? defaults.listIcon,
+                defaultVisibility: pref?.defaultVisibility ?? "DEFAULT",
+            
+            };
+
+        });
+        
         console.log("METHOD: Calendars/GET, MESSAGE: Fetched data from Google Calendar API:", calendarListData);
 
         const timeZoneResponse = await fetch("https://www.googleapis.com/calendar/v3/users/me/settings/timezone", 
@@ -57,15 +79,32 @@ export async function GET() {
         const timeZoneData = await timeZoneResponse.json().catch( () => null );
 
         return NextResponse.json({
+        
+            calendars: { ...calendarListData, items: mergedCalendars },
+            items: mergedCalendars.map((g: any) => ({
+                
+                id: g.id,
+                summary: g.summary ?? g.id,
+                description: g.description,
+                iconKey: g.iconKey,
+                backgroundColor: g.backgroundColor,
+                foregroundColor: g.foregroundColor,
+                defaultVisibility: g.defaultVisibility,
+                primary: g.primary ?? false,
+                accessRole: g.accessRole,
 
-            calendars: calendarListData,
+            })),
             defaultTimeZone: timeZoneData?.value ?? null,
 
         });
 
     }
 
-    catch (error: any){ return NextResponse.json({error: `METHOD: Calendars/GET, ERROR: ${error?.message}` || "METHOD: Calendars/GET, ERROR: Internal Error"}, {status: 500})};
+    catch (error: any){ 
+        
+        return NextResponse.json({error: `METHOD: Calendars/GET, ERROR: ${error?.message}` || "METHOD: Calendars/GET, ERROR: Internal Error"}, {status: 500})
+    
+    };
 
 }
 

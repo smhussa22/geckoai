@@ -58,21 +58,6 @@ export default function HomePage() {
 
         </div>
 
-
-        <div className="mt-4 flex items-center justify-center gap-4 text-xs text-neutral-500">
-
-          <Link href="/terms" className="hover:text-asparagus">Terms</Link>
-
-          <span>•</span>
-
-          <Link href="/privacy-policy" className="hover:text-asparagus">Privacy</Link>
-
-          <span>•</span>
-
-          <Link href="/support" className="hover:text-asparagus">Support</Link>
-
-        </div>
-
       </div>
 
     </div>

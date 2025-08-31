@@ -14,18 +14,44 @@ datasource db {
   url      = env("PRISMA_MIGRATION_DATABASE_URL")
 }
 
+enum CalendarVisibility {
+  DEFAULT
+  PUBLIC
+  PRIVATE
+}
+
+enum MessageRole {
+  USER
+  ASSISTANT
+  SYSTEM
+}
+
+enum Plan {
+  FREE
+  PRO
+}
+
+enum AttachmentStatus {
+  STAGED
+  ATTACHED
+  DELETED
+}
+
 model User {
-  id        String   @id // no uuid/cuid; give google sub to this
-  email     String   @unique
-  name      String?
-  firstName String?
-  picture   String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  token GoogleToken?
-  calendars Calendar[]
-
+  id                String       @id
+  email             String       @unique
+  name              String?
+  firstName         String?
+  picture           String?
+  plan              Plan         @default(FREE)
+  storageLimitBytes BigInt       @default(104857600)
+  storageUsedBytes  BigInt       @default(0)
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+  token             GoogleToken?
+  calendars         Calendar[]
+  messages          Message[]
+  attachments       Attachment[]
 }
 
 model GoogleToken {
@@ -40,41 +66,82 @@ model GoogleToken {
 }
 
 model Calendar {
-  id                     String      @id @default(cuid())
-  googleId               String
-  ownerId                String
-  owner                  User        @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  name                   String
-  description            String?
-  icon                   String?
-  color                  String? 
-  defaultVisibility      CalendarVisibility  @default(PRIVATE) 
-  isPublic               Boolean     @default(false)   
-  publicId               String?     @unique          
-  createdAt              DateTime    @default(now())
-  updatedAt              DateTime    @updatedAt
-  events                 Event[]
-  @@index([ownerId])
-}
+  id                String             @id @default(cuid())
+  googleId          String
+  ownerId           String
+  owner             User               @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  name              String
+  description       String?
+  icon              String?
+  color             String?
+  defaultVisibility CalendarVisibility @default(PRIVATE)
+  isPublic          Boolean            @default(false)
+  publicId          String?            @unique
+  summary           String?
+  lastMessageAt     DateTime           @default(now())
+  deletedAt         DateTime?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  messages          Message[]
+  attachments       Attachment[]
+  events            Event[]
 
-enum CalendarVisibility {
-  DEFAULT
-  PUBLIC
-  PRIVATE
+  @@unique([ownerId, googleId])
+  @@index([ownerId])
+  @@index([lastMessageAt])
 }
 
 model Event {
-  id          String      @id @default(cuid())
+  id          String             @id @default(cuid())
   calendarId  String
-  calendar    Calendar    @relation(fields: [calendarId], references: [id], onDelete: Cascade)
+  calendar    Calendar           @relation(fields: [calendarId], references: [id], onDelete: Cascade)
   name        String
   description String?
   start       DateTime
   end         DateTime
-  visibility  CalendarVisibility  @default(DEFAULT)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  visibility  CalendarVisibility @default(DEFAULT)
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
   @@index([calendarId, start])
 }
 
+model Message {
+  id          String       @id @default(cuid())
+  calendarId  String
+  calendar    Calendar     @relation(fields: [calendarId], references: [id], onDelete: Cascade)
+  userId      String?
+  user        User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+  role        MessageRole
+  content     String       @db.Text
+  createdAt   DateTime     @default(now())
+  deletedAt   DateTime?
+  attachments Attachment[]
 
+  @@index([calendarId, createdAt])
+}
+
+model Attachment {
+  id         String           @id @default(cuid())
+  calendarId String
+  calendar   Calendar         @relation(fields: [calendarId], references: [id], onDelete: Cascade)
+  messageId  String?
+  message    Message?         @relation(fields: [messageId], references: [id], onDelete: SetNull)
+  userId     String
+  user       User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status     AttachmentStatus @default(STAGED)
+  draftId    String?
+  filename   String
+  mimeType   String
+  size       BigInt
+  bucket     String
+  s3Key      String
+  expiresAt  DateTime?
+  deletedAt  DateTime?
+  createdAt  DateTime         @default(now())
+
+  @@unique([bucket, s3Key])
+  @@index([userId, status, createdAt])
+  @@index([calendarId, status, createdAt])
+  @@index([messageId])
+}
