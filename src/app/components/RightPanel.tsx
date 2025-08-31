@@ -14,7 +14,7 @@ export default function RightPanel() {
 
             <div className="border border-neutral-800 shadow-md rounded-md relative h-full flex-1 p-3">
         
-                {calendar? <ChatContent name = {calendar.summary} description = {calendar.description} isPrimary = {calendar.primary}/> : <EmptyState/>}
+                { calendar ? <ChatContent name = {calendar.summary} description = {calendar.description} isPrimary = {calendar.primary}/> : <EmptyState/>}
 
             </div>
 

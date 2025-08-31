@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import PrimaryBadge from "./PrimaryBadge";
 import CalendarQuickActions from "./CalendarQuickActions";
 import Chatbox from "./ChatBox";
@@ -8,6 +8,11 @@ import SearchEventsPopup from "./SearchEventsPopup";
 import ClearEventsPopup from "./ClearEventsPopup";
 import DeleteCalendarPopup from "./DeleteCalendarPopup";
 import CalendarSettingsPopup from "./CalendarSettingsPopup";
+import MessageList from "./MessageList";
+import type { ChatMessage } from "./MessageList";
+import { useCalendar } from "../contexts/SelectedCalendarContext";
+import AttachmentsCard from "./AttachmentsCard";
+import { uploadWithPresignedUrls } from "@/lib/uploads";
 
 type TailLinkChatProps = {
 
@@ -23,68 +28,120 @@ type TailLinkChatProps = {
 
 };
 
-type Panel = | "create" | "search" | "settings" | "delete" | "clear" | null;
+type Panel = "create" | "search" | "settings" | "delete" | "clear" | null;
 
 export default function TailLinkChat({ name, description, isPrimary, className = "" }: TailLinkChatProps) {
-    
-    const [openPanel, setOpenPanel] = useState<Panel>(null);
-    const toggle = (panel: Exclude<Panel, null>) => setOpenPanel((currentPanel) =>  currentPanel === panel ? null : panel );
-    const close = () => setOpenPanel(null);
 
-    return (
+  const [pendingIds, setPendingIds] = useState<string[]>([]);
+  const [attachments, setAttachments] = useState<string[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
 
-        <div className={`relative h-full flex flex-col ${className}`}>
+  const [messages] = useState<ChatMessage[]>([]);
 
-            <div className="flex items-start justify-between gap-4">
+  const [openPanel, setOpenPanel] = useState<Panel>(null);
+  const toggle = (panel: Exclude<Panel, null>) => setOpenPanel((p) => (p === panel ? null : panel));
+  const close = () => setOpenPanel(null);
+  const { calendar } = useCalendar();
 
-                <div className="w-fit">
+  const handleFilesPicked = useCallback(async (files: File[]) => {
 
-                    <div className="flex items-center gap-2">
-                    
-                        <h1 className="tracking-tighter font-semibold text-asparagus text-2xl"> {name} </h1>
-                        <PrimaryBadge show={isPrimary} />
+    if (!files?.length) return;
 
-                    </div>
+    const names = files.map((f) => f.name);
+    setAttachments((prev) => [...prev, ...names]);
 
-                    {description ? ( <h2 className="tracking-tighter text-broccoli text-xl"> {description} </h2> ) : null}
+    try {
 
-                </div>
+      setIsUploading(true);
+      const ids = await uploadWithPresignedUrls(files);
+      setPendingIds((prev) => [...prev, ...ids]);
+    } 
+    catch (err) {
+      console.error("Upload failed:", err);
+      setAttachments((prev) => prev.slice(0, Math.max(0, prev.length - names.length)));
 
-                <div className="relative">
+    } 
+    finally {
 
-                    <CalendarQuickActions
-                    className=""
-                    isPrimary={isPrimary}
-                    onCreateEvent={() => toggle("create")}
-                    onSearchEvents={() => toggle("search")}
-                    onOpenSettings={() => toggle("settings")}
-                    onDeleteCalendar={() => toggle("delete")}
-                    onClearEvents={() => toggle("clear")}
-                    />
+      setIsUploading(false);
 
-                    {openPanel && (
+    }
+  }, []);
 
-                        <div className="mt-2 w-full max-w-3xl rounded-md border border-neutral-800 bg-neutral-900/90 p-4 shadow-xl">
+  const removeAttachment = useCallback((index: number) => {
 
-                            {openPanel === "create" && ( <CreateEventPopup onClose={close} />)}
-                            {openPanel === "search" && ( <SearchEventsPopup onClose={close} />)}
-                            {openPanel === "settings" && ( <CalendarSettingsPopup onClose={close} />)}
-                            {openPanel === "delete" && ( <DeleteCalendarPopup onClose={close} />)}
-                            {openPanel === "clear" && ( <ClearEventsPopup onClose={close} />)}
+    setAttachments((prev) => prev.filter((_, i) => i !== index));
+    setPendingIds((prev) => prev.filter((_, i) => i !== index));
 
-                        </div>
+  }, []);
 
-                    )}
+  return (
+    <div className={`relative h-full flex flex-col ${className}`}>
 
-                </div>
-                
-            </div>
+      <div className="flex items-start justify-between">
 
-            <div className="flex-1 overflow-y-auto pt-2"> {/* message */} </div>
+        <div className="w-fit">
 
-            <div> <Chatbox /> </div>
+          <div className="flex gap-2 items-center">
+
+            <h1 className="text-lg font-semibold tracking-tight text-asparagus">{name}</h1>
+
+            <PrimaryBadge show={isPrimary} />
+
+          </div>
+
+          {description ? <h2 className="text-sm font-normal tracking-tight text-broccoli">{description}</h2> : null}
 
         </div>
 
-    );
+        <div className="relative">
+
+          <CalendarQuickActions
+            className=""
+            isPrimary={isPrimary}
+            onCreateEvent={() => toggle("create")}
+            onSearchEvents={() => toggle("search")}
+            onOpenSettings={() => toggle("settings")}
+            onDeleteCalendar={() => toggle("delete")}
+            onClearEvents={() => toggle("clear")}
+          />
+
+          {openPanel && (
+
+            <div className="absolute right-0 mt-2 z-50">
+
+              <div className="w-120 rounded-md border border-neutral-800 bg-neutral-900/95 p-4 shadow-xl">
+
+                {openPanel === "create" && <CreateEventPopup onClose={close} />}
+                {openPanel === "search" && <SearchEventsPopup onClose={close} />}
+                {openPanel === "settings" && <CalendarSettingsPopup calendarId={calendar!.id} onClose={close} />}
+                {openPanel === "delete" && <DeleteCalendarPopup onClose={close} />}
+                {openPanel === "clear" && <ClearEventsPopup onClose={close} />}
+
+              </div>
+
+            </div>
+
+          )}
+
+        </div>
+
+      </div>
+
+      <div className="flex-1 overflow-y-auto pt-2 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-neutral-600">
+
+        <MessageList messages={messages} />
+
+      </div>
+
+      <div>
+
+        <AttachmentsCard items={attachments} onRemove={removeAttachment} />
+        <Chatbox onFilesPicked={handleFilesPicked} />
+        {isUploading && <div className="mt-1 text-xs text-neutral-400">Uploading…</div>}
+
+      </div>
+      
+    </div>
+  );
 }

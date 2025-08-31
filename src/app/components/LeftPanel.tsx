@@ -22,15 +22,15 @@ export default function LeftPanel() {
 
         <>
 
-            <div className="border border-neutral-800 shadow-md rounded-md h-full w-64 p-2 flex flex-col gap-1">
+            <div className="border border-neutral-800 shadow-md rounded-md h-full p-2 flex flex-col gap-1">
   
                 <div className="flex flex-row items-center relative">
   
                     <h1 className="text-asparagus font-bold text-2xl tracking-tighter">Calendars</h1>
 
-                    <button onClick={() => toggleIsOpen(!isOpen)} className='absolute right-0'>
+                    <button data-tooltip-id = "Create New Calendar" data-tooltip-content={"Create New Calendar"} onClick={() => toggleIsOpen(!isOpen)} className='text-asparagus hover:text-broccoli transition-all rounded-md hover:bgabsolute absolute right-0'>
 
-                        <LuCalendarPlus size={25} color='#698f3f'/>
+                        <LuCalendarPlus size={25}/>
                         
                     </button>
 

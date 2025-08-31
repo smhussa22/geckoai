@@ -24,15 +24,14 @@ const itemIconProps = { // holding identical properties in an object and using .
 const staticIcons = {
 
   calendar: <TbCalendarShare {...itemIconProps} />,
-  brain: <LuBrainCircuit {...itemIconProps} />,
   settings: <LuSettings {...itemIconProps} />,
   help: <RxQuestionMarkCircled {...itemIconProps} />,
   chat: <IoChatbubblesOutline {...itemIconProps} />
 
 }
+
 export default function SidebarDiv() {
 
-  const pathName = usePathname();
   const [isExpanded, toggleExpand] = useState(false);
   const iconsRef = useRef(staticIcons);
 
@@ -65,7 +64,6 @@ export default function SidebarDiv() {
           <ul className = "flex-1 px-3 py-4"> {/* flex-1 makes this take up the rest of the space of the div*/} {/*TODO: make a mapping config for the sidebar items for easier scalability*/}
 
             <SidebarItem buttonIcon={iconsRef.current.calendar} isExpanded={isExpanded} buttonRoute="/taillink" buttonText="TailLink" />
-            <SidebarItem buttonIcon={iconsRef.current.brain} isExpanded={isExpanded} buttonRoute="/quizscale" buttonText="QuizScale" />
             
             <hr className="my-3 border-neutral-800" />
 

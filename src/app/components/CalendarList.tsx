@@ -1,18 +1,36 @@
 "use client";
 import React, { useEffect, useMemo, useState } from "react";
 import CalendarButton from "./CalendarButton";
-import { CgCalendar } from "react-icons/cg";
 import { useCalendar } from "../contexts/SelectedCalendarContext";
 import type { Calendar } from "../contexts/SelectedCalendarContext";
+import { TbCalendarHeart, TbCalendarDot, TbCalendarCode, TbCalendarClock, TbCalendarDollar, TbCalendarStar, TbCalendarPin, TbCalendarUser } from "react-icons/tb";
 
-// @todo add an option to let users refetch if it fails.
+const defaultBackground = "#698f3f";
+
+const iconProps = {
+
+  size: 30
+
+}
+const iconMap = {
+
+  heart: <TbCalendarHeart {...iconProps} />,
+  dot:   <TbCalendarDot   {...iconProps}  />,
+  code:  <TbCalendarCode  {...iconProps}  />,
+  clock: <TbCalendarClock {...iconProps}  />,
+  dollar:<TbCalendarDollar {...iconProps}  />,
+  star:  <TbCalendarStar  {...iconProps}  />,
+  pin:   <TbCalendarPin   {...iconProps} />,
+  user:  <TbCalendarUser  {...iconProps} />,
+
+};
 
 export default function CalendarList() {
 
   const [items, setItems] = useState<Calendar[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const { calendar, setCalendar } = useCalendar();
+  const { calendar: selectedCalendar, setCalendar } = useCalendar();
 
   useEffect(() => {
 
@@ -21,14 +39,14 @@ export default function CalendarList() {
       try {
 
         const res = await fetch("/api/calendars", { cache: "no-store" });
+        if (!res.ok) throw new Error(res.statusText);
         const data = await res.json();
 
-        if (!res.ok) throw new Error(data?.error || res.statusText);
-
-        setItems(data?.calendars?.items || []);
+        const list = data?.items ?? data?.calendars?.items ?? [];
+        setItems(list);
 
       } 
-      catch (error: any) {
+      catch (error) {
 
         console.error(error);
         setItems([]);
@@ -37,7 +55,6 @@ export default function CalendarList() {
       finally {
 
         setLoading(false);
-
       }
 
     })();
@@ -46,29 +63,25 @@ export default function CalendarList() {
 
   const filtered = useMemo(() => {
 
-    const searchLower = search.trim().toLowerCase();
-    if (!searchLower) return items;
-
-    return items.filter((calendar) =>
-
-      (calendar.summary || calendar.id).toLowerCase().includes(searchLower)
-
-    );
+    const q = search.trim().toLowerCase();
+    if (!q) return items;
+    return items.filter((c: any) => (c.summary || c.id).toLowerCase().includes(q));
 
   }, [items, search]);
 
-  const handleSelect = (calendar: Calendar) => {
+  const handleSelect = async (cal: Calendar) => {
 
-    setCalendar(prev => (prev?.id === calendar.id ? prev : calendar));
+    setCalendar((prev) => (prev?.id === cal.id ? prev : cal));
+    
 
   };
-
 
   return (
 
     <>
 
       <input
+
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         autoCapitalize="off"
@@ -77,9 +90,10 @@ export default function CalendarList() {
         placeholder="Search calendars…"
         className="tracking-tighter p-1 bg-neutral-800 text-asparagus placeholder-neutral-600 rounded-md border border-neutral-700 focus:outline-none focus:ring-1 focus:ring-broccoli w-full"
         type="text"
+
       />
 
-      <div className="pr-1.5 mt-0.5 min-h-0 flex-1 overflow-y-auto">
+      <div className="pr-1.5 mt-0.5 min-h-0 flex-1">
 
         {loading ? (
 
@@ -87,25 +101,41 @@ export default function CalendarList() {
 
         ) : filtered.length === 0 ? (
 
-          <p className="text-neutral-500 tracking-tighter text-sm">No calendars match “{search}”.</p>
+          <p className="text-neutral-500 tracking-tighter text-sm">
+
+            No calendars match “{search}”.
+
+          </p>
 
         ) : (
 
           <div className="py-1 flex flex-col gap-1 rounded-md">
 
-            {filtered.map((calendar) => (
+            {filtered.map((cal: any) => {
 
-              <CalendarButton
-                key={calendar.id}
-                name={calendar.summary}
-                icon={<CgCalendar size={30} />}
-                backgroundColor={calendar.backgroundColor || "#ffffff"}
-                textColor={calendar.foregroundColor || "#000000"}
-                selected={calendar?.id === calendar.id}
-                onClick={() => handleSelect(calendar)}
-              />
+              const iconKey = (cal.iconKey || "user") as keyof typeof iconMap;
+              const iconNode = iconMap[iconKey] ?? iconMap.user;
 
-            ))}
+              const bg = cal.backgroundColor || defaultBackground;
+              const fg = cal.foregroundColor || null; 
+
+              return (
+
+                <CalendarButton
+
+                  key={cal.id}
+                  name={cal.summary}
+                  icon={iconNode}
+                  backgroundColor={bg}
+                  textColor={fg}
+                  selected={selectedCalendar?.id === cal.id}
+                  onClick={() => handleSelect(cal)}
+
+                />
+
+              );
+
+            })}
 
           </div>
 
@@ -116,6 +146,5 @@ export default function CalendarList() {
     </>
 
   );
-
+  
 }
-
