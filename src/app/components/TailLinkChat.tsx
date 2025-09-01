@@ -5,14 +5,12 @@ import CalendarQuickActions from "./CalendarQuickActions";
 import Chatbox from "./ChatBox";
 import CreateEventPopup from "./CreateEventPopup";
 import SearchEventsPopup from "./SearchEventsPopup";
-import ClearEventsPopup from "./ClearEventsPopup";
 import DeleteCalendarPopup from "./DeleteCalendarPopup";
 import CalendarSettingsPopup from "./CalendarSettingsPopup";
 import MessageList from "./MessageList";
 import type { ChatMessage } from "./MessageList";
 import { useCalendar } from "../contexts/SelectedCalendarContext";
 import AttachmentsCard from "./AttachmentsCard";
-import { uploadWithPresignedUrls } from "@/lib/uploads";
 
 type TailLinkChatProps = {
 
@@ -23,12 +21,11 @@ type TailLinkChatProps = {
     onSearchEvents?: () => void;
     onOpenSettings?: () => void;
     onDeleteCalendar?: () => void;
-    onClearEvents?: () => void;
     className?: string;
 
 };
 
-type Panel = "create" | "search" | "settings" | "delete" | "clear" | null;
+type Panel = "create" | "search" | "settings" | "delete" | null;
 
 export default function TailLinkChat({ name, description, isPrimary, className = "" }: TailLinkChatProps) {
 
@@ -43,30 +40,7 @@ export default function TailLinkChat({ name, description, isPrimary, className =
   const close = () => setOpenPanel(null);
   const { calendar } = useCalendar();
 
-  const handleFilesPicked = useCallback(async (files: File[]) => {
-
-    if (!files?.length) return;
-
-    const names = files.map((f) => f.name);
-    setAttachments((prev) => [...prev, ...names]);
-
-    try {
-
-      setIsUploading(true);
-      const ids = await uploadWithPresignedUrls(files);
-      setPendingIds((prev) => [...prev, ...ids]);
-    } 
-    catch (err) {
-      console.error("Upload failed:", err);
-      setAttachments((prev) => prev.slice(0, Math.max(0, prev.length - names.length)));
-
-    } 
-    finally {
-
-      setIsUploading(false);
-
-    }
-  }, []);
+  const handleFilesPicked = () => { }
 
   const removeAttachment = useCallback((index: number) => {
 
@@ -103,7 +77,6 @@ export default function TailLinkChat({ name, description, isPrimary, className =
             onSearchEvents={() => toggle("search")}
             onOpenSettings={() => toggle("settings")}
             onDeleteCalendar={() => toggle("delete")}
-            onClearEvents={() => toggle("clear")}
           />
 
           {openPanel && (
@@ -116,7 +89,6 @@ export default function TailLinkChat({ name, description, isPrimary, className =
                 {openPanel === "search" && <SearchEventsPopup onClose={close} />}
                 {openPanel === "settings" && <CalendarSettingsPopup calendarId={calendar!.id} onClose={close} />}
                 {openPanel === "delete" && <DeleteCalendarPopup onClose={close} />}
-                {openPanel === "clear" && <ClearEventsPopup onClose={close} />}
 
               </div>
 

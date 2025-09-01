@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { LuCalendarX2, LuCalendarPlus, LuCalendarCog, LuCalendarSearch, LuCalendarFold } from "react-icons/lu";
+import { LuCalendarX2, LuCalendarPlus, LuCalendarCog, LuCalendarSearch} from "react-icons/lu";
 
 type Props = {
 
@@ -9,12 +9,11 @@ type Props = {
     onSearchEvents: () => void;
     onOpenSettings: () => void;
     onDeleteCalendar: () => void;
-    onClearEvents: () => void;
     className?: string;
 
 };
 
-export default function CalendarQuickActions({ isPrimary, onCreateEvent, onSearchEvents, onOpenSettings, onDeleteCalendar, onClearEvents, className = "", }: Props) {
+export default function CalendarQuickActions({ isPrimary, onCreateEvent, onSearchEvents, onOpenSettings, onDeleteCalendar, className = "", }: Props) {
 
     const base = "flex items-center gap-1.5 rounded-md border transition-colors duration-200 text-sm font-medium px-3 py-2";
 
@@ -40,15 +39,7 @@ export default function CalendarQuickActions({ isPrimary, onCreateEvent, onSearc
       
             </button>
 
-            {isPrimary ? (
-            
-                <button onClick={onClearEvents} className={`${base} border-amber-500/40 bg-amber-500/10 text-amber-400 hover:bg-amber-500/20`}>
-
-                    <LuCalendarFold size={18} /> Clear Events
-        
-                </button>
-      
-                ) : (
+            {!isPrimary && (
         
                 <button onClick={onDeleteCalendar} className={`${base} border-red-500/40 bg-red-500/10 text-red-400 hover:bg-red-500/20`} >
           

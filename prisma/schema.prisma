@@ -93,6 +93,7 @@ model Calendar {
 
 model Event {
   id          String             @id @default(cuid())
+  googleId    String
   calendarId  String
   calendar    Calendar           @relation(fields: [calendarId], references: [id], onDelete: Cascade)
   name        String
@@ -102,7 +103,7 @@ model Event {
   visibility  CalendarVisibility @default(DEFAULT)
   createdAt   DateTime           @default(now())
   updatedAt   DateTime           @updatedAt
-
+  @@unique([calendarId, googleId]) 
   @@index([calendarId, start])
 }
 
