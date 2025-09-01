@@ -4,6 +4,7 @@ import { createContext, useState, useContext, useMemo } from 'react';
 export type Calendar = {
 
     id: string;
+    googleId: string;
     summary: string;
     description?: string;
     backgroundColor: string;

@@ -33,8 +33,6 @@ export default function Header() {
 
         <div className="flex gap-6 ml-auto">
 
-          <AdminTestButton/>
-
           <button className="tracking-tighter bg-asparagus px-5 font-semibold rounded-md shadow-md cursor-pointer">
 
             Upgrade
