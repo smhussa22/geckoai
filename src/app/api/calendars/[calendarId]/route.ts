@@ -26,7 +26,8 @@ const getAccessRole = async (accessToken: string, googleId: string) => {
 
 };
 
-export async function GET(req: Request, { params }: { params: { calendarId: string } }) {
+export async function GET(req: Request, ctx: { params: Promise<{ calendarId: string }> }) {
+  const { calendarId } = await ctx.params;
 
   const user = await getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -36,7 +37,7 @@ export async function GET(req: Request, { params }: { params: { calendarId: stri
 
   const calendar = await prisma.calendar.findFirst({
 
-    where: { id: params.calendarId, ownerId: user.id },
+    where: { id: calendarId, ownerId: user.id },
     select: {
       id: true,
       googleId: true,
@@ -73,7 +74,8 @@ export async function GET(req: Request, { params }: { params: { calendarId: stri
   });
 }
 
-export async function PATCH(req: Request, { params }: { params: { calendarId: string } }) {
+export async function PATCH(req: Request, ctx: { params: Promise<{ calendarId: string }> }) {
+  const { calendarId } = await ctx.params;
 
   const user = await getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -95,7 +97,7 @@ export async function PATCH(req: Request, { params }: { params: { calendarId: st
 
   const calendar = await prisma.calendar.findFirst({
 
-    where: { id: params.calendarId, ownerId: user.id },
+    where: { id: calendarId, ownerId: user.id },
     select: { googleId: true },
 
   });
@@ -170,7 +172,7 @@ export async function PATCH(req: Request, { params }: { params: { calendarId: st
 
   await prisma.calendar.update({
 
-    where: { id: params.calendarId },
+    where: { id: calendarId },
     data: {
       name: body.name?.trim(),
       description: body.description ?? "",
@@ -183,7 +185,7 @@ export async function PATCH(req: Request, { params }: { params: { calendarId: st
 
   return NextResponse.json({
 
-    id: params.calendarId,
+    id: calendarId,
     name: body.name?.trim(),
     description: body.description ?? "",
     icon: body.icon ?? defaults.listIcon,

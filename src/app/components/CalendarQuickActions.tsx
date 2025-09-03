@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
-import { LuCalendarX2, LuCalendarPlus, LuCalendarCog, LuCalendarSearch} from "react-icons/lu";
-
+import { LuCalendarX2, LuCalendarPlus, LuCalendarCog, LuCalendarSearch } from "react-icons/lu";
+import { IoChatboxOutline } from "react-icons/io5";
 type Props = {
 
     isPrimary: boolean;
@@ -9,17 +9,24 @@ type Props = {
     onSearchEvents: () => void;
     onOpenSettings: () => void;
     onDeleteCalendar: () => void;
+    onClearChat: () => void;
     className?: string;
 
 };
 
-export default function CalendarQuickActions({ isPrimary, onCreateEvent, onSearchEvents, onOpenSettings, onDeleteCalendar, className = "", }: Props) {
+export default function CalendarQuickActions({ isPrimary, onCreateEvent, onSearchEvents, onOpenSettings, onDeleteCalendar, onClearChat, className = "", }: Props) {
 
     const base = "flex items-center gap-1.5 rounded-md border transition-colors duration-200 text-sm font-medium px-3 py-2";
 
     return (
 
         <div className={`flex flex-wrap gap-2 ${className}`}>
+
+            <button onClick={onClearChat} className={`${base} border-amber-500/40 bg-amber-500/10 text-amber-500 hover:bg-amber-500/20`}>
+        
+                <IoChatboxOutline size={18} /> Clear Chat
+      
+            </button>
 
             <button onClick={onCreateEvent} className={`${base} border-asparagus/40 bg-asparagus/10 text-asparagus hover:bg-asparagus/20`}>
         

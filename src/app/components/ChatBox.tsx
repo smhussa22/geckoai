@@ -1,22 +1,23 @@
-// ChatBox.tsx
 "use client";
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Plus, Send, Mic } from "lucide-react";
 import { Tooltip } from "react-tooltip";
 import FilePickerPopup from "./FilePickerPopup";
 import { acceptableFiles } from "../../lib/acceptableFiles";
 
 type ChatboxProps = {
-  
   maxLength?: number;
   className?: string;
   onFilesPicked?: (files: File[]) => void;
   onSend?: (text: string) => void;
-
 };
 
-export default function Chatbox({ maxLength = 4000, className = "", onFilesPicked }: ChatboxProps) {
-
+export default function Chatbox({
+  maxLength = 150000,
+  className = "",
+  onFilesPicked,
+  onSend,
+}: ChatboxProps) {
   const [value, setValue] = useState("");
   const [containerHeight, setContainerHeight] = useState(80);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -32,8 +33,8 @@ export default function Chatbox({ maxLength = 4000, className = "", onFilesPicke
     const textarea = textareaRef.current;
 
     if (textarea) {
-
       textarea.style.height = "auto";
+
       const newHeight = Math.min(Math.max(textarea.scrollHeight + padding, 80), 240);
       setContainerHeight(newHeight);
       textarea.style.height = `${newHeight - padding}px`;
@@ -52,7 +53,7 @@ export default function Chatbox({ maxLength = 4000, className = "", onFilesPicke
 
     onFilesPicked?.(files);
 
-  }
+  };
 
   const onDragOver = (e: React.DragEvent<HTMLDivElement>) => {
 
@@ -77,24 +78,42 @@ export default function Chatbox({ maxLength = 4000, className = "", onFilesPicke
 
   };
 
+  const handleSend = () => {
+
+    const text = value.trim();
+    if (!text) return;
+    onSend?.(text);
+    setValue("");
+
+  };
+
+  const onTextareaKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+
+  };
+
   return (
 
     <div className={`flex justify-center ${className}`}>
 
       <div
-      className={`relative w-full rounded-xl border border-neutral-700/60 bg-neutral-900 p-3 transition-all duration-300 ease-out ${dragActive ? "ring-2 ring-asparagus/60" : ""}`}
-      style={{ height: `${containerHeight}px` }}
-      onDragOver={onDragOver}
-      onDragLeave={onDragLeave}
-      onDrop={onDrop}
+        className={`relative w-full rounded-xl border border-neutral-700/60 bg-neutral-900 p-3 transition-all duration-300 ease-out ${dragActive ? "ring-2 ring-asparagus/60" : ""}`}
+        style={{ height: `${containerHeight}px` }}
+        onDragOver={onDragOver}
+        onDragLeave={onDragLeave}
+        onDrop={onDrop}
       >
 
         {dragActive && (
 
           <div className="absolute inset-0 grid place-items-center rounded-xl bg-neutral-800/30 pointer-events-none">
-
+          
             <span className="text-sm text-neutral-300">Drop files to attach…</span>
-
+        
           </div>
 
         )}
@@ -103,6 +122,7 @@ export default function Chatbox({ maxLength = 4000, className = "", onFilesPicke
           ref={textareaRef}
           value={value}
           onChange={handleChange}
+          onKeyDown={onTextareaKeyDown}
           placeholder="Type your instructions"
           autoCapitalize="off"
           autoCorrect="off"
@@ -113,27 +133,33 @@ export default function Chatbox({ maxLength = 4000, className = "", onFilesPicke
         />
 
         <div className="absolute bottom-2 left-2 right-2 flex justify-between items-center h-10">
-
+          
           <div className="relative">
-
+            
             <button
-            data-tooltip-id="plus"
-            data-tooltip-content="Add files and more"
-            onClick={() => setPickerOpen((v) => !v)}
-            className="flex h-10 w-10 items-center justify-center rounded-full text-neutral-400 hover:text-neutral-100 hover:bg-neutral-700/40 transition-colors duration-200"
+              data-tooltip-id="plus"
+              data-tooltip-content="Add files and more"
+              onClick={() => setPickerOpen((v) => !v)}
+              className="flex h-10 w-10 items-center justify-center rounded-full text-neutral-400 hover:text-neutral-100 hover:bg-neutral-700/40 transition-colors duration-200"
             >
 
               <Plus size={20} />
 
             </button>
 
-            <FilePickerPopup open={pickerOpen} onClose={() => setPickerOpen(false)} onPick={handlePick} accept={acceptableFiles}/>
+            <FilePickerPopup
+              open={pickerOpen}
+              onClose={() => setPickerOpen(false)}
+              onPick={handlePick}
+              accept={acceptableFiles}
+            />
 
           </div>
 
           <button
             data-tooltip-id={hasText ? "send" : "mic"}
             data-tooltip-content={hasText ? "Send Prompt" : "Dictate Mode"}
+            onClick={hasText ? handleSend : undefined}
             className="relative flex h-10 w-10 items-center justify-center rounded-full text-neutral-400 hover:text-neutral-100 hover:bg-neutral-700/40 transition-colors duration-200"
           >
 
@@ -168,5 +194,5 @@ export default function Chatbox({ maxLength = 4000, className = "", onFilesPicke
     </div>
 
   );
-
+  
 }
