@@ -5,7 +5,9 @@ import { prisma } from "@/app/lib/prisma";
 
 const sessionSecret = new TextEncoder().encode(process.env.SESSION_SECRET!);
 
-export async function DELETE(req: Request, { params }: { params: { calendarId: string; eventId: string } }) {
+export async function DELETE(req: Request, ctx: { params: Promise<{ calendarId: string; eventId: string }> }) {
+
+  const { calendarId, eventId } = await ctx.params;
 
   const session = (await cookies()).get("ga_session")?.value;
   if (!session) return NextResponse.json({ error: "METHOD: Event/DELETE, ERROR: Could not retrieve cookie session" }, { status: 401 });
@@ -20,14 +22,14 @@ export async function DELETE(req: Request, { params }: { params: { calendarId: s
 
     const calendar = await prisma.calendar.findFirst({
 
-      where: { id: params.calendarId, ownerId: userId },
+      where: { id: calendarId, ownerId: userId },
       select: { googleId: true },
 
     });
     if (!calendar) return NextResponse.json({ error: "Calendar not found" }, { status: 404 });
 
     const sendUpdates = new URL(req.url).searchParams.get("sendUpdates") || "none";
-    const gUrl = new URL(`https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendar.googleId)}/events/${encodeURIComponent(params.eventId)}`);
+    const gUrl = new URL(`https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendar.googleId)}/events/${encodeURIComponent(eventId)}`);
 
     if (sendUpdates) gUrl.searchParams.set("sendUpdates", sendUpdates);
 
@@ -43,15 +45,15 @@ export async function DELETE(req: Request, { params }: { params: { calendarId: s
 
       where: {
         calendarId_googleId: {
-          calendarId: params.calendarId,
-          googleId: params.eventId,
+          calendarId: calendarId,
+          googleId: eventId,
         },
       },
 
     }).catch(async () => {
 
       await prisma.event.deleteMany({
-        where: { calendarId: params.calendarId, googleId: params.eventId },
+        where: { calendarId: calendarId, googleId: eventId },
 
       });
       
@@ -68,7 +70,9 @@ export async function DELETE(req: Request, { params }: { params: { calendarId: s
 
 }
 
-export async function GET(req: Request, { params }: { params: { calendarId: string; eventId: string } }) {
+export async function GET(req: Request, ctx: { params: Promise<{ calendarId: string; eventId: string }> }) {
+
+  const { calendarId, eventId } = await ctx.params;
 
   const session = (await cookies()).get("ga_session")?.value;
   if (!session) return NextResponse.json({ error: "METHOD: Event/GET, ERROR: Could not retrieve cookie session" }, { status: 401 });
@@ -83,13 +87,13 @@ export async function GET(req: Request, { params }: { params: { calendarId: stri
 
     const calendar = await prisma.calendar.findFirst({
 
-      where: { id: params.calendarId, ownerId: userId },
+      where: { id: calendarId, ownerId: userId },
       select: { googleId: true },
 
     });
     if (!calendar) return NextResponse.json({ error: "Calendar not found" }, { status: 404 });
 
-    const gUrl = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendar.googleId)}/events/${encodeURIComponent(params.eventId)}`;
+    const gUrl = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendar.googleId)}/events/${encodeURIComponent(eventId)}`;
 
     const gRes = await fetch(gUrl, { headers: { Authorization: `Bearer ${googleToken.accessToken}` } });
     if (!gRes.ok) return NextResponse.json({ error: "METHOD: Event/GET, ERROR: Calendar API Response Failed" }, { status: gRes.status });
@@ -104,8 +108,8 @@ export async function GET(req: Request, { params }: { params: { calendarId: stri
       await prisma.event.upsert({
         where: {
           calendarId_googleId: {
-            calendarId: params.calendarId,
-            googleId: params.eventId,
+            calendarId: calendarId,
+            googleId: eventId,
           },
         },
         update: {
@@ -115,8 +119,8 @@ export async function GET(req: Request, { params }: { params: { calendarId: stri
           end: endIso,
         },
         create: {
-          calendarId: params.calendarId,
-          googleId: params.eventId,
+          calendarId: calendarId,
+          googleId: eventId,
           name: data.summary ?? "",
           description: data.description ?? null,
           start: startIso,

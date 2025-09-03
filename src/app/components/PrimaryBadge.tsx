@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { MdPerson } from "react-icons/md";
+import { GoVerified } from "react-icons/go";
 import { Tooltip } from "react-tooltip";
 
 type PrimaryBadgeProps = {
@@ -10,14 +10,14 @@ type PrimaryBadgeProps = {
   className?: string;
 };
 
-export default function PrimaryBadge({ show, tooltipId = "primary-crown", size = 24, className = ""}: PrimaryBadgeProps) {
+export default function PrimaryBadge({ show, tooltipId = "primary-crown", size = 28, className}: PrimaryBadgeProps) {
   
     if (!show) return null;
 
     return (
         <>
         
-        <MdPerson
+        <GoVerified
             data-tooltip-id={tooltipId}
             size={size}
             className={`text-neutral-700 hover:text-neutral-600 transition-colors duration-300 ${className}`}

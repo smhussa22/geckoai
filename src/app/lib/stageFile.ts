@@ -31,7 +31,7 @@ export function useStagedFiles() {
 
     const removeAt = useCallback((index: number) => {
 
-        setStaged(prev => prev.filter((_, i) => i !== index));
+        setStaged(prev => prev.toSpliced(index, 1)); 
         
     }, []);
 

@@ -5,7 +5,9 @@ import { prisma } from "@/app/lib/prisma";
 
 const sessionSecret = new TextEncoder().encode(process.env.SESSION_SECRET!);
 
-export async function GET(req: Request, { params }: { params: { calendarId: string } }) {
+export async function GET(req: Request, ctx: { params: Promise<{ calendarId: string }> }) {
+
+  const { calendarId } = await ctx.params;
 
   const session = (await cookies()).get("ga_session")?.value;
   if (!session) return NextResponse.json({ error: "METHOD: Events/GET, ERROR: Could not retrieve cookie session" }, { status: 401 });
@@ -20,7 +22,7 @@ export async function GET(req: Request, { params }: { params: { calendarId: stri
 
     const calendar = await prisma.calendar.findFirst({
 
-      where: { id: params.calendarId, ownerId: userId },
+      where: { id: calendarId, ownerId: userId },
       select: { googleId: true },
 
     });
@@ -71,7 +73,9 @@ export async function GET(req: Request, { params }: { params: { calendarId: stri
 
 }
 
-export async function POST(req: Request, { params }: { params: { calendarId: string } }) {
+export async function POST(req: Request, ctx: { params: Promise<{ calendarId: string }> }) {
+  
+  const { calendarId } = await ctx.params;
 
   const session = (await cookies()).get("ga_session")?.value;
   if (!session) return NextResponse.json({ error: "METHOD: Events/POST, ERROR: Could not retrieve cookie session" }, { status: 401 });
@@ -106,7 +110,7 @@ export async function POST(req: Request, { params }: { params: { calendarId: str
 
     const calendar = await prisma.calendar.findFirst({
 
-      where: { id: params.calendarId, ownerId: userId },
+      where: { id: calendarId, ownerId: userId },
       select: { googleId: true },
       
     });
@@ -141,7 +145,7 @@ export async function POST(req: Request, { params }: { params: { calendarId: str
 
         where: {
             calendarId_googleId: {
-                calendarId: params.calendarId,
+                calendarId: calendarId,
                 googleId: data.id,        
             },
         },
@@ -156,7 +160,7 @@ export async function POST(req: Request, { params }: { params: { calendarId: str
             : new Date(`${data.end.date}T00:00:00.000Z`),
         },
         create: {
-            calendarId: params.calendarId,
+            calendarId: calendarId,
             googleId: data.id,           
             name: data.summary ?? "Untitled",
             description: data.description ?? null,
@@ -180,7 +184,9 @@ export async function POST(req: Request, { params }: { params: { calendarId: str
   }
 }
 
-export async function DELETE(req: Request, { params }: { params: { calendarId: string; eventId: string } }) {
+export async function DELETE(req: Request, ctx: { params: Promise<{ calendarId: string; eventId: string }> }) {
+
+  const { calendarId, eventId } = await ctx.params;
 
   const session = (await cookies()).get("ga_session")?.value;
   if (!session) return NextResponse.json({ error: "METHOD: Event/DELETE, ERROR: Could not retrieve cookie session" }, { status: 401 });
@@ -195,14 +201,14 @@ export async function DELETE(req: Request, { params }: { params: { calendarId: s
 
     const calendar = await prisma.calendar.findFirst({
 
-      where: { id: params.calendarId, ownerId: userId },
+      where: { id: calendarId, ownerId: userId },
       select: { googleId: true },
 
     });
     if (!calendar) return NextResponse.json({ error: "Calendar not found" }, { status: 404 });
 
     const sendUpdates = new URL(req.url).searchParams.get("sendUpdates") || "none";
-    const gUrl = new URL(`https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendar.googleId)}/events/${encodeURIComponent(params.eventId)}`);
+    const gUrl = new URL(`https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendar.googleId)}/events/${encodeURIComponent(eventId)}`);
     if (sendUpdates) gUrl.searchParams.set("sendUpdates", sendUpdates);
 
     const gRes = await fetch(gUrl.toString(), {
@@ -217,8 +223,8 @@ export async function DELETE(req: Request, { params }: { params: { calendarId: s
 
         where: {
             calendarId_googleId: {
-            calendarId: params.calendarId,
-            googleId: params.eventId,
+            calendarId: calendarId,
+            googleId: eventId,
             },
         },
 
