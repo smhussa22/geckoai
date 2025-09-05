@@ -28,7 +28,7 @@ enum MessageRole {
 
 enum Plan {
   FREE
-  PRO
+  PLUS
 }
 
 enum AttachmentStatus {
@@ -48,6 +48,7 @@ model User {
   storageUsedBytes  BigInt       @default(0)
   createdAt         DateTime     @default(now())
   updatedAt         DateTime     @updatedAt
+
   token             GoogleToken?
   calendars         Calendar[]
   messages          Message[]
@@ -70,6 +71,7 @@ model Calendar {
   googleId          String
   ownerId           String
   owner             User               @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
   name              String
   description       String?
   icon              String?
@@ -78,10 +80,12 @@ model Calendar {
   isPublic          Boolean            @default(false)
   publicId          String?            @unique
   summary           String?
+
   lastMessageAt     DateTime           @default(now())
   deletedAt         DateTime?
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
+
   messages          Message[]
   attachments       Attachment[]
   events            Event[]
@@ -96,14 +100,17 @@ model Event {
   googleId    String
   calendarId  String
   calendar    Calendar           @relation(fields: [calendarId], references: [id], onDelete: Cascade)
+
   name        String
   description String?
   start       DateTime
   end         DateTime
   visibility  CalendarVisibility @default(DEFAULT)
+
   createdAt   DateTime           @default(now())
   updatedAt   DateTime           @updatedAt
-  @@unique([calendarId, googleId]) 
+
+  @@unique([calendarId, googleId])
   @@index([calendarId, start])
 }
 
@@ -111,12 +118,15 @@ model Message {
   id          String       @id @default(cuid())
   calendarId  String
   calendar    Calendar     @relation(fields: [calendarId], references: [id], onDelete: Cascade)
+
   userId      String?
   user        User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+
   role        MessageRole
   content     String       @db.Text
   createdAt   DateTime     @default(now())
   deletedAt   DateTime?
+
   attachments Attachment[]
 
   @@index([calendarId, createdAt])
@@ -126,18 +136,21 @@ model Attachment {
   id         String           @id @default(cuid())
   calendarId String
   calendar   Calendar         @relation(fields: [calendarId], references: [id], onDelete: Cascade)
+
   messageId  String?
   message    Message?         @relation(fields: [messageId], references: [id], onDelete: SetNull)
+
   userId     String
   user       User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   status     AttachmentStatus @default(STAGED)
-  draftId    String?
   filename   String
   mimeType   String
   size       BigInt
+
   bucket     String
   s3Key      String
-  expiresAt  DateTime?
+
   deletedAt  DateTime?
   createdAt  DateTime         @default(now())
 
