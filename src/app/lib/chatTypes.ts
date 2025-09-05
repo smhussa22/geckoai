@@ -1,49 +1,82 @@
-export type ChatRole = "user" | "assistant";
+export type ChatRole = "user" | "assistant" | "system";
+
+export type ChatAttachment = {
+
+  id: string;
+  filename: string;
+  mimeType: string;
+  size: number;
+  
+};
 
 export type ChatMessageJSON = {
 
-    id: string;
-    role: ChatRole;
-    content: string;
-    calendarId: string;
-    createdAt: string;
-    attachments?: Attachment[];
+  id: string;
+  role: ChatRole;
+  content: string;
+  calendarId: string;
+  createdAt: string;
+  attachments?: ChatAttachment[];
 
-}
+};
 
-export type Attachment = {
+export type AIEventPlan = {
 
-    fileName: string;
-    mimeType: string;
-    size?: number;
-    s3Key: string;
-    etag?: string;
+  operations: Array<
+    | {
 
-}
+        action: "create";
+        event: {
+          title?: string;
+          description?: string;
+          location?: string;
+          recurrence?: string[];
+          startAt: string;
+          endAt: string;
+        };
 
-export type AIEventInput = {
+      }
 
-    title?: string;
-    description?: string;
-    location?: string;
-    recurrence?: string[];
-    startAt: string; 
-    endAt: string;
+    | {
+
+        action: "update";
+        googleId: string;
+        event: {
+          title?: string;
+          description?: string;
+          location?: string;
+          recurrence?: string[];
+          startAt?: string;
+          endAt?: string;
+        };
+
+      }
+
+    | {
+
+        action: "delete";
+        googleId: string;
+
+      }
+
+  >;
+
+};
+
+export type AIEventResult = {
+
+  created: Array<{ googleId: string; htmlLink?: string }>;
+  updated: Array<{ googleId: string; htmlLink?: string }>;
+  deleted: Array<{ googleId: string }>;
+  errors: Array<{
     
-}
+    action?: "create" | "update" | "delete" | "unknown" | string;
+    googleId?: string;
+    message: string;
+    index?: number; 
+    status?: number;
+    detail?: any; 
 
-export type AIEventOperation =
-    | { action: "create"; event: AIEventInput }
-    | { action: "update"; googleId: string; event: Partial<AIEventInput> }
-    | { action: "delete"; googleId: string };
-
-export type AIEventPlan = { operations: AIEventOperation[]};
-
-export type AIEventResult = { 
-
-    created: { googleId: string; htmlLink?: string}[];
-    updated: { googleId: string; htmlLink?: string}[];
-    deleted: { googleId: string; }[];
-    errors: { action: string; googleId?: string; message: string}[];
-
-}
+  }>;
+  
+};
