@@ -2,6 +2,7 @@
 import React from "react";
 import MessageBubble from "./MessageBubble";
 import AIChatLoading from "./AIChatLoading";
+import ReactMarkdown from 'react-markdown';
 
 export type Attachment = {
 
@@ -31,7 +32,7 @@ export default function MessageList({ messages }: { messages: ChatMessage[] }) {
 
                 <MessageBubble key={m.id} role={m.role} attachments={m.attachments}>
 
-                    {m.content}
+                    <ReactMarkdown>{m.content}</ReactMarkdown>
 
                 </MessageBubble>
 

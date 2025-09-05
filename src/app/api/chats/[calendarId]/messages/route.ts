@@ -18,6 +18,46 @@ function toGeminiRole(role: ChatRole): "user" | "model" {
   return role === "assistant" ? "model" : "user";
 }
 
+// ---- HELPERS for attachment previews ----
+const TEXTY_MIME_PREFIXES = [
+  "text/plain",
+  "text/markdown", 
+  "text/csv",
+  "text/html",
+  "text/xml",
+  "application/json",
+  "application/xml",
+  "application/javascript",
+  "application/typescript",
+  // Catch all text types
+  "text/",
+];
+
+const MAX_PREVIEW_BYTES = 200_000;
+
+async function readAttachmentPreview(s3Key?: string | null, mimeType?: string) {
+  if (!s3Key) return null;
+  
+  console.log(`[readAttachmentPreview] Processing file with mime type: ${mimeType}`);
+  
+  try {
+    const raw = await s3ReadObjectAsString(s3Key);
+    if (!raw) {
+      console.log(`[readAttachmentPreview] No content found for ${s3Key}`);
+      return null;
+    }
+    
+    console.log(`[readAttachmentPreview] Read ${raw.length} bytes from ${s3Key}`);
+    
+    return raw.length > MAX_PREVIEW_BYTES
+      ? raw.slice(0, MAX_PREVIEW_BYTES) + "\n…(truncated)"
+      : raw;
+  } catch (error) {
+    console.error(`[readAttachmentPreview] Error reading ${s3Key}:`, error);
+    return null;
+  }
+}
+
 export async function POST(
   req: Request,
   ctx: { params: Promise<{ calendarId: string }> }
@@ -40,6 +80,58 @@ export async function POST(
   const content = (body?.content ?? "").trim();
   if (!content) return NextResponse.json({ error: "Message content needed" }, { status: 400 });
 
+  const attachmentIds = Array.isArray(body?.attachmentIds) ? body!.attachmentIds : [];
+  console.log(`[POST] Processing message with ${attachmentIds.length} attachment IDs`);
+
+  // ------- Fetch staged attachments for this message -------
+  const dbAtts = attachmentIds.length
+    ? await prisma.attachment.findMany({
+        where: { id: { in: attachmentIds }, userId, calendarId, status: "STAGED" },
+        select: {
+          id: true,
+          filename: true,
+          mimeType: true,
+          size: true,
+          bucket: true,
+          s3Key: true,
+        },
+      })
+    : [];
+
+  console.log(`[POST] Found ${dbAtts.length} attachments in database`);
+
+  // Build a preview bundle for text-like files
+  const previews: Array<{ filename: string; mimeType: string; text: string }> = [];
+  for (const a of dbAtts) {
+    const mt = (a.mimeType || "").toLowerCase();
+    console.log(`[POST] Processing attachment: ${a.filename} (${mt})`);
+    
+    const isTexty = TEXTY_MIME_PREFIXES.some(prefix => mt.startsWith(prefix));
+    
+    if (!isTexty) {
+      console.log(`[POST] Skipping binary file: ${a.filename} (${mt})`);
+      continue;
+    }
+    
+    try {
+      const text = await readAttachmentPreview(a.s3Key, mt);
+      if (text) {
+        console.log(`[POST] Successfully extracted ${text.length} characters from ${a.filename}`);
+        previews.push({
+          filename: a.filename || "attachment",
+          mimeType: mt || "text/plain",
+          text,
+        });
+      } else {
+        console.log(`[POST] No text extracted from ${a.filename}`);
+      }
+    } catch (error) {
+      console.error(`[POST] Error processing attachment ${a.filename}:`, error);
+    }
+  }
+
+  console.log(`[POST] Created ${previews.length} file previews`);
+
   const userMsgId = randomUUID();
   const createdAt = new Date().toISOString();
   const userMessage: ChatMessageJSON = {
@@ -48,7 +140,12 @@ export async function POST(
     content,
     calendarId: calendar.id,
     createdAt,
-    attachments: [], // persisted separately if you store attachments on messages
+    attachments: dbAtts.map(a => ({
+      id: a.id,
+      filename: a.filename || "file",
+      mimeType: a.mimeType || "application/octet-stream",
+      size: Number(a.size ?? 0),
+    })),
   };
 
   const userKey = s3KeyMessageJson(userId, calendar.id, userMsgId);
@@ -59,7 +156,15 @@ export async function POST(
     data: { lastMessageAt: new Date(createdAt) },
   });
 
-  // -------- Load recent context (no date/time anchoring) --------
+  // Mark attachments as attached
+  if (dbAtts.length) {
+    await prisma.attachment.updateMany({
+      where: { id: { in: dbAtts.map(a => a.id) } },
+      data: { status: "ATTACHED" },
+    });
+  }
+
+  // -------- Load recent context --------
   let recent: ChatMessageJSON[] = [];
   try {
     const prefix = `${s3PrefixChat(userId, calendar.id)}/messages/`;
@@ -83,15 +188,36 @@ export async function POST(
     recent = msgs.slice(-10);
   } catch {}
 
+  // ------- Build prompt with file content -------
+  let attachmentsBlock = "";
+  if (previews.length) {
+    attachmentsBlock =
+      "\n\n[File attachments provided by user]\n" +
+      previews
+        .map(
+          p =>
+            `--- File: ${p.filename} (${p.mimeType}) ---\n${p.text}\n--- End of ${p.filename} ---\n`
+        )
+        .join("\n");
+    
+    console.log(`[POST] Created attachments block with ${attachmentsBlock.length} characters`);
+  } else if (dbAtts.length > 0) {
+    // User uploaded files but we couldn't process them
+    const fileList = dbAtts.map(a => `${a.filename} (${a.mimeType})`).join(", ");
+    attachmentsBlock = `\n\n[Files uploaded but could not be processed: ${fileList}]`;
+    console.log(`[POST] Could not process ${dbAtts.length} files: ${fileList}`);
+  }
+
   const contents: Array<{ role: "user" | "model"; parts: Array<{ text: string }> }> = [];
 
-  // Small guardrail: keep chat focused on calendar, but no dates.
+  // System prompt with file awareness
   contents.push({
     role: "user",
     parts: [{
       text: [
         "You are a calendar assistant.",
         "Keep replies short and focused on calendar tasks.",
+        "If the user references file attachments, use the extracted file content provided below to help with calendar tasks.",
         "If the message is not about calendar events, say briefly that you only handle calendar tasks.",
       ].join("\n")
     }]
@@ -103,8 +229,8 @@ export async function POST(
     contents.push({ role, parts: [{ text }] });
   }
 
-  // current user message last
-  contents.push({ role: "user", parts: [{ text: content }] });
+  // Current user message with file content appended
+  contents.push({ role: "user", parts: [{ text: `${content}${attachmentsBlock}` }] });
 
   // -------- Call Gemini --------
   let assistantMessage: ChatMessageJSON | null = null;
@@ -131,7 +257,8 @@ export async function POST(
         data: { lastMessageAt: new Date(asstCreatedAt) },
       });
     }
-  } catch {
+  } catch (error) {
+    console.error("[POST] Gemini API error:", error);
     assistantMessage = null;
   }
 
