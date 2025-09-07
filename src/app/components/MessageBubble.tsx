@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { FaRegFilePdf, FaRegFileCode, FaRegFileAlt, FaRegFileAudio, FaRegFile } from "react-icons/fa";
+import { FaRegFilePdf, FaRegFileAlt, FaRegFile } from "react-icons/fa";
 import { FaRegFileImage } from "react-icons/fa6";
 import { BsFiletypeTxt, BsFiletypeCsv } from "react-icons/bs";
 

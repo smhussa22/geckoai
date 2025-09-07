@@ -1,12 +1,8 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
-  // output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -31,28 +27,20 @@ enum Plan {
   PLUS
 }
 
-enum AttachmentStatus {
-  STAGED
-  ATTACHED
-  DELETED
-}
-
 model User {
-  id                String       @id
-  email             String       @unique
+  id                String   @id
+  email             String   @unique
   name              String?
   firstName         String?
   picture           String?
-  plan              Plan         @default(FREE)
-  storageLimitBytes BigInt       @default(104857600)
-  storageUsedBytes  BigInt       @default(0)
-  createdAt         DateTime     @default(now())
-  updatedAt         DateTime     @updatedAt
+  plan              Plan     @default(FREE)
+  storageLimitBytes BigInt   @default(104857600)
+  storageUsedBytes  BigInt   @default(0)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
-  token             GoogleToken?
-  calendars         Calendar[]
-  messages          Message[]
-  attachments       Attachment[]
+  token     GoogleToken?
+  calendars Calendar[]
 }
 
 model GoogleToken {
@@ -81,14 +69,14 @@ model Calendar {
   publicId          String?            @unique
   summary           String?
 
+  isPrimary         Boolean            @default(false)
   lastMessageAt     DateTime           @default(now())
   deletedAt         DateTime?
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
 
-  messages          Message[]
-  attachments       Attachment[]
   events            Event[]
+  messages          Message[]
 
   @@unique([ownerId, googleId])
   @@index([ownerId])
@@ -115,47 +103,13 @@ model Event {
 }
 
 model Message {
-  id          String       @id @default(cuid())
-  calendarId  String
-  calendar    Calendar     @relation(fields: [calendarId], references: [id], onDelete: Cascade)
-
-  userId      String?
-  user        User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
-
-  role        MessageRole
-  content     String       @db.Text
-  createdAt   DateTime     @default(now())
-  deletedAt   DateTime?
-
-  attachments Attachment[]
+  id         String       @id @default(cuid())
+  calendarId String
+  calendar   Calendar     @relation(fields: [calendarId], references: [id], onDelete: Cascade)
+  role       MessageRole
+  content    String
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
 
   @@index([calendarId, createdAt])
-}
-
-model Attachment {
-  id         String           @id @default(cuid())
-  calendarId String
-  calendar   Calendar         @relation(fields: [calendarId], references: [id], onDelete: Cascade)
-
-  messageId  String?
-  message    Message?         @relation(fields: [messageId], references: [id], onDelete: SetNull)
-
-  userId     String
-  user       User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  status     AttachmentStatus @default(STAGED)
-  filename   String
-  mimeType   String
-  size       BigInt
-
-  bucket     String
-  s3Key      String
-
-  deletedAt  DateTime?
-  createdAt  DateTime         @default(now())
-
-  @@unique([bucket, s3Key])
-  @@index([userId, status, createdAt])
-  @@index([calendarId, status, createdAt])
-  @@index([messageId])
 }

@@ -1,6 +1,6 @@
 "use client";
 import React from 'react';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { LuCalendarPlus } from "react-icons/lu";
 import CalendarList from './CalendarList';
 import PopUp from './Popup';
@@ -11,6 +11,7 @@ import CreateCalendarPage from './CreateCalendarPopup';
 export default function LeftPanel() {
 
     const [isOpen, toggleIsOpen] = useState(false);
+    const popupRef = useRef<HTMLDivElement | null>(null);
 
     const handleClosePopup = () => {
 
@@ -42,11 +43,15 @@ export default function LeftPanel() {
 
             {isOpen && (
 
-                <PopUp className='flex flex-col gap-4' onClose={handleClosePopup}>
+                <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50" onClick={handleClosePopup}>
 
-                    <CreateCalendarPage onClose={handleClosePopup} />
+                    <PopUp className='flex flex-col gap-4' onClose={handleClosePopup}>
 
-                </PopUp>
+                        <CreateCalendarPage onClose={handleClosePopup} />
+
+                    </PopUp>
+
+                </div>
 
             )}
 

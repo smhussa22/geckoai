@@ -2,7 +2,6 @@
 import React from 'react';
 import { FaGoogle } from "react-icons/fa";
 import { useUser } from '../contexts/UserContext';
-import Link from 'next/link';
 
 // @todo add sliding logo reveal animation
 export default function HomePage() {

@@ -12,19 +12,12 @@ type ChatboxProps = {
   onSend?: (text: string) => void;
 };
 
-export default function Chatbox({
-  maxLength = 150000,
-  className = "",
-  onFilesPicked,
-  onSend,
-}: ChatboxProps) {
+export default function Chatbox({ maxLength = 20000, className = "", onFilesPicked, onSend,}: ChatboxProps) {
+
   const [value, setValue] = useState("");
   const [containerHeight, setContainerHeight] = useState(80);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-
   const [pickerOpen, setPickerOpen] = useState(false);
-  const [dragActive, setDragActive] = useState(false);
-
   const hasText = value.trim().length > 0;
   const padding = 76;
 
@@ -55,28 +48,6 @@ export default function Chatbox({
 
   };
 
-  const onDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-
-    e.preventDefault();
-    if (!dragActive) setDragActive(true);
-
-  };
-
-  const onDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
-
-    e.preventDefault();
-    setDragActive(false);
-
-  };
-
-  const onDrop = (e: React.DragEvent<HTMLDivElement>) => {
-
-    e.preventDefault();
-    setDragActive(false);
-    const files = Array.from(e.dataTransfer.files || []);
-    if (files.length) onFilesPicked?.(files);
-
-  };
 
   const handleSend = () => {
 
@@ -101,22 +72,9 @@ export default function Chatbox({
     <div className={`flex justify-center ${className}`}>
 
       <div
-        className={`relative w-full rounded-xl border border-neutral-700/60 bg-neutral-900 p-3 transition-all duration-300 ease-out ${dragActive ? "ring-2 ring-asparagus/60" : ""}`}
+        className={`relative w-full rounded-xl border border-neutral-700/60 bg-neutral-900 p-3 transition-all duration-300 ease-out`}
         style={{ height: `${containerHeight}px` }}
-        onDragOver={onDragOver}
-        onDragLeave={onDragLeave}
-        onDrop={onDrop}
       >
-
-        {dragActive && (
-
-          <div className="absolute inset-0 grid place-items-center rounded-xl bg-neutral-800/30 pointer-events-none">
-          
-            <span className="text-sm text-neutral-300">Drop files to attach…</span>
-        
-          </div>
-
-        )}
 
         <textarea
           ref={textareaRef}
