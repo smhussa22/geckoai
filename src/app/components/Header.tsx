@@ -8,6 +8,7 @@ import AccountDropDown from './AccountDropdown';
 
 
 import AdminTestButton from './AdminTestButton';
+import StorageBar from './StorageBar';
 
 export default function Header() {
 
@@ -32,6 +33,8 @@ export default function Header() {
         </div>
 
         <div className="flex gap-6 ml-auto">
+
+          <StorageBar/>
 
           <button className="tracking-tighter bg-asparagus px-5 font-semibold rounded-md shadow-md cursor-pointer">
 

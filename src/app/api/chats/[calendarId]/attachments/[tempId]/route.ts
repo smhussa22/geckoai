@@ -1,9 +1,10 @@
-import "use server";
+"use server";
 import { NextResponse } from "next/server";
 import { authUserOrThrow } from "@/app/lib/getUser";
 import { s3DeleteObject, s3StagedAttachmentKey } from "@/app/lib/s3";
 
 export async function DELETE(req: Request, ctx: { params: Promise<{ calendarId: string }> }) {
+    
     try {
 
         const user = await authUserOrThrow();

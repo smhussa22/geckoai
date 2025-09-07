@@ -5,6 +5,8 @@ import { authUserOrThrow } from "@/app/lib/getUser";
 import { s3, s3Bucket, s3MessageKey, s3SignedGetUrl } from "@/app/lib/s3";
 import { GetObjectCommand } from "@aws-sdk/client-s3";
 
+const fallbackMessageGet = 1000;
+
 export async function GET(req: Request, ctx: { params: Promise<{ calendarId: string }> }) {
 
     try {
@@ -13,7 +15,9 @@ export async function GET(req: Request, ctx: { params: Promise<{ calendarId: str
         const { calendarId } = await ctx.params;
 
         const url = new URL(req.url);
-        const take = Math.min(Number(url.searchParams.get("take") ?? 50), 100);
+        const all = url.searchParams.get("all") === "true";
+        const takeParam = Number(url.searchParams.get("take") ?? 50);
+        const take = all ? fallbackMessageGet : Math.min(takeParam, 100);
 
         const rows = await prisma.message.findMany({
 
