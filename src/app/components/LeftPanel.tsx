@@ -42,18 +42,13 @@ export default function LeftPanel() {
             </div>
 
             {isOpen && (
-
-                <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50" onClick={handleClosePopup}>
-
-                    <PopUp className='flex flex-col gap-4' onClose={handleClosePopup}>
-
-                        <CreateCalendarPage onClose={handleClosePopup} />
-
-                    </PopUp>
-
-                </div>
-
-            )}
+    <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50" onClick={handleClosePopup}>
+        {/* Add onClick handler here */}
+        <PopUp className='flex flex-col gap-4' onClose={handleClosePopup} onClick={(e) => e.stopPropagation()}>
+            <CreateCalendarPage onClose={handleClosePopup} />
+        </PopUp>
+    </div>
+)}
 
         </>
 

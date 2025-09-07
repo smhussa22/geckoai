@@ -3,7 +3,8 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/app/lib/prisma";
 import { authUserOrThrow } from "@/app/lib/getUser";
 import { gemini } from "@/app/lib/gemini";
-import { s3DeletePrefix, s3MessagesPrefix, s3WriteMessageJSON, s3CopyObject, s3DeleteObject, s3CommittedAttachmentKey, s3SignedGetUrl } from "@/app/lib/s3";
+import { s3, s3DeletePrefix, s3MessagesPrefix, s3WriteMessageJSON, s3CopyObject, s3DeleteObject, s3CommittedAttachmentKey, s3SignedGetUrl, s3MessageKey, s3Bucket } from "@/app/lib/s3";
+import { GetObjectCommand } from "@aws-sdk/client-s3";
 
 type StagedFile = {
 
@@ -33,6 +34,60 @@ export async function POST (req: Request, ctx: { params: Promise<{ calendarId: s
 
         const { text, staged } = (await req.json()) as { text: string; staged?: StagedFile[]};
         if (!text?.trim()) return NextResponse.json( { error: "need text" }, { status: 400} );
+
+        const previousMessages = await prisma.message.findMany({
+
+            where: { calendarId },
+            orderBy: { createdAt: "asc" },
+
+        });
+
+        const history = [];
+
+        for (const message of previousMessages) {
+
+            const key = s3MessageKey(user.id, calendarId, message.id);
+
+            try { 
+
+                const object = await s3.send(new GetObjectCommand({
+
+                    Bucket: s3Bucket,
+                    Key: key,
+
+                }));
+                const json = JSON.parse(await object.Body!.transformToString("utf-8"));
+
+                const parts: any[] = [ { text: message.content }];
+
+                if (json.attachments && json.attachments.length > 0) {
+
+                    const attachmentsText = "Attached files:\n" + json.attachments.map((a: any) => `- ${a.fileName || a.filename} [${a.mimeType}]`).join("\n");
+                    parts.push({ text: attachmentsText });
+
+                }
+
+                history.push({
+                    
+                    role: message.role.toLowerCase() === 'user' ? 'user' : 'model',
+                    parts: parts
+
+                });
+
+
+            }
+            catch (error: any){
+
+                history.push({
+
+                    role: message.role.toLowerCase() === 'user' ? 'user' : 'model',
+                    parts: [{ text: message.content }]
+
+                });
+
+            }
+
+        }
 
         const userMessage = await prisma.message.create({
 
@@ -107,7 +162,7 @@ export async function POST (req: Request, ctx: { params: Promise<{ calendarId: s
     
         }
             
-        const chat = gemini.startChat({history: []});
+        const chat = gemini.startChat({history});
         const result = await chat.sendMessage(parts);
         const assistantText = result.response.text() || "Failed to respond";
 
