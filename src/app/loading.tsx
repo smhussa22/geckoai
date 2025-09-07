@@ -2,7 +2,7 @@
 import React from 'react';
 import LoadingPage from './components/LoadingPage'
 
-export default function HomePage() {
+export default function Loading() {
 
   return (
 

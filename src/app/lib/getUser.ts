@@ -24,3 +24,11 @@ export async function getUser(){
     }
 
 }
+
+export async function authUserOrThrow() {
+
+    const user = await getUser();
+    if (!user) throw new Error("Unauthorized");
+    return user; 
+    
+}

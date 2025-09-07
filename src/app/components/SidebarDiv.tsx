@@ -5,10 +5,9 @@ import { useState, useRef } from 'react';
 import Logo from '../components/Logo';
 import SidebarItem from './SidebarItem';
 import { motion } from 'framer-motion';
-import { usePathname } from 'next/navigation';
 import { IoChatbubblesOutline } from "react-icons/io5";
 import { TbCalendarShare } from "react-icons/tb";
-import { LuBrainCircuit, LuSettings } from "react-icons/lu";
+import { LuSettings } from "react-icons/lu";
 import { RxQuestionMarkCircled } from "react-icons/rx";
 
 const itemIconProps = { // holding identical properties in an object and using ... to spread across all of required components
