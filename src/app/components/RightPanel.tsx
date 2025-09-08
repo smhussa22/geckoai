@@ -1,25 +1,59 @@
 "use client";
-import React from 'react';
-import EmptyState from './TailLinkEmptyState';
-import ChatContent from './TailLinkChat';
-import { useCalendar } from '../contexts/SelectedCalendarContext';
+import React, { useEffect, useState } from "react";
+import EmptyState from "./TailLinkEmptyState";
+import ChatContent from "./TailLinkChat";
+import TailLinkCalendar from "./TailLinkCal";
+import { useCalendar } from "../contexts/SelectedCalendarContext";
+import type { ViewMode } from "./ViewToggle";
 
 export default function RightPanel() {
+  const { calendar } = useCalendar();
+  const [view, setView] = useState<ViewMode>("chat");
 
-    const { calendar } = useCalendar();
+  useEffect(() => {
+    if (!calendar?.id) return;
+    const saved = localStorage.getItem(`view:${calendar.id}`) as ViewMode | null;
+    if (saved === "chat" || saved === "calendar") setView(saved);
+  }, [calendar?.id]);
+
+  useEffect(() => {
+    if (calendar?.id) localStorage.setItem(`view:${calendar.id}`, view);
+  }, [view, calendar?.id]);
+
+  if (!calendar) {
 
     return (
 
-        <>
-
-            <div className="border border-neutral-800 shadow-md rounded-md relative h-full flex-1 p-3">
+      <div className="border border-neutral-800 shadow-md rounded-md relative h-full flex-1 p-3">
         
-                { calendar ? <ChatContent name = {calendar.summary} description = {calendar.description} isPrimary = {calendar.primary}/> : <EmptyState/>}
+        <EmptyState />
 
-            </div>
-
-        </>
+      </div>
 
     );
 
+  }
+
+  return (
+    
+    <div className="border border-neutral-800 shadow-md rounded-md relative h-full flex-1 p-3">
+      {view === "chat" ? (
+        <ChatContent
+          name={calendar.summary}
+          description={calendar.description}
+          isPrimary={calendar.primary}
+          view={view}
+          onChangeView={setView}
+        />
+      ) : (
+        <TailLinkCalendar
+          name={calendar.summary}
+          description={calendar.description}
+          isPrimary={calendar.primary}
+          view={view}
+          onChangeView={setView}
+        />
+      )}
+    </div>
+  );
 }

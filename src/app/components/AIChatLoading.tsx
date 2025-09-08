@@ -4,7 +4,7 @@ export default function AIChatIcon() {
 
     return (
         
-        <div className="flex justify-start">
+        <div className="flex justify-start mb-4">
 
             <div className="animate-pulse tracking-tighter w-[30%] flex items-start gap-5">
 
