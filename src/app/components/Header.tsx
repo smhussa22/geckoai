@@ -5,7 +5,7 @@ import { routeMetadata } from '../routeMetadata';
 import { Tooltip } from 'react-tooltip';
 import { useUser } from '../contexts/UserContext';
 import AccountDropDown from './AccountDropdown';
-
+import Link from 'next/link';
 
 import AdminTestButton from './AdminTestButton';
 import StorageBar from './StorageBar';
@@ -36,11 +36,11 @@ export default function Header() {
 
           <StorageBar/>
 
-          <button className="tracking-tighter bg-asparagus px-5 font-semibold rounded-md shadow-md cursor-pointer">
+          <Link href = "/plus" className="tracking-tighter transition-colors hover:bg-night hover:text-asparagus bg-asparagus px-5 font-semibold flex items-center rounded-md shadow-md cursor-pointer">
 
             Upgrade
 
-          </button>
+          </Link>
 
           <button onClick={() => setLogOutMenu(!logOutMenu)} data-tooltip-id="gmailIcon" className="cursor-pointer overflow-hidden bg-neutral-800 w-12 aspect-square rounded-full" type="button">
           
