@@ -50,6 +50,7 @@ export default function TailLinkChat({
   const [staged, setStaged] = useState<StagedAttachment[]>([]);
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const [pinnedToBottom, setPinnedToBottom] = useState(true);
+  const [isUploading, setIsUploading] = useState(false);
 
   const scrollToBottom = (behavior: ScrollBehavior = "auto") => {
     const el = scrollerRef.current;
@@ -65,9 +66,156 @@ export default function TailLinkChat({
     scrollToBottom();
   }, []);
 
-  const handleFilesPicked = async (files: File[]) => {};
-  const removeAttachment = async (index: number) => {};
-  const handleSend = async (text: string) => {};
+  const handleFilesPicked = async (files: File[]) => {
+
+    if (!calendar || files.length === 0) return;
+    
+    setIsUploading(true);
+    
+    try {
+      
+      const uploaded: StagedAttachment[] = [];
+      
+      for (const file of files) {
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        const response = await fetch(`/api/chats/${encodeURIComponent(calendar.id)}/attachments`, {
+
+          method: "POST",
+          body: formData,
+
+        });
+
+        const data = await response.json();
+        if (!response.ok) throw new Error(data?.error || "Upload failed");
+
+        uploaded.push({
+
+          id: data.tempId,
+          filename: data.filename,
+          mimeType: data.mimeType,
+          size: data.size,
+          s3Key: data.s3Key,
+
+        });
+
+      }
+
+      setStaged(prev => [...prev, ...uploaded]);
+
+    } 
+    finally {
+
+      setIsUploading(false);
+
+    }
+
+  };
+
+  const removeAttachment = async (index: number) => {
+  
+    if (!calendar) return;
+    const item = staged[index];
+    if (!item) return;
+
+    await fetch(`/api/chats/${encodeURIComponent(calendar.id)}/attachments/${encodeURIComponent(item.id)}?filename=${encodeURIComponent(item.filename)}`,
+    
+      { method: "DELETE" }
+  
+    );
+
+    setStaged(prev => prev.filter((_, i) => i !== index));
+
+  };
+
+  const handleSend = async (text: string) => {
+  if (!calendar) return;
+
+  // 1) Optimistic USER bubble first
+  const now = new Date().toISOString();
+  const tempUserId = crypto.randomUUID();
+  const optimisticUser: ChatMessage = {
+    id: tempUserId,
+    role: "user",
+    content: text,
+    createdAt: now,
+    attachments: staged.map(s => ({
+      id: s.id,
+      name: s.filename,
+      url: `/api/chats/${encodeURIComponent(calendar.id)}/attachments/${encodeURIComponent(s.id)}?filename=${encodeURIComponent(s.filename)}`,
+    })),
+  };
+  setMessages(prev => [...prev, optimisticUser]);
+
+  // 2) Turn on loader
+  setThinking(true);
+
+  // Prepare staged payload and clear composer attachments immediately
+  const stagedForApi = staged.map(s => ({
+    tempId: s.id,
+    fileName: s.filename,
+    mimeType: s.mimeType,
+    size: s.size,
+    s3Key: s.s3Key,
+  }));
+  setStaged([]);
+
+  try {
+    // 3) POST to your route (non-streaming)
+    const res = await fetch(
+      `/api/chats/${encodeURIComponent(calendar.id)}/messages`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text, staged: stagedForApi }),
+      }
+    );
+
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data?.error || "Send failed");
+
+    // 4) Refresh full list so you see server-saved user + assistant
+    const list = await fetch(
+      `/api/chats/${encodeURIComponent(calendar.id)}/messages?take=100`,
+      { cache: "no-store" }
+    );
+    if (list.ok) {
+
+      const json = await list.json();
+      if (Array.isArray(json.messages)) setMessages(json.messages);
+
+    } 
+    else {
+
+      console.warn("Refresh failed:", list.status, await list.text());
+
+    }
+  } catch (err) {
+    console.error(err);
+    // Roll back optimistic user if send failed
+    setMessages(prev => prev.filter(m => m.id !== tempUserId));
+    // (Optional) restore staged files
+    setStaged(prev => prev.length ? prev : staged);
+  } finally {
+    setThinking(false);
+  }
+};
+
+  const refreshMessages = async (take = 100) => {
+  if (!calendar) return;
+  const url = `/api/chats/${encodeURIComponent(calendar.id)}/messages?take=${take}`;
+  const res = await fetch(url, { cache: "no-store" });
+  if (!res.ok) {
+    console.warn("Initial fetch failed:", res.status, await res.text());
+    return;
+  }
+  const data = await res.json();
+  if (Array.isArray(data.messages)) setMessages(data.messages);
+  };
+
+  useEffect(() => { refreshMessages(100); }, [calendar?.id]);
   const onDragOver = (e: React.DragEvent<HTMLDivElement>) => { e.preventDefault(); };
   const onDragLeave = (e: React.DragEvent<HTMLDivElement>) => { e.preventDefault(); };
   const onDrop = (e: React.DragEvent<HTMLDivElement>) => { e.preventDefault(); };
