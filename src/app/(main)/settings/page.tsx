@@ -1,20 +1,10 @@
-import type { Metadata } from "next";
+import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-
-  title: "GeckoAI - Settings",
-  description: "Manage your settings.",
-
+  title: 'GeckoAI - Settings',
+  description: 'Manage your settings.',
 };
 
 export default function SettingsPage() {
-
-  return (
-
-    <>
-    
-    </>
-  
-  );
-
+  return <></>;
 }

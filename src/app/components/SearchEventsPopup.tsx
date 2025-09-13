@@ -1,8 +1,8 @@
-"use client";
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { BsXCircle, BsX } from "react-icons/bs";
-import { TbCalendarDot } from "react-icons/tb";
-import { useCalendar } from "../contexts/SelectedCalendarContext";
+'use client';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { BsXCircle, BsX } from 'react-icons/bs';
+import { TbCalendarDot } from 'react-icons/tb';
+import { useCalendar } from '../contexts/SelectedCalendarContext';
 
 type EventItem = {
   id: string;
@@ -15,7 +15,7 @@ type EventItem = {
 export default function SearchEventsPopup({ onClose }: { onClose?: () => void }) {
   const { calendar } = useCalendar();
 
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
   const [events, setEvents] = useState<EventItem[]>([]);
   const [expandedIds, setExpandedIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
@@ -35,13 +35,13 @@ export default function SearchEventsPopup({ onClose }: { onClose?: () => void })
       setErrorMsg(null);
       try {
         const queryParams = new URLSearchParams({
-          scope: "all",
-          singleEvents: "true",
-          orderBy: "startTime",
+          scope: 'all',
+          singleEvents: 'true',
+          orderBy: 'startTime',
         });
 
         const response = await fetch(
-          `/api/calendars/${encodeURIComponent(calendar.id)}/events?${queryParams}`
+          `/api/calendars/${encodeURIComponent(calendar.id)}/events?${queryParams}`,
         );
         if (!response.ok) throw new Error(`Error: ${response.status}`);
 
@@ -50,15 +50,15 @@ export default function SearchEventsPopup({ onClose }: { onClose?: () => void })
 
         const mapped: EventItem[] = items.map((ev: any) => ({
           id: ev.id,
-          name: ev.summary || "Untitled",
-          description: ev.description || "",
+          name: ev.summary || 'Untitled',
+          description: ev.description || '',
           start: ev?.start?.dateTime || ev?.start?.date || null,
           end: ev?.end?.dateTime || ev?.end?.date || null,
         }));
 
         setEvents(mapped);
       } catch (error: any) {
-        setErrorMsg(error.message || "Failed to load events.");
+        setErrorMsg(error.message || 'Failed to load events.');
       } finally {
         setLoading(false);
       }
@@ -71,27 +71,27 @@ export default function SearchEventsPopup({ onClose }: { onClose?: () => void })
     return Number.isFinite(t) ? t : NaN;
   };
 
-  const isAllDay = (iso?: string | null) => Boolean(iso && !iso.includes("T"));
+  const isAllDay = (iso?: string | null) => Boolean(iso && !iso.includes('T'));
 
   const formatYMD = (d: Date) => {
     const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, "0");
-    const da = String(d.getDate()).padStart(2, "0");
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const da = String(d.getDate()).padStart(2, '0');
     return `${y}/${m}/${da}`;
   };
 
-  const fmtTime = new Intl.DateTimeFormat(undefined, { hour: "numeric", minute: "2-digit" });
+  const fmtTime = new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit' });
 
   const formatTimeRange = (startIso?: string | null, endIso?: string | null) => {
-    if (!startIso) return "Time TBD";
-    if (isAllDay(startIso)) return "All day";
+    if (!startIso) return 'Time TBD';
+    if (isAllDay(startIso)) return 'All day';
     const s = new Date(startIso);
     const e = endIso ? new Date(endIso) : null;
     return e ? `${fmtTime.format(s)} – ${fmtTime.format(e)}` : fmtTime.format(s);
   };
 
   const formatDateLine = (startIso?: string | null, endIso?: string | null) => {
-    if (!startIso) return "Date TBD";
+    if (!startIso) return 'Date TBD';
     const d = new Date(startIso);
     return `${formatYMD(d)} • ${formatTimeRange(startIso, endIso)}`;
   };
@@ -110,8 +110,8 @@ export default function SearchEventsPopup({ onClose }: { onClose?: () => void })
     const searched = !q
       ? pool
       : pool.filter((e) => {
-          const name = (e.name || "").toLowerCase();
-          const desc = (e.description || "").toLowerCase();
+          const name = (e.name || '').toLowerCase();
+          const desc = (e.description || '').toLowerCase();
           return name.includes(q) || desc.includes(q);
         });
 
@@ -132,11 +132,11 @@ export default function SearchEventsPopup({ onClose }: { onClose?: () => void })
   const handleDelete = async (e: React.MouseEvent, id?: string) => {
     e.stopPropagation();
     if (!calendar?.id) {
-      setErrorMsg("No calendar selected.");
+      setErrorMsg('No calendar selected.');
       return;
     }
     if (!id) {
-      setErrorMsg("Missing event id.");
+      setErrorMsg('Missing event id.');
       return;
     }
 
@@ -149,9 +149,9 @@ export default function SearchEventsPopup({ onClose }: { onClose?: () => void })
 
     try {
       const url = `/api/calendars/${encodeURIComponent(calendar.id)}/events/${encodeURIComponent(
-        id
+        id,
       )}?sendUpdates=none`;
-      const res = await fetch(url, { method: "DELETE" });
+      const res = await fetch(url, { method: 'DELETE' });
 
       if (!res.ok) {
         setEvents(snapshot);
@@ -159,7 +159,7 @@ export default function SearchEventsPopup({ onClose }: { onClose?: () => void })
       }
     } catch (error: any) {
       setEvents(snapshot);
-      setErrorMsg(error?.message || "Failed to delete event. Please try again.");
+      setErrorMsg(error?.message || 'Failed to delete event. Please try again.');
     } finally {
       setDeletingIds((prev) => prev.filter((x) => x !== id));
     }
@@ -167,7 +167,7 @@ export default function SearchEventsPopup({ onClose }: { onClose?: () => void })
 
   return (
     <div className="w-full space-y-4">
-      <div className="flex relative">
+      <div className="relative flex">
         <div>
           <h1 className="text-2xl font-bold tracking-tighter text-cyan-700">Search Events</h1>
           <h2 className="font-semibold tracking-tighter text-cyan-800">
@@ -191,11 +191,11 @@ export default function SearchEventsPopup({ onClose }: { onClose?: () => void })
           spellCheck={false}
           autoCorrect="off"
           placeholder="Search events…"
-          className="flex-1 tracking-tighter p-2 bg-neutral-800 text-asparagus placeholder-neutral-600 rounded-md border border-neutral-700 focus:outline-none focus:ring-1 focus:ring-broccoli"
+          className="text-asparagus focus:ring-broccoli flex-1 rounded-md border border-neutral-700 bg-neutral-800 p-2 tracking-tighter placeholder-neutral-600 focus:ring-1 focus:outline-none"
           type="text"
         />
 
-        <label className="inline-flex items-center gap-2 select-none text-sm text-neutral-300">
+        <label className="inline-flex items-center gap-2 text-sm text-neutral-300 select-none">
           <input
             type="checkbox"
             checked={includePast}
@@ -208,14 +208,13 @@ export default function SearchEventsPopup({ onClose }: { onClose?: () => void })
 
       <div className="rounded-xl border border-neutral-800 bg-neutral-900 p-2">
         {loading ? (
-          <div className="text-neutral-400 text-sm tracking-tight p-2">Loading…</div>
+          <div className="p-2 text-sm tracking-tight text-neutral-400">Loading…</div>
         ) : errorMsg ? (
-          <div className="text-red-400 text-sm tracking-tight p-2">{errorMsg}</div>
+          <div className="p-2 text-sm tracking-tight text-red-400">{errorMsg}</div>
         ) : filteredSorted.length === 0 ? (
-          <div className="text-neutral-400 text-sm tracking-tight p-2">No events found.</div>
+          <div className="p-2 text-sm tracking-tight text-neutral-400">No events found.</div>
         ) : (
-          
-          <div className="flex flex-col gap-1 max-h-[500px] overflow-y-auto scrollbar-thin scrollbar-thumb-neutral-700 scrollbar-track-transparent pr-1">
+          <div className="scrollbar-thin scrollbar-thumb-neutral-700 scrollbar-track-transparent flex max-h-[500px] flex-col gap-1 overflow-y-auto pr-1">
             {filteredSorted.map((event) => {
               const expanded = expandedIds.includes(event.id);
               const isDeleting = deletingIds.includes(event.id);
@@ -224,33 +223,33 @@ export default function SearchEventsPopup({ onClose }: { onClose?: () => void })
                 <div key={event.id} className="relative">
                   <button
                     onClick={() => toggleExpand(event.id)}
-                    className="w-full rounded-md border border-neutral-800 bg-neutral-800 text-neutral-100 transition-opacity duration-150 hover:opacity-95 text-left"
+                    className="w-full rounded-md border border-neutral-800 bg-neutral-800 text-left text-neutral-100 transition-opacity duration-150 hover:opacity-95"
                   >
                     <div className="p-2">
                       <div className="flex items-start gap-2">
-                        <span className="shrink-0 flex items-center justify-center text-neutral-200">
+                        <span className="flex shrink-0 items-center justify-center text-neutral-200">
                           <TbCalendarDot size={30} />
                         </span>
 
                         <div className="min-w-0">
                           <div
-                            className={`tracking-tighter font-semibold leading-tight ${
-                              expanded ? "" : "overflow-hidden whitespace-nowrap text-ellipsis"
+                            className={`leading-tight font-semibold tracking-tighter ${
+                              expanded ? '' : 'overflow-hidden text-ellipsis whitespace-nowrap'
                             }`}
                           >
                             {event.name}
                           </div>
 
-                          <div className="text-xs text-neutral-300 mt-0.5">
+                          <div className="mt-0.5 text-xs text-neutral-300">
                             {formatDateLine(event.start, event.end)}
                           </div>
 
                           <div
-                            className={`text-sm text-neutral-200/90 leading-snug transition-[max-height,opacity,margin] duration-200 ease-out ${
-                              expanded ? "max-h-40 opacity-100 mt-1" : "max-h-0 opacity-0 -mt-1"
+                            className={`text-sm leading-snug text-neutral-200/90 transition-[max-height,opacity,margin] duration-200 ease-out ${
+                              expanded ? 'mt-1 max-h-40 opacity-100' : '-mt-1 max-h-0 opacity-0'
                             }`}
                           >
-                            {event.description || "No description."}
+                            {event.description || 'No description.'}
                           </div>
                         </div>
                       </div>
@@ -260,8 +259,8 @@ export default function SearchEventsPopup({ onClose }: { onClose?: () => void })
                   <button
                     onClick={(e) => handleDelete(e, event.id)}
                     disabled={isDeleting}
-                    className="absolute right-1 top-1 rounded-md p-1 text-neutral-200 bg-neutral-900/40 hover:bg-neutral-900/60 disabled:opacity-50 transition-colors"
-                    title={isDeleting ? "Deleting…" : "Remove from list"}
+                    className="absolute top-1 right-1 rounded-md bg-neutral-900/40 p-1 text-neutral-200 transition-colors hover:bg-neutral-900/60 disabled:opacity-50"
+                    title={isDeleting ? 'Deleting…' : 'Remove from list'}
                   >
                     <BsX size={18} />
                   </button>

@@ -1,7 +1,7 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/app/lib/prisma";
-import { authUserOrThrow } from "@/app/lib/getUser";
-import { gemini } from "@/app/lib/gemini";
+import { NextResponse } from 'next/server';
+import { prisma } from '@/app/lib/prisma';
+import { authUserOrThrow } from '@/app/lib/getUser';
+import { gemini } from '@/app/lib/gemini';
 import {
   s3,
   s3DeletePrefix,
@@ -13,8 +13,8 @@ import {
   s3SignedGetUrl,
   s3MessageKey,
   s3Bucket,
-} from "@/app/lib/s3";
-import { GetObjectCommand } from "@aws-sdk/client-s3";
+} from '@/app/lib/s3';
+import { GetObjectCommand } from '@aws-sdk/client-s3';
 
 type StagedFile = {
   tempId: string;
@@ -24,25 +24,21 @@ type StagedFile = {
   s3Key: string;
 };
 
+export const dynamic = 'force-dynamic';
 
-export const dynamic = "force-dynamic";
-
-export async function GET(
-  req: Request,
-  { params }: { params: { calendarId: string } }
-) {
+export async function GET(req: Request, { params }: { params: { calendarId: string } }) {
   try {
     const user = await authUserOrThrow();
     const { calendarId } = params;
 
     const url = new URL(req.url);
-    const all = url.searchParams.get("all") === "true";
-    const takeParam = Number(url.searchParams.get("take") ?? 50);
+    const all = url.searchParams.get('all') === 'true';
+    const takeParam = Number(url.searchParams.get('take') ?? 50);
     const take = all ? 1000 : Math.min(takeParam, 100);
 
     const rows = await prisma.message.findMany({
       where: { calendarId },
-      orderBy: { createdAt: "asc" },
+      orderBy: { createdAt: 'asc' },
       take,
     });
 
@@ -51,7 +47,7 @@ export async function GET(
       try {
         const key = s3MessageKey(user.id, calendarId, message.id);
         const obj = await s3.send(new GetObjectCommand({ Bucket: s3Bucket, Key: key }));
-        const json = JSON.parse(await obj.Body!.transformToString("utf-8"));
+        const json = JSON.parse(await obj.Body!.transformToString('utf-8'));
 
         const attachments = await Promise.all(
           (json.attachments ?? []).map(async (a: any) => ({
@@ -59,7 +55,7 @@ export async function GET(
             name: a.fileName ?? a.filename,
             url: await s3SignedGetUrl(a.s3Key, 900),
             mime: a.mimeType,
-          }))
+          })),
         );
 
         messages.push({
@@ -70,7 +66,6 @@ export async function GET(
           attachments,
         });
       } catch {
-   
         messages.push({
           id: message.id,
           role: message.role.toLowerCase(),
@@ -83,14 +78,11 @@ export async function GET(
 
     return NextResponse.json({ messages });
   } catch (e: any) {
-    return NextResponse.json({ error: e?.message ?? "Internal Server Error" }, { status: 500 });
+    return NextResponse.json({ error: e?.message ?? 'Internal Server Error' }, { status: 500 });
   }
 }
 
-export async function POST(
-  req: Request,
-  ctx: { params: Promise<{ calendarId: string }> }
-) {
+export async function POST(req: Request, ctx: { params: Promise<{ calendarId: string }> }) {
   try {
     const user = await authUserOrThrow();
     const { calendarId } = await ctx.params;
@@ -99,17 +91,15 @@ export async function POST(
       text: string;
       staged?: StagedFile[];
     };
-    if (!text?.trim())
-      return NextResponse.json({ error: "need text" }, { status: 400 });
+    if (!text?.trim()) return NextResponse.json({ error: 'need text' }, { status: 400 });
 
-    // ---- load prior turns and build Gemini history ----
     const previousMessages = await prisma.message.findMany({
       where: { calendarId },
-      orderBy: { createdAt: "asc" },
+      orderBy: { createdAt: 'asc' },
     });
 
     const history: Array<{
-      role: "user" | "model";
+      role: 'user' | 'model';
       parts: Array<{ text: string }>;
     }> = [];
 
@@ -118,41 +108,33 @@ export async function POST(
       let parts: Array<{ text: string }> = [{ text: message.content }];
 
       try {
-        const obj = await s3.send(
-          new GetObjectCommand({ Bucket: s3Bucket, Key: key })
-        );
-        const json = JSON.parse(await obj.Body!.transformToString("utf-8"));
+        const obj = await s3.send(new GetObjectCommand({ Bucket: s3Bucket, Key: key }));
+        const json = JSON.parse(await obj.Body!.transformToString('utf-8'));
 
         if (json.attachments?.length) {
           const attachmentsText =
-            "Attached files:\n" +
+            'Attached files:\n' +
             json.attachments
-              .map(
-                (a: any) => `- ${a.fileName || a.filename} [${a.mimeType}]`
-              )
-              .join("\n");
+              .map((a: any) => `- ${a.fileName || a.filename} [${a.mimeType}]`)
+              .join('\n');
           parts = [{ text: message.content }, { text: attachmentsText }];
         }
-      } catch {
-        
-      }
+      } catch {}
 
       history.push({
-        role: message.role.toLowerCase() === "user" ? "user" : "model",
+        role: message.role.toLowerCase() === 'user' ? 'user' : 'model',
         parts,
       });
     }
 
-    // ---- persist user's message first ----
     const userMessage = await prisma.message.create({
       data: {
         calendarId,
-        role: "USER",
+        role: 'USER',
         content: text,
       },
     });
 
-    // move staged → committed
     const committedFiles: {
       fileName: string;
       mimeType: string;
@@ -165,31 +147,27 @@ export async function POST(
         user.id,
         calendarId,
         userMessage.id,
-        stagedFile.fileName
+        stagedFile.fileName,
       );
       await s3CopyObject(stagedFile.s3Key, key, stagedFile.mimeType);
 
       await s3DeleteObject(stagedFile.s3Key);
 
       committedFiles.push({
-
         fileName: stagedFile.fileName,
         mimeType: stagedFile.mimeType,
         size: stagedFile.size,
         s3Key: key,
-
       });
     }
 
     await s3WriteMessageJSON(user.id, calendarId, userMessage.id, {
-
       id: userMessage.id,
-      role: "user",
+      role: 'user',
       content: userMessage.content,
       calendarId,
       createdAt: userMessage.createdAt.toISOString(),
       attachments: committedFiles,
-
     });
 
     const attachmentsForModel = await Promise.all(
@@ -197,35 +175,33 @@ export async function POST(
         filename: c.fileName,
         mimeType: c.mimeType,
         url: await s3SignedGetUrl(c.s3Key, 600),
-      }))
+      })),
     );
 
     const parts: Array<{ text: string }> = [{ text }];
     if (attachmentsForModel.length) {
       parts.push({
         text:
-          "Attached files (signed URLs):\n" +
-          attachmentsForModel
-            .map((a) => `- ${a.filename} [${a.mimeType}] ${a.url}`)
-            .join("\n"),
+          'Attached files (signed URLs):\n' +
+          attachmentsForModel.map((a) => `- ${a.filename} [${a.mimeType}] ${a.url}`).join('\n'),
       });
     }
 
     const chat = gemini.startChat({ history });
     const result = await chat.sendMessage(parts);
-    const assistantText = result.response.text() || "Failed to respond";
+    const assistantText = result.response.text() || 'Failed to respond';
 
     const assistantMessage = await prisma.message.create({
       data: {
         calendarId,
-        role: "ASSISTANT",
+        role: 'ASSISTANT',
         content: assistantText,
       },
     });
 
     await s3WriteMessageJSON(user.id, calendarId, assistantMessage.id, {
       id: assistantMessage.id,
-      role: "assistant",
+      role: 'assistant',
       content: assistantMessage.content,
       calendarId,
       createdAt: assistantMessage.createdAt.toISOString(),
@@ -238,31 +214,21 @@ export async function POST(
     });
 
     return NextResponse.json({
-
       message: assistantText,
       messageId: assistantMessage.id,
-
     });
-
   } catch (error: any) {
-
-    console.error("[GEMINI API ERROR]", error); 
+    console.error('[GEMINI API ERROR]', error);
 
     return NextResponse.json(
-
-      { error: error.message || "An internal server error occurred." },
-      { status: 500 }
-
+      { error: error.message || 'An internal server error occurred.' },
+      { status: 500 },
     );
-
   }
-  
 }
 
 export async function DELETE(req: Request, ctx: { params: Promise<{ calendarId: string }> }) {
-
   try {
-
     const user = await authUserOrThrow();
     const { calendarId } = await ctx.params;
 
@@ -270,19 +236,12 @@ export async function DELETE(req: Request, ctx: { params: Promise<{ calendarId: 
     await s3DeletePrefix(s3MessagesPrefix(user.id, calendarId));
 
     return NextResponse.json({ ok: true });
-
-  } 
-  catch (error: any) {
-
-    console.error("[GEMINI API ERROR]", error); 
+  } catch (error: any) {
+    console.error('[GEMINI API ERROR]', error);
 
     return NextResponse.json(
-
-      { error: error.message || "An internal server error occurred." },
-      { status: 500 }
-
+      { error: error.message || 'An internal server error occurred.' },
+      { status: 500 },
     );
-
   }
-
 }

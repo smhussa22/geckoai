@@ -8,6 +8,7 @@ It combines modern web technologies with AI to make productivity smarter and mor
 ---
 
 ## 🚀 Features
+
 - 📅 **Smart Scheduling** – Connect with Google Calendar to create, edit, and track events.
 - 🤖 **AI-Powered Learning** – Upload notes and generate quizzes or study questions with the Google Gemini API.
 - ☁️ **Cloud Storage** – Securely store files with AWS S3.
@@ -17,47 +18,55 @@ It combines modern web technologies with AI to make productivity smarter and mor
 ---
 
 ## 🧰 Tech Stack
-- **Frontend:** Next.js, React, TypeScript, TailwindCSS, Framer Motion  
-- **Backend:** Prisma, Neon PostgreSQL  
-- **APIs & Services:**  
-  - Google Calendar API  
-  - Google Gemini API  
-  - Google Identity API  
-  - AWS S3  
+
+- **Frontend:** Next.js, React, TypeScript, TailwindCSS, Framer Motion
+- **Backend:** Prisma, Neon PostgreSQL
+- **APIs & Services:**
+  - Google Calendar API
+  - Google Gemini API
+  - Google Identity API
+  - AWS S3
 
 ---
 
 ### ▶️ Steps to Run the Project Locally
 
 ### ✅ Prerequisites
+
 Make sure you have the following installed before running GeckoAI:
 
 - **Node.js** (v18+ recommended)  
-Check if you already have it:
+  Check if you already have it:
+
 ```bash
 node -v
 ```
 
 ### 📥 Installation
 
-1) Clone the repository
+1. Clone the repository
+
 ```bash
 git clone https://github.com/yourusername/geckoai.git
 cd geckoai
 ```
 
-2) Install the necessary packages
+2. Install the necessary packages
+
 ```bash
 npm install
 ```
 
-3) Create the following environment files:
+3. Create the following environment files:
    a) **.env** with the following keys:
+
 ```bash
 DATABASE_URL=
 PRISMA_MIGRATION_DATABASE_URL=
 ```
-   b) **.env.local** with the following keys:
+
+b) **.env.local** with the following keys:
+
 ```bash
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
@@ -74,30 +83,32 @@ S3_BUCKET_NAME=
 SESSION_SECRET=
 ```
 
-4) Fill in the keys
+4. Fill in the keys
+
 ### 🔑 Environment Keys – Quick Guide
 
 - **Database (Neon PostgreSQL)**
-  - `DATABASE_URL` – Connection string from your Neon project.  
-  - `PRISMA_MIGRATION_DATABASE_URL` – Same as above, or a separate DB URL for migrations.  
+  - `DATABASE_URL` – Connection string from your Neon project.
+  - `PRISMA_MIGRATION_DATABASE_URL` – Same as above, or a separate DB URL for migrations.
 
 - **Google APIs**
-  - `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` – Create in [Google Cloud Console](https://console.cloud.google.com/), under **OAuth 2.0 Credentials**.  
-  - `GOOGLE_REDIRECT_URI` – Must match your OAuth redirect (default: `http://localhost:3000/api/auth/google/callback`).  
+  - `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` – Create in [Google Cloud Console](https://console.cloud.google.com/), under **OAuth 2.0 Credentials**.
+  - `GOOGLE_REDIRECT_URI` – Must match your OAuth redirect (default: `http://localhost:3000/api/auth/google/callback`).
 
 - **Frontend URLs**
-  - `NEXT_PUBLIC_BASE_URL` – Base URL for your app (local = `http://localhost:3000`).  
-  - `NEXT_PUBLIC_REDIRECT_URL` – Redirect after auth (e.g., `/taillink`).  
+  - `NEXT_PUBLIC_BASE_URL` – Base URL for your app (local = `http://localhost:3000`).
+  - `NEXT_PUBLIC_REDIRECT_URL` – Redirect after auth (e.g., `/taillink`).
 
 - **AWS (S3 Storage)**
-  - `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` – From **AWS IAM** → create user with programmatic access + S3 permissions.  
-  - `AWS_REGION` – The region your S3 bucket is hosted in (e.g., `us-east-1`).  
-  - `S3_BUCKET_NAME` – Your bucket’s name.  
+  - `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` – From **AWS IAM** → create user with programmatic access + S3 permissions.
+  - `AWS_REGION` – The region your S3 bucket is hosted in (e.g., `us-east-1`).
+  - `S3_BUCKET_NAME` – Your bucket’s name.
 
 - **Auth**
   - `SESSION_SECRET` – A random string for signing JWTs (generate with: `openssl rand -base64 32`).
 
-5) Once all keys are filled in, run the local server:
+5. Once all keys are filled in, run the local server:
+
 ```bash
 npm run dev
 ```

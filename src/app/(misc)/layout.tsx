@@ -1,15 +1,5 @@
 import '../globals.css';
 
-export default function AuthLayout({children}: { children: React.ReactNode; }) {
-
-  return (
-
-    <div className="auth-layout flex flex-col p-4 h-screen bg-night">
-      
-      {children}
-      
-    </div>
-
-  );
-
+export default function AuthLayout({ children }: { children: React.ReactNode }) {
+  return <div className="auth-layout bg-night flex h-screen flex-col p-4">{children}</div>;
 }
