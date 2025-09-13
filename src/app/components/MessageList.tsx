@@ -1,11 +1,11 @@
-"use client";
-import React, { useEffect, useRef } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import MessageBubble from "./MessageBubble";
-import AIChatLoading from "./AIChatLoading";
-import ReactMarkdown from "react-markdown";
-import Image from "next/image";
-import { useUser } from "../contexts/UserContext";
+'use client';
+import React, { useEffect, useRef } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import MessageBubble from './MessageBubble';
+import AIChatLoading from './AIChatLoading';
+import ReactMarkdown from 'react-markdown';
+import Image from 'next/image';
+import { useUser } from '../contexts/UserContext';
 
 export type Attachment = {
   id: string;
@@ -15,7 +15,7 @@ export type Attachment = {
 
 export type ChatMessage = {
   id: string;
-  role: "user" | "assistant";
+  role: 'user' | 'assistant';
   content: string;
   createdAt: string;
   attachments?: Attachment[];
@@ -42,32 +42,32 @@ export default function MessageList({ messages, isStreaming }: MessageListProps)
   const { user } = useUser();
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
   }, [messages.length, isStreaming]);
 
   if (messages.length === 0) {
-    // Center ONLY the empty state
+
     return (
-      <div className="h-full flex flex-col items-center justify-center text-center py-20">
+      <div className="flex h-full flex-col items-center justify-center py-20 text-center">
         <Image
-            draggable={false}
+          draggable={false}
           src="/logoAnimated.svg"
           alt="GeckoAI Hand Logo"
           width={80}
           height={80}
           className="mb-4 animate-bounce"
         />
-        <h2 className="text-2xl font-bold tracking-tight text-asparagus">
-          Hello, {user?.firstName || "there"}
+        <h2 className="text-asparagus text-2xl font-bold tracking-tight">
+          Hello, {user?.firstName || 'there'}
         </h2>
-        <p className="text-neutral-400 text-sm mt-2 max-w-md">
+        <p className="mt-2 max-w-md text-sm text-neutral-400">
           Automate some events with text instructions, or drop your files instead!
         </p>
       </div>
     );
   }
 
-  // Normal chat list (not centered)
+
   return (
     <div className="space-y-3">
       <AnimatePresence initial={false}>

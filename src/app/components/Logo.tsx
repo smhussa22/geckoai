@@ -1,21 +1,15 @@
-"use client";
-import React from "react";
-import { motion } from "framer-motion";
+'use client';
+import React from 'react';
+import { motion } from 'framer-motion';
 
 type LogoProps = {
-
   className?: string;
   logoColor: string;
-
 };
 
 export default function Logo({ className, logoColor }: LogoProps) {
   return (
-    <svg
-      viewBox="0 0 732.66 627.01"
-      className={className}
-      xmlns="http://www.w3.org/2000/svg"
-    >
+    <svg viewBox="0 0 732.66 627.01" className={className} xmlns="http://www.w3.org/2000/svg">
       <g id="rightFinger2">
         <motion.path
           animate={{ fill: logoColor }}

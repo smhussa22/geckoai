@@ -1,25 +1,35 @@
 [
-
-    { "id": 1, "text": "GeckoAI v1.0 was developed and maintained by a solo developer!" },
-    { "id": 2, "text": "GeckoAI is powered by Next.js, giving it lightning-fast page loads and server-side rendering." },
-    { "id": 3, "text": "We use React.js to build dynamic, interactive user interfaces." },
-    { "id": 4, "text": "A lot of the animations you see are possible with Framer Motion!" },
-    { "id": 5, "text": "User accounts are secure and convenient with Google Identity Services." },
-    { "id": 6, "text": "File uploads and storage are handled by AWS S3, keeping your data safe and scalable." },
-    { "id": 7, "text": "We use a Neon PostgreSQL database to store user data." },
-    { "id": 8, "text": "The AI in GeckoAI is powered by the Gemini API!" },
-    { "id": 9, "text": "We integrate with the Google Calendar API to let you schedule events conveniently." },
-    { "id": 10, "text": "The main programming language used to develop GeckoAI is TypeScript." },
-    { "id": 11, "text": "You can offer suggestions by emailing geckoaihelp@gmail.com!" },
-    { "id": 12, "text": "GeckoAI v2.0 will offer TailLink access to Apple Calendar!" },
-    { "id": 13, "text": "Icons in the site are provided by the public library React Icons." },
-    { "id": 14, "text": "GeckoAI was created to help students organize their semesters effortlessly." },
-    { "id": 15, "text": "開発者のお気に入りのアニメはハンター×ハンターです." },
-    { "id": 16, "text": "The iconic light green we use is known in our codebase as 'asparagus.'" },
-    { "id": 17, "text": "The darker green we use is known in our codebase as 'broccoli.'" },
-    { "id": 18, "text": "Customize GeckoAI's appearance in the settings menu." },
-    { "id": 19, "text": "GeckoAI's source code is publicly available!" },
-    { "id": 20, "text": "GeckoAI is entrusted by students at dozens of different universities!" },
-    { "id": 21, "text": "We offer quick, easy, and cheap payments powered by Stripe!"}
-    
+  { "id": 1, "text": "GeckoAI v1.0 was developed and maintained by a solo developer!" },
+  {
+    "id": 2,
+    "text": "GeckoAI is powered by Next.js, giving it lightning-fast page loads and server-side rendering."
+  },
+  { "id": 3, "text": "We use React.js to build dynamic, interactive user interfaces." },
+  { "id": 4, "text": "A lot of the animations you see are possible with Framer Motion!" },
+  { "id": 5, "text": "User accounts are secure and convenient with Google Identity Services." },
+  {
+    "id": 6,
+    "text": "File uploads and storage are handled by AWS S3, keeping your data safe and scalable."
+  },
+  { "id": 7, "text": "We use a Neon PostgreSQL database to store user data." },
+  { "id": 8, "text": "The AI in GeckoAI is powered by the Gemini API!" },
+  {
+    "id": 9,
+    "text": "We integrate with the Google Calendar API to let you schedule events conveniently."
+  },
+  { "id": 10, "text": "The main programming language used to develop GeckoAI is TypeScript." },
+  { "id": 11, "text": "You can offer suggestions by emailing geckoaihelp@gmail.com!" },
+  { "id": 12, "text": "GeckoAI v2.0 will offer TailLink access to Apple Calendar!" },
+  { "id": 13, "text": "Icons in the site are provided by the public library React Icons." },
+  {
+    "id": 14,
+    "text": "GeckoAI was created to help students organize their semesters effortlessly."
+  },
+  { "id": 15, "text": "開発者のお気に入りのアニメはハンター×ハンターです." },
+  { "id": 16, "text": "The iconic light green we use is known in our codebase as 'asparagus.'" },
+  { "id": 17, "text": "The darker green we use is known in our codebase as 'broccoli.'" },
+  { "id": 18, "text": "Customize GeckoAI's appearance in the settings menu." },
+  { "id": 19, "text": "GeckoAI's source code is publicly available!" },
+  { "id": 20, "text": "GeckoAI is entrusted by students at dozens of different universities!" },
+  { "id": 21, "text": "We offer quick, easy, and cheap payments powered by Stripe!" }
 ]

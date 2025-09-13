@@ -1,19 +1,19 @@
-"use client";
-import React, { useEffect, useState } from "react";
-import EmptyState from "./TailLinkEmptyState";
-import ChatContent from "./TailLinkChat";
-import TailLinkCalendar from "./TailLinkCal";
-import { useCalendar } from "../contexts/SelectedCalendarContext";
-import type { ViewMode } from "./ViewToggle";
+'use client';
+import React, { useEffect, useState } from 'react';
+import EmptyState from './TailLinkEmptyState';
+import ChatContent from './TailLinkChat';
+import TailLinkCalendar from './TailLinkCal';
+import { useCalendar } from '../contexts/SelectedCalendarContext';
+import type { ViewMode } from './ViewToggle';
 
 export default function RightPanel() {
   const { calendar } = useCalendar();
-  const [view, setView] = useState<ViewMode>("chat");
+  const [view, setView] = useState<ViewMode>('chat');
 
   useEffect(() => {
     if (!calendar?.id) return;
     const saved = localStorage.getItem(`view:${calendar.id}`) as ViewMode | null;
-    if (saved === "chat" || saved === "calendar") setView(saved);
+    if (saved === 'chat' || saved === 'calendar') setView(saved);
   }, [calendar?.id]);
 
   useEffect(() => {
@@ -21,23 +21,16 @@ export default function RightPanel() {
   }, [view, calendar?.id]);
 
   if (!calendar) {
-
     return (
-
-      <div className="border border-neutral-800 shadow-md rounded-md relative h-full flex-1 p-3">
-        
+      <div className="relative h-full flex-1 rounded-md border border-neutral-800 p-3 shadow-md">
         <EmptyState />
-
       </div>
-
     );
-
   }
 
   return (
-    
-    <div className="border border-neutral-800 shadow-md rounded-md relative h-full flex-1 p-3">
-      {view === "chat" ? (
+    <div className="relative h-full flex-1 rounded-md border border-neutral-800 p-3 shadow-md">
+      {view === 'chat' ? (
         <ChatContent
           name={calendar.summary}
           description={calendar.description}
