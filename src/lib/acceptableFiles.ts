@@ -12,6 +12,11 @@ export const acceptableFiles = [
   '.pptx',
 ].join(',');
 
-export const documentTypes = ['.pdf', '.doc', '.docx', '.txt', '.md'];
+const maxFileSizeInMegabytes = 50;
+
+export const maxFileSizeInBytes = maxFileSizeInMegabytes * 1024 * 1024;
+export const maxFilesPerMessage = 5;
+
+export const documentTypes = ['.pdf', '.doc', '.docx', '.txt'];
 export const imageTypes = ['.png', '.jpg', '.jpeg', '.webp'];
 export const presentationTypes = ['.pptx'];
