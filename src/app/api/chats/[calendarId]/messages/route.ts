@@ -26,10 +26,11 @@ type StagedFile = {
 
 export const dynamic = 'force-dynamic';
 
-export async function GET(req: Request, { params }: { params: { calendarId: string } }) {
+export async function GET(req: Request, ctx: { params: Promise<{ calendarId: string }> }) {
+  
   try {
     const user = await authUserOrThrow();
-    const { calendarId } = params;
+    const { calendarId } = await ctx.params;
 
     const url = new URL(req.url);
     const all = url.searchParams.get('all') === 'true';
@@ -84,6 +85,7 @@ export async function GET(req: Request, { params }: { params: { calendarId: stri
 
 export async function POST(req: Request, ctx: { params: Promise<{ calendarId: string }> }) {
   try {
+
     const user = await authUserOrThrow();
     const { calendarId } = await ctx.params;
 
