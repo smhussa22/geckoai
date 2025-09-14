@@ -3,7 +3,6 @@ export const acceptableFiles = [
   '.doc',
   '.docx',
   '.txt',
-  '.md',
 
   '.png',
   '.jpg',
