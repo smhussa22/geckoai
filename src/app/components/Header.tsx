@@ -44,7 +44,7 @@ export default function Header() {
             className="bg-asparagus flex aspect-square w-12 cursor-pointer items-center justify-center overflow-hidden rounded-full"
           >
             {picture ? (
-              <img src={picture} alt="Profile" className="h-full w-full object-cover" />
+              <img src={picture} draggable="false" alt="Profile" className="h-full w-full object-cover" />
             ) : (
               <span className="text-night text-xl font-bold">{initial}</span>
             )}

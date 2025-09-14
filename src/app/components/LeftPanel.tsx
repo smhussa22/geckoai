@@ -5,7 +5,7 @@ import { LuCalendarPlus } from 'react-icons/lu';
 import CalendarList from './CalendarList';
 import PopUp from './Popup';
 import CreateCalendarPage from './CreateCalendarPopup';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Tooltip } from 'react-tooltip';
 // @todo: make page refresh after calendar token expries
 
 export default function LeftPanel() {
@@ -36,19 +36,43 @@ export default function LeftPanel() {
       </div>
 
       {isOpen && (
+
         <div
           className="fixed inset-0 z-70 flex items-center justify-center"
           onClick={handleClosePopup}
         >
+
           <PopUp
             className="flex flex-col gap-4 shadow-lg"
             onClose={handleClosePopup}
             onClick={(e) => e.stopPropagation()}
           >
             <CreateCalendarPage onClose={handleClosePopup} />
+
           </PopUp>
+
         </div>
+
       )}
+
+      <Tooltip id="Create New Calendar"
+      place="right"
+      opacity={1}
+      style={{
+        marginLeft: '0.5rem',
+        backgroundColor: '#262626',
+        padding: '0.4rem',
+        borderRadius: '0.375rem',
+        transition: 'color 0.3s',
+        letterSpacing: '-0.05em',
+        zIndex: 50,
+        color: '#698f3f'
+      }}
+      noArrow
+      delayShow={0}
+      delayHide={0}
+      />
+      
     </>
   );
 }

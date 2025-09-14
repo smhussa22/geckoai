@@ -12,7 +12,7 @@ export default function AccountDropDown({ open }: { open: boolean }) {
     <div className="bg-ghost absolute top-24 right-3 z-10 flex flex-col items-center gap-3 rounded-md border border-neutral-400 p-4 tracking-tighter">
       <h1 className="text-sm font-medium">{user?.email}</h1>
 
-      <img src={user?.picture ?? ''} alt="" className="h-auto w-22 rounded-full" />
+      <img src={user?.picture ?? ''} alt="" draggable = "false" className="h-auto w-22 rounded-full" />
 
       <h1 className="text-xl">
         Hello, <span className="text-xl font-medium tracking-tighter">{user?.firstName}!</span>

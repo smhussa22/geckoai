@@ -14,6 +14,7 @@ import { useCalendar } from '../contexts/SelectedCalendarContext';
 import AttachmentsCard from './AttachmentsCard';
 import AIChatLoading from './AIChatLoading';
 import ViewToggle, { type ViewMode } from './ViewToggle';
+import DragActive from './DragActive';
 
 type TailLinkChatProps = {
   name: string;
@@ -31,7 +32,15 @@ type StagedAttachment = {
   mimeType: string;
   size: number;
   s3Key: string;
+  parsed?: { kind: string; pageCount?: number; slideCount?: number; preview?: string };
 };
+
+const acceptableFiles = new Set(['.pdf', '.txt', '.png', '.jpg', '.jpeg', '.webp', '.pptx']);
+const maxFileSizeInBytes = 50 * 1024 * 1024;
+const maxFilesPerMessage = 5;
+
+const extensionOf = (n: string) => (n.lastIndexOf('.') >= 0 ? n.slice(n.lastIndexOf('.')).toLowerCase() : '');
+const fmtMB = (b: number) => (b / 1048576).toFixed(1);
 
 export default function TailLinkChat({
   name,
@@ -46,10 +55,36 @@ export default function TailLinkChat({
   const close = () => setOpenPanel(null);
   const { calendar } = useCalendar();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [staged, setStaged] = useState<StagedAttachment[]>([]);
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const [pinnedToBottom, setPinnedToBottom] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
+  const [loadingChat, setLoadingChat] = useState(false);
+  const [dragDepth, setDragDepth] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const [toastMsg, setToastMsg] = useState<string | null>(null);
+  const stagedMapRef = useRef<Map<string, StagedAttachment[]>>(new Map());
+  const [staged, setStaged] = useState<StagedAttachment[]>([]);
+  const chatId = calendar?.id ?? '';
+
+  useEffect(() => {
+    if (!chatId) {
+      setStaged([]);
+      return;
+    }
+    setStaged(stagedMapRef.current.get(chatId) ?? []);
+  }, [chatId]);
+
+  const saveStagedForChat = (
+    next: StagedAttachment[] | ((prev: StagedAttachment[]) => StagedAttachment[])
+  ) => {
+    setStaged((prevState) => {
+      const nextState = typeof next === 'function' ? (next as any)(prevState) : next;
+      if (chatId) stagedMapRef.current.set(chatId, nextState);
+      return nextState;
+    });
+  };
+
+  const remainingSlots = Math.max(0, maxFilesPerMessage - staged.length);
 
   const scrollToBottom = (behavior: ScrollBehavior = 'auto') => {
     const el = scrollerRef.current;
@@ -57,23 +92,37 @@ export default function TailLinkChat({
     el.scrollTo({ top: el.scrollHeight, behavior });
   };
 
-  useEffect(() => {
-    if (pinnedToBottom) scrollToBottom('smooth');
-  }, [messages.length, thinking]);
+  const requestAnimationFrameScroll = (behavior: ScrollBehavior = 'auto') => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => scrollToBottom(behavior));
+    });
+  };
+
+  const onScroll = () => {
+    const container = scrollerRef.current;
+    if (!container) return;
+    const threshold = 8;
+    const atBottom = container.scrollHeight - container.scrollTop - container.clientHeight <= threshold;
+    setPinnedToBottom(atBottom);
+  };
 
   useEffect(() => {
-    scrollToBottom();
+    if (pinnedToBottom) requestAnimationFrameScroll('smooth');
+  }, [messages.length, thinking, pinnedToBottom]);
+
+  useEffect(() => {
+    requestAnimationFrameScroll('auto');
   }, []);
 
   const handleFilesPicked = async (files: File[]) => {
     if (!calendar || files.length === 0) return;
 
     setIsUploading(true);
-
     try {
       const uploaded: StagedAttachment[] = [];
+      const stagedFiles = files.slice(0, Math.max(0, maxFilesPerMessage - staged.length));
 
-      for (const file of files) {
+      for (const file of stagedFiles) {
         const formData = new FormData();
         formData.append('file', file);
 
@@ -87,15 +136,22 @@ export default function TailLinkChat({
 
         uploaded.push({
           id: data.tempId,
-          filename: data.filename,
+          filename: data.fileName ?? data.filename,
           mimeType: data.mimeType,
           size: data.size,
           s3Key: data.s3Key,
+          parsed: data.parsed || undefined,
         });
       }
 
-      setStaged((prev) => [...prev, ...uploaded]);
-    } finally {
+      saveStagedForChat((prev) => [...prev, ...uploaded]);
+      if (files.length > stagedFiles.length) {
+        setToastMsg('You can attach at most 5 files per message. Extra files were skipped.');
+      }
+
+      if (pinnedToBottom) requestAnimationFrameScroll('smooth');
+    } 
+    finally {
       setIsUploading(false);
     }
   };
@@ -107,16 +163,14 @@ export default function TailLinkChat({
 
     await fetch(
       `/api/chats/${encodeURIComponent(calendar.id)}/attachments/${encodeURIComponent(item.id)}?filename=${encodeURIComponent(item.filename)}`,
-
       { method: 'DELETE' },
     );
 
-    setStaged((prev) => prev.filter((_, i) => i !== index));
+    saveStagedForChat((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleSend = async (text: string) => {
     if (!calendar) return;
-
 
     const now = new Date().toISOString();
     const tempUserId = crypto.randomUUID();
@@ -133,9 +187,9 @@ export default function TailLinkChat({
     };
     setMessages((prev) => [...prev, optimisticUser]);
 
+    if (pinnedToBottom) requestAnimationFrameScroll('smooth');
 
     setThinking(true);
-
 
     const stagedForApi = staged.map((s) => ({
       tempId: s.id,
@@ -143,19 +197,20 @@ export default function TailLinkChat({
       mimeType: s.mimeType,
       size: s.size,
       s3Key: s.s3Key,
+      parsed: s.parsed,
     }));
-    setStaged([]);
+
+    saveStagedForChat([]);
 
     try {
-
-      const res = await fetch(`/api/chats/${encodeURIComponent(calendar.id)}/messages`, {
+      const response = await fetch(`/api/chats/${encodeURIComponent(calendar.id)}/messages`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text, staged: stagedForApi }),
       });
 
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data?.error || 'Send failed');
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data?.error || 'Send failed');
 
       const list = await fetch(`/api/chats/${encodeURIComponent(calendar.id)}/messages?take=100`, {
         cache: 'no-store',
@@ -166,44 +221,116 @@ export default function TailLinkChat({
       } else {
         console.warn('Refresh failed:', list.status, await list.text());
       }
-    } catch (err) {
-      console.error(err);
-
-      setMessages((prev) => prev.filter((m) => m.id !== tempUserId));
-
-      setStaged((prev) => (prev.length ? prev : staged));
-    } finally {
+    } 
+    catch (error: any) {
+      console.error(error);
+      setMessages((prev) => prev.filter((message) => message.id !== tempUserId));
+ 
+      saveStagedForChat(stagedForApi as any);
+    } 
+    finally {
       setThinking(false);
+      if (pinnedToBottom) requestAnimationFrameScroll('smooth');
     }
   };
 
   const refreshMessages = async (take = 100) => {
     if (!calendar) return;
     const url = `/api/chats/${encodeURIComponent(calendar.id)}/messages?take=${take}`;
-    const res = await fetch(url, { cache: 'no-store' });
-    if (!res.ok) {
-      console.warn('Initial fetch failed:', res.status, await res.text());
+    const response = await fetch(url, { cache: 'no-store' });
+    if (!response.ok) {
+      console.warn('Initial fetch failed:', response.status, await response.text());
       return;
     }
-    const data = await res.json();
+    const data = await response.json();
     if (Array.isArray(data.messages)) setMessages(data.messages);
   };
 
   useEffect(() => {
-    refreshMessages(100);
+    let active = true;
+    const run = async () => {
+      if (!calendar?.id) return;
+      setLoadingChat(true);
+      await refreshMessages(100);
+      if (active) {
+        setLoadingChat(false);
+        requestAnimationFrameScroll('auto');
+      }
+    };
+    run();
+    return () => {
+      active = false;
+    };
   }, [calendar?.id]);
+
+  const onDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragDepth((d) => d + 1);
+    setIsDragging(true);
+  };
+
   const onDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
+    e.stopPropagation();
+    if (e.dataTransfer) e.dataTransfer.dropEffect = 'copy';
   };
+
   const onDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
+    e.stopPropagation();
+    setDragDepth((d) => {
+      const next = Math.max(0, d - 1);
+      if (next === 0) setIsDragging(false);
+      return next;
+    });
   };
+
   const onDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
+    e.stopPropagation();
+    setDragDepth(0);
+    setIsDragging(false);
+
+    const files = Array.from(e.dataTransfer?.files || []);
+    if (!files.length) return;
+
+    const accepted: File[] = [];
+    const rejected: string[] = [];
+
+    const remaining = Math.max(0, maxFilesPerMessage - staged.length);
+    if (remaining === 0) {
+      setToastMsg('Attachment limit reached (5). Remove a file to add another.');
+      return;
+    }
+
+    for (const file of files) {
+      const extension = extensionOf(file.name);
+      if (!acceptableFiles.has(extension)) {
+        rejected.push(`${file.name} — unsupported ${extension || '(none)'}`);
+      } else if (file.size > maxFileSizeInBytes) {
+        rejected.push(`${file.name} — too large (${fmtMB(file.size)} MB)`);
+      } else if (accepted.length < remaining) {
+        accepted.push(file);
+      } else {
+        rejected.push(`${file.name} — limit reached (max ${maxFilesPerMessage})`);
+      }
+    }
+
+    if (rejected.length) {
+      const msg =
+        `Skipped ${rejected.length} file${rejected.length > 1 ? 's' : ''}:\n` +
+        rejected.slice(0, 5).join('\n') +
+        (rejected.length > 5 ? `\n+${rejected.length - 5} more` : '');
+      setToastMsg(msg);
+    }
+
+    if (accepted.length) handleFilesPicked(accepted);
   };
 
   return (
     <div
+      onDragEnter={onDragEnter}
       onDragOver={onDragOver}
       onDragLeave={onDragLeave}
       onDrop={onDrop}
@@ -247,7 +374,8 @@ export default function TailLinkChat({
                     onClose={close}
                     onCleared={() => {
                       setMessages([]);
-                      setStaged([]);
+                      saveStagedForChat([]);
+                      requestAnimationFrameScroll('auto');
                     }}
                   />
                 )}
@@ -258,16 +386,30 @@ export default function TailLinkChat({
       </div>
 
       <div
+        key={chatId}
         ref={scrollerRef}
-        className="scrollbar-thin scrollbar-track-transparent scrollbar-thumb-neutral-600 flex-1 overflow-y-auto pt-2"
+        onScroll={onScroll}
+        className="scrollbar-thin scrollbar-track-transparent scrollbar-thumb-neutral-600 relative flex-1 overflow-y-auto pt-2"
       >
         <MessageList messages={messages} />
         {thinking && <AIChatLoading />}
+        {loadingChat && (
+          <div className="pointer-events-none absolute inset-0 z-10 grid place-items-center bg-night">
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-neutral-700 border-t-asparagus" />
+          </div>
+        )}
+        {isDragging && <DragActive />}
       </div>
 
       <div>
         <AttachmentsCard items={staged.map((s) => s.filename)} onRemove={removeAttachment} />
-        <Chatbox onFilesPicked={handleFilesPicked} onSend={handleSend} />
+        <Chatbox
+          onFilesPicked={handleFilesPicked}
+          onSend={handleSend}
+          toastMessage={toastMsg}
+          onDismissToast={() => setToastMsg(null)}
+          remainingSlots={remainingSlots}
+        />
       </div>
     </div>
   );
