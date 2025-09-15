@@ -1,16 +1,16 @@
-'use server';
-import { NextResponse } from 'next/server';
+"use server";
+import { NextResponse } from "next/server";
 
 export async function POST() {
-  const res = NextResponse.json({ ok: true });
+    const res = NextResponse.json({ ok: true });
 
-  res.cookies.set('ga_session', '', {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    path: '/',
-    maxAge: 0,
-  });
+    res.cookies.set("ga_session", "", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        path: "/",
+        maxAge: 0,
+    });
 
-  return res;
+    return res;
 }
