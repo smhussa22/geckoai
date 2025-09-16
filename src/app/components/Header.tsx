@@ -47,7 +47,6 @@ export default function Header() {
                             <img
                                 src={picture}
                                 draggable="false"
-                                alt="Profile"
                                 className="h-full w-full object-cover"
                             />
                         ) : (
