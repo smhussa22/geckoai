@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 type ManageBillingButtonProps = {
-    userId?: string; // pass your real user id when ready
+    userId?: string; 
     className?: string;
 };
 
@@ -32,7 +32,6 @@ export default function ManageBillingButton({
                 }
             }
 
-            // Fallback “dummy” behavior if API isn’t wired yet:
             alert("Demo mode: API not ready. Staying on this page.");
         } catch (e) {
             console.error(e);

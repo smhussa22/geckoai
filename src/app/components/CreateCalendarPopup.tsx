@@ -1,4 +1,3 @@
-// CreateCalendarPage.tsx
 "use client";
 import React, { useState } from "react";
 import { Tooltip } from "react-tooltip";
