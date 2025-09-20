@@ -134,7 +134,6 @@ export async function POST(req: Request, ctx: { params: Promise<{ calendarId: st
         };
         if (!text?.trim()) return NextResponse.json({ error: "need text" }, { status: 400 });
 
-        // 1. Grab calendar to get timezone
         const calendar = await prisma.calendar.findUnique({
             where: { id: calendarId },
             select: { timeZone: true },

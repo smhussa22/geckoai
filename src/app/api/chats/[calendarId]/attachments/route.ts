@@ -22,7 +22,7 @@ export async function POST(req: Request, ctx: { params: Promise<{ calendarId: st
         return NextResponse.json({
             tempId,
             filename: file.name,
-            mimeType: file.type || "appliation/octet.stream",
+            mimeType: file.type || "application/octet.stream",
             size: file.size,
             s3Key: key,
         });

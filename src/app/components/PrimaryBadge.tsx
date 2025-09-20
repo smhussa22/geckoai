@@ -4,7 +4,7 @@ import { GoVerified } from "react-icons/go";
 import { Tooltip } from "react-tooltip";
 
 type PrimaryBadgeProps = {
-    show: boolean; // render only when true
+    show: boolean; 
     tooltipId?: string;
     size?: number;
     className?: string;

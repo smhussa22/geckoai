@@ -3,8 +3,8 @@
 import { useState } from "react";
 
 type BuyButtonProps = {
-    userId?: string; // pass your real user id when ready
-    priceId?: string; // optional: override monthly price id
+    userId?: string; 
+    priceId?: string; 
     className?: string;
 };
 
@@ -25,12 +25,10 @@ export default function BuyButton({ userId = DUMMY_USER_ID, priceId, className }
             if (res.ok) {
                 const { url } = await res.json();
                 if (url) {
-                    window.location.href = url; // real Stripe Checkout
+                    window.location.href = url; 
                     return;
                 }
             }
-
-            // Fallback “dummy” behavior if API isn’t wired yet:
             alert("Demo mode: API not ready, simulating success redirect.");
             window.location.href = "/checkout/success?demo=1";
         } catch (e) {
