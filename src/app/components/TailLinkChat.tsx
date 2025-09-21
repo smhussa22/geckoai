@@ -124,14 +124,12 @@ export default function TailLinkChat({
 
         setIsUploading(true);
         try {
-
             const uploaded: StagedAttachment[] = [];
             const stagedFiles = files.slice(0, Math.max(0, maxFilesPerMessage - staged.length));
 
             console.log("[TailLinkChat] Uploading staged files:", stagedFiles);
 
             for (const file of stagedFiles) {
-
                 console.log("[TailLinkChat] Uploading to API:", file.name, file.size, file.type);
 
                 const formData = new FormData();
@@ -145,7 +143,7 @@ export default function TailLinkChat({
                     }
                 );
 
-                 console.log("[TailLinkChat] API response status:", response.status);
+                console.log("[TailLinkChat] API response status:", response.status);
 
                 const data = await response.json();
 
@@ -163,7 +161,6 @@ export default function TailLinkChat({
                 });
 
                 console.log("[TailLinkChat] Uploaded attachments:", uploaded);
-
             }
 
             saveStagedForChat((prev) => [...prev, ...uploaded]);
@@ -174,13 +171,9 @@ export default function TailLinkChat({
             }
 
             if (pinnedToBottom) requestAnimationFrameScroll("smooth");
-        } 
-        catch (error: any){
-
+        } catch (error: any) {
             console.error("[TailLinkChat] Upload error:", error);
-
-        }
-        finally {
+        } finally {
             setIsUploading(false);
         }
     };
@@ -335,7 +328,6 @@ export default function TailLinkChat({
         }
 
         for (const file of files) {
-            
             console.log("[Parent] Uploading file:", file.name, file.size, file.type);
             const extension = extensionOf(file.name);
             if (!acceptableFiles.has(extension)) {

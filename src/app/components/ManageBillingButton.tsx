@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 type ManageBillingButtonProps = {
-    userId?: string; 
+    userId?: string;
     className?: string;
 };
 
