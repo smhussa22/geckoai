@@ -23,36 +23,53 @@ export default function MessageBubble({
     const isUser = role === "user";
 
     return (
+        
         <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
+
             <div className="flex max-w-150 gap-2 tracking-tighter">
+
                 {!isUser && (
+
                     <img src="/logoAnimated.svg" className="h-11 w-11 rounded-full p-1.5" />
+                
                 )}
 
-                <div
-                    className={`flex w-full flex-col gap-2 ${isUser ? "items-end" : "items-start"}`}
-                >
+                <div className={`flex w-full flex-col gap-2 ${isUser ? "items-end" : "items-start"}`}>
+                    
                     {attachments.length > 0 && (
+
                         <div className="flex w-full flex-col gap-2">
-                            {attachments.map((a) => (
-                                <AttachmentCard
+
+                            {attachments.map((a) => {
+
+                                console.log("[MessageBubble] Rendering attachment:", a);
+                                return (
+                                    <AttachmentCard
                                     key={a.id}
                                     file={a}
                                     align={isUser ? "right" : "left"}
-                                />
-                            ))}
+                                    />
+                                );
+
+                            })}
+
                         </div>
                     )}
 
-                    <div
-                        className={`text-ghost whitespace-no-wrap rounded-md p-3 break-words ${isUser && "border border-neutral-700 bg-neutral-800"}`}
-                    >
+                    <div className={`text-ghost whitespace-no-wrap rounded-md p-3 break-words ${isUser && "border border-neutral-700 bg-neutral-800"}`}>
+                        
                         {children}
+
                     </div>
+
                 </div>
+
             </div>
+
         </div>
+
     );
+
 }
 
 const pickIcon = (mime?: string, name?: string) => {
