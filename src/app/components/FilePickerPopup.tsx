@@ -50,6 +50,7 @@ export default function FilePickerPopup({
     const chooseFiles = () => inputRef.current?.click();
 
     const addFiles = (files: File[]) => {
+        console.log("[FilePickerPopup] Adding files:", files);
         const accepted: File[] = [];
         const rejected: string[] = [];
         const seen = new Set(
@@ -129,9 +130,11 @@ export default function FilePickerPopup({
     const clearAll = () => setStaged([]);
 
     const confirmAdd = () => {
+        console.log("[FilePickerPopup] Confirming staged:", staged);
         if (staged.length === 0) return;
         const available = Math.max(0, remainingSlots);
         const toSend = staged.slice(0, available);
+        console.log("[FilePickerPopup] Sending to parent:", toSend);
         onPick(toSend);
         setStaged([]);
         onClose();

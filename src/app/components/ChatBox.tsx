@@ -54,11 +54,13 @@ export default function Chatbox({
 
     const handlePick = (files: File[]) => {
         onFilesPicked?.(files);
+        console.log("[ChatBox] Picked files:", files);
     };
 
     const handleSend = () => {
         const text = value.trim();
         if (!text) return;
+        console.log("[ChatBox] Picked files: ", text);
         onSend?.(text);
         setValue("");
     };
