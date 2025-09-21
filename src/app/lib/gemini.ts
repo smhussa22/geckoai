@@ -1,35 +1,43 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenAI } from "@google/genai";
 
-const apiKey = process.env.GEMINI_API_KEY;
-if (!apiKey) {
-    throw new Error("Missing GEMINI_API_KEY environment variable");
-}
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
 
-const modelName = process.env.GEMINI_MODEL ?? "gemini-2.0-flash-exp";
+export const geminiClient = ai;
 
-export const genAI = new GoogleGenerativeAI(apiKey);
-export const gemini = genAI.getGenerativeModel({ model: modelName });
+export async function gemini({
+    text,
+    files = [],
+    systemInstruction,
+}: {
+    text?: string;
+    files?: { mimeType: string; data?: ArrayBuffer; uri?: string }[];
+    systemInstruction?: string;
+}) {
+    
+    const parts: any[] = [];
+    if (text) parts.push({ text });
 
-/**
- * Runs Gemini on text with a given system prompt.
- * @param text - The text to analyze (user content + extracted file text).
- * @param systemPrompt - Instructions to guide Gemini (built in route.ts).
- */
-
-export async function extractEventsFromText(text: string, systemPrompt: string) {
-    try {
-        const result = await gemini.generateContent({
-            contents: [
-                {
-                    role: "user",
-                    parts: [{ text: systemPrompt + "\n\n" + text }],
+    for (const file of files) {
+        if (file.data) {
+            parts.push({
+                inlineData: {
+                    mimeType: file.mimeType,
+                    data: Buffer.from(file.data).toString("base64"),
                 },
-            ],
-        });
-
-        return result.response.text();
-    } catch (error) {
-        console.error("Gemini API Error:", error);
-        throw error;
+            });
+        }
     }
+
+    console.log("[gemini.ts] Final parts for request:", parts);
+
+    const response = await ai.models.generateContent({
+        model: "gemini-2.5-flash",
+        contents: [{ role: "user", parts }],
+        config: {
+            systemInstruction,
+            temperature: 0,
+        },
+    });
+
+    return response.text;
 }

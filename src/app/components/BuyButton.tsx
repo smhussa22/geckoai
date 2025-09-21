@@ -3,8 +3,8 @@
 import { useState } from "react";
 
 type BuyButtonProps = {
-    userId?: string; 
-    priceId?: string; 
+    userId?: string;
+    priceId?: string;
     className?: string;
 };
 
@@ -25,7 +25,7 @@ export default function BuyButton({ userId = DUMMY_USER_ID, priceId, className }
             if (res.ok) {
                 const { url } = await res.json();
                 if (url) {
-                    window.location.href = url; 
+                    window.location.href = url;
                     return;
                 }
             }
