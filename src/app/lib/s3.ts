@@ -161,3 +161,9 @@ export async function s3DeletePrefix(prefix: string) {
         continuationToken = page.NextContinuationToken;
     } while (continuationToken);
 }
+
+export async function s3ObjectToBase64(key: string): Promise<string> {
+    const obj = await s3.send(new GetObjectCommand({ Bucket: s3Bucket, Key: key }));
+    const buffer = await obj.Body?.transformToByteArray();
+    return Buffer.from(buffer!).toString("base64");
+}
