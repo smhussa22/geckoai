@@ -49,35 +49,34 @@ Rules:
 - Return valid JSON only, with no extra text.
 `;
 
-
 export async function gemini({
-  text,
-  files = [],
+    text,
+    files = [],
 }: {
-  text?: string;
-  files?: { mimeType: string; data?: ArrayBuffer }[];
+    text?: string;
+    files?: { mimeType: string; data?: ArrayBuffer }[];
 }) {
-  const parts: any[] = [];
-  if (text) parts.push({ text });
+    const parts: any[] = [];
+    if (text) parts.push({ text });
 
-  for (const file of files) {
-    if (file.data) {
-      parts.push({
-        inlineData: {
-          mimeType: file.mimeType,
-          data: Buffer.from(file.data).toString("base64"),
-        },
-      });
+    for (const file of files) {
+        if (file.data) {
+            parts.push({
+                inlineData: {
+                    mimeType: file.mimeType,
+                    data: Buffer.from(file.data).toString("base64"),
+                },
+            });
+        }
     }
-  }
 
-  console.log("[gemini.ts] Final parts for request:", parts);
+    console.log("[gemini.ts] Final parts for request:", parts);
 
-  const response = await ai.models.generateContent({
-    model: "gemini-2.5-flash",
-    contents: [{ role: "user", parts }],
-    config: { systemInstruction, temperature: 0 },
-  });
+    const response = await ai.models.generateContent({
+        model: "gemini-2.5-flash",
+        contents: [{ role: "user", parts }],
+        config: { systemInstruction, temperature: 0 },
+    });
 
-  return response.text;
+    return response.text;
 }
