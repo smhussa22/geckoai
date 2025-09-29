@@ -11,8 +11,11 @@ import {
     s3MessageKey,
     s3Bucket,
     s3ObjectToBase64,
+    s3DeletePrefix,
+    s3MessagesPrefix,
 } from "@/app/lib/s3";
 import { GetObjectCommand } from "@aws-sdk/client-s3";
+import { cookies } from "next/headers";
 
 type StagedFile = {
     tempId: string;
@@ -49,8 +52,12 @@ type GeminiResponse = {
     tasks: GeminiTask[];
 };
 
+
 async function postCalendarData(calendarId: string, calendarData: GeminiResponse) {
+
     const results = { eventsAdded: 0, tasksAdded: 0, errors: [] as string[] };
+    const cookieStore = cookies();
+    const cookieHeader = cookieStore.toString();
 
     for (const event of calendarData.events || []) {
         try {
@@ -68,7 +75,12 @@ async function postCalendarData(calendarId: string, calendarData: GeminiResponse
                 `${process.env.NEXT_PUBLIC_BASE_URL}/api/calendars/${calendarId}/events`,
                 {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: { 
+                        
+                        "Content-Type": "application/json",
+                        cookie: cookieHeader, 
+                    
+                    },
                     body: JSON.stringify({
                         title: event.title,
                         description: event.notes || null,
@@ -77,6 +89,7 @@ async function postCalendarData(calendarId: string, calendarData: GeminiResponse
                         end: endDateTime,
                         timeZone: "UTC",
                     }),
+
                 }
             );
 
@@ -104,7 +117,12 @@ async function postCalendarData(calendarId: string, calendarData: GeminiResponse
                 `${process.env.NEXT_PUBLIC_BASE_URL!}/api/calendars/${calendarId}/events`,
                 {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: { 
+                        
+                        "Content-Type": "application/json", 
+                        cookie: cookieHeader,
+                    
+                    },
                     body: JSON.stringify({
                         title: task.title,
                         description:
@@ -192,10 +210,12 @@ export async function GET(req: Request, ctx: { params: Promise<{ calendarId: str
     }
 }
 
-export async function POST(req: Request, { params }: { params: { calendarId: string } }) {
+export async function POST(req: Request, ctx: { params: Promise<{ calendarId: string }> }) {
+
     try {
+
         const user = await authUserOrThrow();
-        const { calendarId } = params;
+        const { calendarId } = await ctx.params;
 
         const { text, staged } = (await req.json()) as { text: string; staged?: StagedFile[] };
         if (!text?.trim()) {
@@ -247,21 +267,15 @@ export async function POST(req: Request, { params }: { params: { calendarId: str
         let displayText = assistantText;
         let calendarData: GeminiResponse | null = null;
 
-        // Replace the existing parsing logic with this improved version:
         let clean = assistantText.trim();
 
         try {
-            // Strip Markdown code fences if present - improved version
 
-            // Handle various code fence patterns
             if (clean.startsWith("```")) {
-                // Remove opening fence (```json, ```JSON, or just ```)
                 clean = clean.replace(/^```(?:json|JSON)?\s*\n?/i, "");
 
-                // Remove closing fence
                 clean = clean.replace(/\n?\s*```\s*$/i, "");
 
-                // Additional cleanup for any remaining whitespace
                 clean = clean.trim();
             }
 
@@ -289,7 +303,7 @@ export async function POST(req: Request, { params }: { params: { calendarId: str
             console.log("[DEBUG] Response could not be parsed as JSON:", parseError);
             console.log("[DEBUG] Raw response:", assistantText);
             console.log("[DEBUG] Cleaned response attempt:", clean);
-            // Fall back to plain text
+
         }
 
         const assistantMessage = await prisma.message.create({
@@ -324,4 +338,33 @@ export async function POST(req: Request, { params }: { params: { calendarId: str
             { status: 500 }
         );
     }
+}
+
+export async function DELETE(req: Request, ctx: { params: Promise<{ calendarId: string }> }) {
+
+    try {
+
+        const user = await authUserOrThrow();
+        const { calendarId } = await ctx.params;
+
+        await prisma.message.deleteMany({ where: { calendarId } });
+        await s3DeletePrefix(s3MessagesPrefix(user.id, calendarId));
+
+        return NextResponse.json({ ok: true });
+
+    } 
+
+    catch (error: any) {
+
+        console.error("[DELETE MESSAGES ERROR]", error);
+
+        return NextResponse.json(
+
+            { error: error.message || "An internal server error occurred." },
+            { status: 500 }
+
+        );
+
+    }
+
 }
