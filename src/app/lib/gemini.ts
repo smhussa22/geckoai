@@ -7,7 +7,7 @@ export const geminiClient = ai;
 const systemInstruction = `
 You are an assistant that manages calendar events and tasks for students.
 
-Always output ONLY valid JSON that matches this schema:
+Always output ONLY valid JSON that matches this schema. Respond strictly with valid JSON only. No code fences or explanations.:
 
 {
   "events": [
@@ -80,4 +80,3 @@ export async function gemini({
 
     return response.text;
 }
- 
