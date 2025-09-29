@@ -8,7 +8,6 @@ import { GoogleGenAI } from "@google/genai";
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
 
 export async function POST(req: Request, ctx: { params: Promise<{ calendarId: string }> }) {
-    
     try {
         const user = await authUserOrThrow();
         const { calendarId } = await ctx.params;
