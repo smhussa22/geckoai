@@ -56,7 +56,7 @@ type GeminiResponse = {
 async function postCalendarData(calendarId: string, calendarData: GeminiResponse) {
 
     const results = { eventsAdded: 0, tasksAdded: 0, errors: [] as string[] };
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const cookieHeader = cookieStore.toString();
 
     for (const event of calendarData.events || []) {
@@ -104,45 +104,36 @@ async function postCalendarData(calendarId: string, calendarData: GeminiResponse
     }
 
     for (const task of calendarData.tasks || []) {
-        try {
-            const dueDateTime = task.time
-                ? `${task.due_date}T${task.time}:00`
-                : `${task.due_date}T23:59:00`;
+    try {
+        const dueDateTime = task.time
+            ? `${task.due_date}T${task.time}:00`
+            : `${task.due_date}T23:59:00`;
 
-            const endDateTime = task.time
-                ? `${task.due_date}T${addMinutes(task.time, 30)}:00`
-                : `${task.due_date}T23:59:59`;
-
-            const response = await fetch(
-                `${process.env.NEXT_PUBLIC_BASE_URL!}/api/calendars/${calendarId}/events`,
-                {
-                    method: "POST",
-                    headers: { 
-                        
-                        "Content-Type": "application/json", 
-                        cookie: cookieHeader,
-                    
-                    },
-                    body: JSON.stringify({
-                        title: task.title,
-                        description:
-                            `Due: ${task.due_date}${task.time ? ` at ${task.time}` : ""}\n${task.notes || ""}`.trim(),
-                        start: dueDateTime,
-                        end: endDateTime,
-                        timeZone: "UTC",
-                    }),
-                }
-            );
-
-            if (response.ok) {
-                results.tasksAdded++;
-            } else {
-                results.errors.push(`Task: ${task.title}`);
+        const response = await fetch(
+            `${process.env.NEXT_PUBLIC_BASE_URL}/api/calendars/${calendarId}/tasks`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    cookie: cookieHeader,
+                },
+                body: JSON.stringify({
+                    title: task.title,
+                    notes: task.notes || "",
+                    due: dueDateTime ? new Date(dueDateTime).toISOString() : undefined,
+                }),
             }
-        } catch (error) {
+        );
+
+        if (response.ok) {
+            results.tasksAdded++;
+        } else {
             results.errors.push(`Task: ${task.title}`);
         }
+    } catch (error) {
+        results.errors.push(`Task: ${task.title}`);
     }
+}
 
     return results;
 }
