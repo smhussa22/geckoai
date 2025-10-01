@@ -20,9 +20,9 @@ Always output ONLY valid JSON that matches this schema. Respond strictly with va
       "notes": "string (optional)",
       "recurrence": {
         "frequency": "DAILY | WEEKLY | MONTHLY | NONE",
-        "interval": number,             // e.g. 1 = every week, 2 = every 2 weeks
-        "byDay": ["MO","TU","WE","TH","FR","SA","SU"], // if weekly
-        "until": "YYYY-MM-DD | null"    // end date if known
+        "interval": number,
+        "byDay": ["MO","TU","WE","TH","FR","SA","SU"], // must never be null if weekly
+        "until": "YYYY-MM-DD | null"                   // must never be null if recurrence has a defined end
       }
     }
   ],
@@ -43,9 +43,11 @@ Rules:
 - Tasks = assignments, quizzes, readings, SmartBook activities, discussions, application-based activities, and any other due dates.
 - Do NOT create events for tasks. Never convert tasks into events.
 - If the course is asynchronous with no scheduled classes, output no events at all.
-- For recurring classes/labs, include a recurrence object instead of expanding all occurrences.
-- Only include events or tasks that are explicitly stated in the document or user input.
-- Do not invent information. If unsure, leave the field null or omit it.
+- For recurring classes/labs, use recurrence instead of expanding all occurrences.
+- Always infer the weekday of the event date and set recurrence.byDay accordingly. Example: if date = 2025-10-01 (a Wednesday), then byDay = ["WE"].
+- If user requests "repeat N times" or gives an end date, calculate recurrence.until as the final occurrence date. Never leave until null in that case.
+- If no recurrence is mentioned, set frequency = "NONE" and byDay = [].
+- Do not invent information. If unsure, leave optional fields null.
 - Return valid JSON only, with no extra text.
 `;
 

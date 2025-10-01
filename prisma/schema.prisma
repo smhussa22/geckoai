@@ -77,6 +77,7 @@ model Calendar {
 
   events            Event[]
   messages          Message[]
+  tasks Task[]
 
   @@unique([ownerId, googleId])
   @@index([ownerId])
@@ -100,6 +101,26 @@ model Event {
 
   @@unique([calendarId, googleId])
   @@index([calendarId, start])
+}
+
+model Task {
+
+  id          String             @id @default(cuid())
+  googleId    String
+  calendarId  String
+  calendar    Calendar           @relation(fields: [calendarId], references: [id], onDelete: Cascade)
+
+  title       String
+  description String?
+  due         DateTime?
+
+
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  @@unique([calendarId, googleId])
+  @@index([calendarId, due])
+
 }
 
 model Message {
