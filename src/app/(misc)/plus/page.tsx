@@ -129,20 +129,7 @@ function PlanCard({ plan }: { plan: Plan }) {
     const green = "#698f3f";
     return (
         <div
-            className={[
-                "relative rounded-2xl border p-6 shadow-xl",
-                plan.featured
-                    ? "border-neutral-800 bg-[rgba(105,143,63,0.08)]"
-                    : "border-neutral-800 bg-[rgba(56,79,31,0.08)]",
-            ].join(" ")}
-            style={
-                plan.featured
-                    ? {
-                          boxShadow:
-                              "0 10px 30px rgba(0,0,0,0.4), inset 0 1px 0 rgba(247,247,255,0.06)",
-                      }
-                    : undefined
-            }
+            className="relative rounded-2xl border p-6 shadow-xl bg-neutral-900"
         >
             <div className="flex items-baseline justify-between">
                 <h3 className="text-xl font-extrabold tracking-tight md:text-2xl">{plan.name}</h3>

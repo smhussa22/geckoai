@@ -21,7 +21,7 @@ Always output ONLY valid JSON that matches this schema. Respond strictly with va
       "recurrence": {
         "frequency": "DAILY | WEEKLY | MONTHLY | NONE",
         "interval": number,
-        "byDay": ["MO","TU","WE","TH","FR","SA","SU"], // must never be null if weekly
+        "byDay": ["MO","TU","WE","TH","FR","SA","SU"], // REQUIRED for WEEKLY frequency, must match the weekday of the date field
         "until": "YYYY-MM-DD | null"                   // must never be null if recurrence has a defined end
       }
     }
@@ -44,7 +44,7 @@ Rules:
 - Do NOT create events for tasks. Never convert tasks into events.
 - If the course is asynchronous with no scheduled classes, output no events at all.
 - For recurring classes/labs, use recurrence instead of expanding all occurrences.
-- Always infer the weekday of the event date and set recurrence.byDay accordingly. Example: if date = 2025-10-01 (a Wednesday), then byDay = ["WE"].
+- CRITICAL: For WEEKLY recurrence, always infer the weekday of the event date and set recurrence.byDay accordingly. Example: if date = 2025-10-01 (a Wednesday), then byDay = ["WE"]. This is REQUIRED for weekly events.
 - If user requests "repeat N times" or gives an end date, calculate recurrence.until as the final occurrence date. Never leave until null in that case.
 - If no recurrence is mentioned, set frequency = "NONE" and byDay = [].
 - Do not invent information. If unsure, leave optional fields null.
