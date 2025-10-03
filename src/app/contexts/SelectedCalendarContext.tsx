@@ -14,13 +14,19 @@ export type Calendar = {
 type SelectedCalendarContext = {
     calendar: Calendar | null;
     setCalendar: React.Dispatch<React.SetStateAction<Calendar | null>>;
+    refreshCalendars: () => void;
+    setRefreshCalendars: React.Dispatch<React.SetStateAction<() => void>>;
 };
 
 const Context = createContext<SelectedCalendarContext | undefined>(undefined);
 
 export const CalendarProvider = ({ children }: { children: React.ReactNode }) => {
     const [calendar, setCalendar] = useState<Calendar | null>(null);
-    const value = useMemo(() => ({ calendar, setCalendar }), [calendar]);
+    const [refreshCalendars, setRefreshCalendars] = useState<() => void>(() => () => {});
+    const value = useMemo(
+        () => ({ calendar, setCalendar, refreshCalendars, setRefreshCalendars }),
+        [calendar, refreshCalendars]
+    );
 
     return <Context.Provider value={value}>{children}</Context.Provider>;
 };

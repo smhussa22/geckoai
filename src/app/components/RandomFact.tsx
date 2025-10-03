@@ -1,17 +1,18 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import randomFacts from "../lib/didyouknowfacts.json";
 
-// @todo fix facts reloading every time
-const i = Math.floor(Math.random() * randomFacts.length);
-const fact = randomFacts[i].text;
+export default function RandomFact() {
+    const [fact, setFact] = useState<string | null>(null);
 
-const Fact = React.memo(
-    function SidebarIcon() {
-        return <h2 className="text-shadow text-asparagus text-xl font-semibold">{fact}</h2>;
-    },
+    useEffect(() => {
+        const i = Math.floor(Math.random() * randomFacts.length);
+        setFact(randomFacts[i].text);
+    }, []);
 
-    () => true
-);
+    if (!fact) {
+        return <h2 className="text-asparagus text-xl font-semibold">Loading...</h2>;
+    }
 
-export default Fact;
+    return <h2 className="text-shadow text-asparagus text-xl font-semibold">{fact}</h2>;
+}

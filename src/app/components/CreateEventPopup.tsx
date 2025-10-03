@@ -152,7 +152,7 @@ export default function CreateEventPopup({ onClose }: { onClose?: () => void }) 
     };
 
     return (
-        <div className="w-fit" data-user-email={user?.email || ""}>
+        <div data-user-email={user?.email || ""}>
             <div className="relative flex">
                 <div>
                     <h1 className="text-asparagus text-2xl font-bold tracking-tighter">

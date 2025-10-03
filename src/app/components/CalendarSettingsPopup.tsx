@@ -13,6 +13,7 @@ import {
 } from "react-icons/tb";
 import { IoIosSettings } from "react-icons/io";
 import type { IconType } from "react-icons";
+import { mutate } from "swr";
 
 type LowerVis = "default" | "public" | "private";
 type UpperVis = "DEFAULT" | "PUBLIC" | "PRIVATE";
@@ -122,6 +123,7 @@ export default function CalendarSettingsPopup({
             const data = await response.json().catch(() => ({}));
 
             if (!response.ok) throw new Error((data && data.error) || "Failed to save.");
+            mutate("/api/calendars");
             if (onSaved) onSaved(data);
             if (onClose) onClose();
         } catch (error: any) {

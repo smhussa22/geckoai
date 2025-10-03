@@ -4,6 +4,7 @@ import { Tooltip } from "react-tooltip";
 import { LuCalendarPlus } from "react-icons/lu";
 import { BsXCircle } from "react-icons/bs";
 import TimeZoneSelect from "./TimeZoneSelect";
+import { mutate } from "swr";
 
 export default function CreateCalendarPage({ onClose }: { onClose?: () => void }) {
     const [nameVal, setNameVal] = useState("");
@@ -43,6 +44,7 @@ export default function CreateCalendarPage({ onClose }: { onClose?: () => void }
             if (!res.ok)
                 throw new Error(data?.error || res.statusText || "Failed to create calendar");
 
+            mutate("/api/calendars");
             onClose?.();
         } catch (e: any) {
             setErrorMsg(e?.message || "Failed to create calendar.");
@@ -135,7 +137,7 @@ export default function CreateCalendarPage({ onClose }: { onClose?: () => void }
                 </div>
             </div>
 
-            <div className="relative mt-2 w-100">
+            <div className="relative mt-2">
                 <textarea
                     value={descVal}
                     onChange={(e) => setDescVal(e.target.value)}

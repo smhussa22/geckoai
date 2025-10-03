@@ -15,6 +15,7 @@ import AttachmentsCard from "./AttachmentsCard";
 import AIChatLoading from "./AIChatLoading";
 import ViewToggle, { type ViewMode } from "./ViewToggle";
 import DragActive from "./DragActive";
+import PopupOverlay from "./PopupOverlay";
 
 type TailLinkChatProps = {
     name: string;
@@ -391,24 +392,44 @@ export default function TailLinkChat({
                     {openPanel && (
                         <div className="absolute top-full right-0 z-50 mt-2">
                             <div className="w-120 rounded-md border border-neutral-800 bg-neutral-900/95 p-4 shadow-xl">
-                                {openPanel === "create" && <CreateEventPopup onClose={close} />}
-                                {openPanel === "search" && <SearchEventsPopup onClose={close} />}
-                                {openPanel === "settings" && (
-                                    <CalendarSettingsPopup
-                                        calendarId={calendar!.id}
-                                        onClose={close}
-                                    />
+                                {openPanel === "create" && (
+                                    <PopupOverlay onClose={close}>
+                                        <CreateEventPopup onClose={close} />
+                                    </PopupOverlay>
                                 )}
-                                {openPanel === "delete" && <DeleteCalendarPopup onClose={close} />}
+
+                                {openPanel === "search" && (
+                                    <PopupOverlay onClose={close}>
+                                        <SearchEventsPopup onClose={close} />
+                                    </PopupOverlay>
+                                )}
+
+                                {openPanel === "settings" && (
+                                    <PopupOverlay onClose={close}>
+                                        <CalendarSettingsPopup
+                                            calendarId={calendar!.id}
+                                            onClose={close}
+                                        />
+                                    </PopupOverlay>
+                                )}
+
+                                {openPanel === "delete" && (
+                                    <PopupOverlay onClose={close}>
+                                        <DeleteCalendarPopup onClose={close} />
+                                    </PopupOverlay>
+                                )}
+
                                 {openPanel === "clear" && (
-                                    <ClearChatPopup
-                                        onClose={close}
-                                        onCleared={() => {
-                                            setMessages([]);
-                                            saveStagedForChat([]);
-                                            requestAnimationFrameScroll("auto");
-                                        }}
-                                    />
+                                    <PopupOverlay onClose={close}>
+                                        <ClearChatPopup
+                                            onClose={close}
+                                            onCleared={() => {
+                                                setMessages([]);
+                                                saveStagedForChat([]);
+                                                requestAnimationFrameScroll("auto");
+                                            }}
+                                        />
+                                    </PopupOverlay>
                                 )}
                             </div>
                         </div>
@@ -425,7 +446,7 @@ export default function TailLinkChat({
                 <MessageList messages={messages} />
                 {thinking && <AIChatLoading />}
                 {loadingChat && (
-                    <div className="pointer-events-none absolute inset-0 z-10 grid place-items-center bg-night">
+                    <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center bg-night">
                         <div className="h-8 w-8 animate-spin rounded-full border-2 border-neutral-700 border-t-asparagus" />
                     </div>
                 )}

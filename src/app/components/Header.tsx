@@ -7,6 +7,7 @@ import { useUser } from "../contexts/UserContext";
 import AccountDropDown from "./AccountDropdown";
 import Link from "next/link";
 import StorageBar from "./StorageBar";
+import UserAvatar from "./UserAvatar";
 
 export default function Header() {
     const pathName = usePathname();
@@ -43,19 +44,11 @@ export default function Header() {
                         data-tooltip-id="gmailIcon"
                         className="bg-asparagus flex aspect-square w-12 cursor-pointer items-center justify-center overflow-hidden rounded-full"
                     >
-                        {picture ? (
-                            <img
-                                src={picture}
-                                draggable="false"
-                                className="h-full w-full object-cover"
-                            />
-                        ) : (
-                            <span className="text-night text-xl font-bold">{initial}</span>
-                        )}
+                        <UserAvatar picture={picture} name={name} />
                     </button>
                 </div>
 
-                <AccountDropDown open={logOutMenu} />
+                <AccountDropDown open={logOutMenu} onClose={() => setLogOutMenu(false)} />
 
                 {!logOutMenu && (
                     <Tooltip

@@ -1,5 +1,5 @@
 import LogInLeftPanel from "../components/LogInLeftPanel";
-
+import LoadingWrapper from "../LoadingWrapper";
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
     return (
         <div className="bg-night flex h-screen">

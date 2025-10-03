@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import CalendarButton from "./CalendarButton";
 import { useCalendar } from "../contexts/SelectedCalendarContext";
 import type { Calendar } from "../contexts/SelectedCalendarContext";
@@ -13,12 +13,11 @@ import {
     TbCalendarPin,
     TbCalendarUser,
 } from "react-icons/tb";
+import useSWR from "swr";
 
 const defaultBackground = "#698f3f";
 
-const iconProps = {
-    size: 30,
-};
+const iconProps = { size: 30 };
 const iconMap = {
     heart: <TbCalendarHeart {...iconProps} />,
     dot: <TbCalendarDot {...iconProps} />,
@@ -30,37 +29,34 @@ const iconMap = {
     user: <TbCalendarUser {...iconProps} />,
 };
 
+// API response type
+type CalendarApiResponse = { items: Calendar[] } | { calendars: { items: Calendar[] } };
+
+const fetcher = async (url: string): Promise<CalendarApiResponse> => {
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) throw new Error(res.statusText);
+    return res.json();
+};
+
 export default function CalendarList() {
-    const [items, setItems] = useState<Calendar[]>([]);
-    const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("");
     const { calendar: selectedCalendar, setCalendar } = useCalendar();
 
-    useEffect(() => {
-        (async () => {
-            try {
-                const res = await fetch("/api/calendars", { cache: "no-store" });
-                if (!res.ok) throw new Error(res.statusText);
-                const data = await res.json();
+    const { data, error, isLoading } = useSWR<CalendarApiResponse>("/api/calendars", fetcher);
 
-                const list = data?.items ?? data?.calendars?.items ?? [];
-                setItems(list);
-            } catch (error) {
-                console.error(error);
-                setItems([]);
-            } finally {
-                setLoading(false);
-            }
-        })();
-    }, []);
+    let items: Calendar[] = [];
+    if (data) {
+        if ("items" in data) items = data.items;
+        else if ("calendars" in data) items = data.calendars.items;
+    }
 
     const filtered = useMemo(() => {
         const q = search.trim().toLowerCase();
         if (!q) return items;
-        return items.filter((c: any) => (c.summary || c.id).toLowerCase().includes(q));
+        return items.filter((c) => (c.summary || c.id).toLowerCase().includes(q));
     }, [items, search]);
 
-    const handleSelect = async (cal: Calendar) => {
+    const handleSelect = (cal: Calendar) => {
         setCalendar((prev) => (prev?.id === cal.id ? prev : cal));
     };
 
@@ -78,20 +74,23 @@ export default function CalendarList() {
             />
 
             <div className="mt-0.5 min-h-0 flex-1 pr-1.5">
-                {loading ? (
+                {isLoading ? (
                     <p className="text-neutral-400">Loading…</p>
+                ) : error ? (
+                    <p className="text-sm text-red-500">Failed to load calendars.</p>
                 ) : filtered.length === 0 ? (
                     <p className="text-sm tracking-tighter text-neutral-500">
                         No calendars match “{search}”.
                     </p>
                 ) : (
                     <div className="flex flex-col gap-1 rounded-md py-1">
-                        {filtered.map((cal: any) => {
-                            const iconKey = (cal.iconKey || "user") as keyof typeof iconMap;
+                        {filtered.map((cal) => {
+                            const iconKey =
+                                (cal as { iconKey?: keyof typeof iconMap }).iconKey ?? "user";
                             const iconNode = iconMap[iconKey] ?? iconMap.user;
 
                             const bg = cal.backgroundColor || defaultBackground;
-                            const fg = cal.foregroundColor || null;
+                            const fg = cal.foregroundColor ?? null;
 
                             return (
                                 <CalendarButton

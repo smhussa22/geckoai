@@ -3,6 +3,7 @@ import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import "../globals.css";
 import "react-tooltip/dist/react-tooltip.css";
+import LoadingWrapper from "../LoadingWrapper";
 
 export const metadata: Metadata = {
     title: "GeckoAI",

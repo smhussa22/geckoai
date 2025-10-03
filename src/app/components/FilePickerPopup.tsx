@@ -145,7 +145,7 @@ export default function FilePickerPopup({
     return (
         <div className="fixed inset-0 z-50 grid place-items-center">
             <div
-                className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+                className="absolute inset-0 bg-black/50"
                 onClick={onClose}
                 onDragEnter={shield}
                 onDragOver={shield}

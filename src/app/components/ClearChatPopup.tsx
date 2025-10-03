@@ -5,9 +5,7 @@ import { IoChatboxOutline } from "react-icons/io5";
 import { useCalendar } from "../contexts/SelectedCalendarContext";
 
 type Props = {
-    /** Close the popup (no side effects) */
     onClose?: () => void;
-    /** Called after DELETE succeeds so parent can clear local state */
     onCleared?: () => void;
 };
 
