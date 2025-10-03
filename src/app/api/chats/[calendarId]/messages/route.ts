@@ -52,9 +52,35 @@ type GeminiResponse = {
     tasks: GeminiTask[];
 };
 
+function buildRRule(event: GeminiEvent): string[] | undefined {
+    if (!event.recurrence || event.recurrence.frequency === "NONE") return undefined;
+
+    const parts: string[] = [`FREQ=${event.recurrence.frequency}`];
+
+    if (event.recurrence.interval && event.recurrence.interval > 1) {
+        parts.push(`INTERVAL=${event.recurrence.interval}`);
+    }
+
+    // For WEEKLY frequency, BYDAY is REQUIRED by Google Calendar
+    if (event.recurrence.frequency === "WEEKLY") {
+        if (!event.recurrence.byDay || event.recurrence.byDay.length === 0) {
+            console.error(`[ERROR] WEEKLY recurrence missing BYDAY for event: ${event.title}`);
+            return undefined; // Don't create invalid recurrence
+        }
+        parts.push(`BYDAY=${event.recurrence.byDay.join(",")}`);
+    } else if (event.recurrence.byDay && event.recurrence.byDay.length > 0) {
+        // For other frequencies, only add if provided
+        parts.push(`BYDAY=${event.recurrence.byDay.join(",")}`);
+    }
+
+    if (event.recurrence.until) {
+        parts.push(`UNTIL=${event.recurrence.until.replace(/-/g, "")}T235959Z`);
+    }
+
+    return [`RRULE:${parts.join(";")}`];
+}
 
 async function postCalendarData(calendarId: string, calendarData: GeminiResponse) {
-
     const results = { eventsAdded: 0, tasksAdded: 0, errors: [] as string[] };
     const cookieStore = await cookies();
     const cookieHeader = cookieStore.toString();
@@ -71,15 +97,23 @@ async function postCalendarData(calendarId: string, calendarData: GeminiResponse
                   ? `${event.date}T${addOneHour(event.time)}:00`
                   : `${event.date}T23:59:59`;
 
+            const recurrence = buildRRule(event);
+
+            console.log("[DEBUG] Posting event:", {
+                title: event.title,
+                start: startDateTime,
+                end: endDateTime,
+                recurrence,
+                geminiRecurrence: event.recurrence,
+            });
+
             const response = await fetch(
                 `${process.env.NEXT_PUBLIC_BASE_URL}/api/calendars/${calendarId}/events`,
                 {
                     method: "POST",
-                    headers: { 
-                        
+                    headers: {
                         "Content-Type": "application/json",
-                        cookie: cookieHeader, 
-                    
+                        cookie: cookieHeader,
                     },
                     body: JSON.stringify({
                         title: event.title,
@@ -88,52 +122,74 @@ async function postCalendarData(calendarId: string, calendarData: GeminiResponse
                         start: startDateTime,
                         end: endDateTime,
                         timeZone: "UTC",
+                        recurrence,
                     }),
-
                 }
             );
+
+            const responseText = await response.text();
+            console.log("[DEBUG] Calendar API response:", {
+                status: response.status,
+                ok: response.ok,
+                statusText: response.statusText,
+                body: responseText,
+            });
 
             if (response.ok) {
                 results.eventsAdded++;
             } else {
-                results.errors.push(`Event: ${event.title}`);
+                console.error("[ERROR] Failed to add event:", {
+                    event: event.title,
+                    status: response.status,
+                    error: responseText,
+                    sentRecurrence: recurrence,
+                });
+                results.errors.push(`Event: ${event.title} (${response.status})`);
             }
         } catch (error) {
+            console.error("[ERROR] Exception posting event:", error);
             results.errors.push(`Event: ${event.title}`);
         }
     }
 
     for (const task of calendarData.tasks || []) {
-    try {
-        const dueDateTime = task.time
-            ? `${task.due_date}T${task.time}:00`
-            : `${task.due_date}T23:59:00`;
+        try {
+            const dueDateTime = task.time
+                ? `${task.due_date}T${task.time}:00`
+                : `${task.due_date}T23:59:00`;
 
-        const response = await fetch(
-            `${process.env.NEXT_PUBLIC_BASE_URL}/api/calendars/${calendarId}/tasks`,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    cookie: cookieHeader,
-                },
-                body: JSON.stringify({
-                    title: task.title,
-                    notes: task.notes || "",
-                    due: dueDateTime ? new Date(dueDateTime).toISOString() : undefined,
-                }),
+            const response = await fetch(
+                `${process.env.NEXT_PUBLIC_BASE_URL}/api/calendars/${calendarId}/tasks`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        cookie: cookieHeader,
+                    },
+                    body: JSON.stringify({
+                        title: task.title,
+                        notes: task.notes || "",
+                        due: dueDateTime ? new Date(dueDateTime).toISOString() : undefined,
+                    }),
+                }
+            );
+
+            if (response.ok) {
+                results.tasksAdded++;
+            } else {
+                const responseText = await response.text();
+                console.error("[ERROR] Failed to add task:", {
+                    task: task.title,
+                    status: response.status,
+                    error: responseText,
+                });
+                results.errors.push(`Task: ${task.title}`);
             }
-        );
-
-        if (response.ok) {
-            results.tasksAdded++;
-        } else {
+        } catch (error) {
+            console.error("[ERROR] Exception posting task:", error);
             results.errors.push(`Task: ${task.title}`);
         }
-    } catch (error) {
-        results.errors.push(`Task: ${task.title}`);
     }
-}
 
     return results;
 }
@@ -202,9 +258,7 @@ export async function GET(req: Request, ctx: { params: Promise<{ calendarId: str
 }
 
 export async function POST(req: Request, ctx: { params: Promise<{ calendarId: string }> }) {
-
     try {
-
         const user = await authUserOrThrow();
         const { calendarId } = await ctx.params;
 
@@ -261,18 +315,17 @@ export async function POST(req: Request, ctx: { params: Promise<{ calendarId: st
         let clean = assistantText.trim();
 
         try {
-
             if (clean.startsWith("```")) {
                 clean = clean.replace(/^```(?:json|JSON)?\s*\n?/i, "");
-
                 clean = clean.replace(/\n?\s*```\s*$/i, "");
-
                 clean = clean.trim();
             }
 
             console.log("[DEBUG] Cleaned response:", clean);
 
             calendarData = JSON.parse(clean) as GeminiResponse;
+
+            console.log("[DEBUG] Parsed calendar data:", JSON.stringify(calendarData, null, 2));
 
             const results = await postCalendarData(calendarId, calendarData);
 
@@ -294,7 +347,6 @@ export async function POST(req: Request, ctx: { params: Promise<{ calendarId: st
             console.log("[DEBUG] Response could not be parsed as JSON:", parseError);
             console.log("[DEBUG] Raw response:", assistantText);
             console.log("[DEBUG] Cleaned response attempt:", clean);
-
         }
 
         const assistantMessage = await prisma.message.create({
@@ -332,9 +384,7 @@ export async function POST(req: Request, ctx: { params: Promise<{ calendarId: st
 }
 
 export async function DELETE(req: Request, ctx: { params: Promise<{ calendarId: string }> }) {
-
     try {
-
         const user = await authUserOrThrow();
         const { calendarId } = await ctx.params;
 
@@ -342,20 +392,11 @@ export async function DELETE(req: Request, ctx: { params: Promise<{ calendarId: 
         await s3DeletePrefix(s3MessagesPrefix(user.id, calendarId));
 
         return NextResponse.json({ ok: true });
-
-    } 
-
-    catch (error: any) {
-
+    } catch (error: any) {
         console.error("[DELETE MESSAGES ERROR]", error);
-
         return NextResponse.json(
-
             { error: error.message || "An internal server error occurred." },
             { status: 500 }
-
         );
-
     }
-
 }
