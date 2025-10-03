@@ -15,7 +15,7 @@ export async function GET(req: Request) {
             "profile",
             "https://www.googleapis.com/auth/calendar.events",
             "https://www.googleapis.com/auth/calendar.readonly",
-            "https://www.googleapis.com/auth/tasks"
+            "https://www.googleapis.com/auth/tasks",
         ].join(" "),
         access_type: "offline",
         include_granted_scopes: "true",

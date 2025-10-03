@@ -1,10 +1,9 @@
 "use client";
 import React from "react";
 import Link from "next/link";
-import { GrFormUpload } from "react-icons/gr";
-import { TiCloudStorageOutline } from "react-icons/ti";
-import { LuMessageSquareLock, LuMessageSquareMore } from "react-icons/lu";
-
+import { TbCloudLock, TbCloudLockOpen, TbMessage2Pause, TbMessage2Bolt } from "react-icons/tb";
+import { PiFileLock } from "react-icons/pi";
+import { LuFileBadge } from "react-icons/lu";
 type Plan = {
     name: string;
     price: string;
@@ -15,12 +14,14 @@ type Plan = {
     onClick?: () => void;
 };
 
-const iconSize = 40;
+const iconSize = 25;
 const icons = {
-    upload: <GrFormUpload size={iconSize} />,
-    cloud: <TiCloudStorageOutline size={iconSize} />,
-    messageLock: <LuMessageSquareLock size={iconSize} />,
-    messageOpen: <LuMessageSquareMore size={iconSize} />,
+    cloudLock: <TbCloudLock size={iconSize} />,
+    cloudOpen: <TbCloudLockOpen size={iconSize} />,
+    fileLock: <PiFileLock size={iconSize} />,
+    fileOpen: <LuFileBadge size={iconSize} />,
+    messageLock: <TbMessage2Pause size={iconSize} />,
+    messageOpen: <TbMessage2Bolt size={iconSize} />,
 };
 
 export default function GeckoAIPlusPage() {
@@ -32,19 +33,19 @@ export default function GeckoAIPlusPage() {
             name: "Basic",
             price: "Free",
             bullets: [
-                { text: "50 MB total cloud storage", icon: icons.cloud },
-                { text: "5 file uploads cooldown", icon: icons.upload },
-                { text: "20 messages cooldown", icon: icons.messageLock },
+                { text: "10 MB total cloud storage", icon: icons.cloudLock },
+                { text: "5 file uploads cooldown", icon: icons.fileLock },
+                { text: "10 messages cooldown", icon: icons.messageLock },
             ],
             ctaText: "Your Plan",
             onClick: startBasic,
         },
         {
-            name: "GeckoAI",
+            name: "Plus",
             price: "CA$0.99",
             bullets: [
-                { text: "Unlimited cloud storage", icon: icons.cloud },
-                { text: "Unlimited file uploads", icon: icons.upload },
+                { text: "Unlimited cloud storage", icon: icons.cloudOpen },
+                { text: "Unlimited file uploads", icon: icons.fileOpen },
                 { text: "Unlimited messages", icon: icons.messageOpen },
             ],
             ctaText: "Upgrade for CA$0.99",
@@ -54,7 +55,7 @@ export default function GeckoAIPlusPage() {
     ];
 
     return (
-        <div className="text-ghost relative overflow-hidden bg-[#131112]">
+        <div className="text-ghost relative overflow-hidden bg-night">
             <header className="relative z-10">
                 <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
                     <Link
@@ -128,9 +129,7 @@ export default function GeckoAIPlusPage() {
 function PlanCard({ plan }: { plan: Plan }) {
     const green = "#698f3f";
     return (
-        <div
-            className="relative rounded-2xl border p-6 shadow-xl bg-neutral-900"
-        >
+        <div className="relative rounded-2xl border p-6 shadow-xl bg-neutral-900">
             <div className="flex items-baseline justify-between">
                 <h3 className="text-xl font-extrabold tracking-tight md:text-2xl">{plan.name}</h3>
                 <div className="text-right">

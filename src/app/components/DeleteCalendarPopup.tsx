@@ -3,6 +3,7 @@ import React, { useMemo, useState } from "react";
 import { BsXCircle } from "react-icons/bs";
 import { AiFillDelete } from "react-icons/ai";
 import { useCalendar } from "../contexts/SelectedCalendarContext";
+import { mutate } from "swr";
 
 export default function DeleteEventPopup({ onClose }: { onClose?: () => void }) {
     const { calendar, setCalendar } = useCalendar();
@@ -45,6 +46,7 @@ export default function DeleteEventPopup({ onClose }: { onClose?: () => void }) 
                 throw new Error(msg);
             }
 
+            mutate("/api/calendars");
             setCalendar(null);
             onClose?.();
         } catch (error: any) {

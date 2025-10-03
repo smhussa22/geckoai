@@ -6,10 +6,6 @@ import { GrSatellite } from "react-icons/gr";
 import { FiMessageCircle } from "react-icons/fi";
 import RandomFact from "./RandomFact";
 
-// @todo make loading actually show for at least 2 seconds
-// @todo make an actual loading animation
-// @todo make an actual serverstatus page
-// @todo make an actual contact page
 // @todo fix the facts remounting
 
 export default function Loading() {

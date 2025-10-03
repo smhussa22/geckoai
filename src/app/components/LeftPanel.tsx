@@ -3,9 +3,9 @@ import React from "react";
 import { useState, useRef } from "react";
 import { LuCalendarPlus } from "react-icons/lu";
 import CalendarList from "./CalendarList";
-import PopUp from "./Popup";
 import CreateCalendarPage from "./CreateCalendarPopup";
 import { Tooltip } from "react-tooltip";
+import PopupOverlay from "./PopupOverlay";
 // @todo: make page refresh after calendar token expries
 
 export default function LeftPanel() {
@@ -42,13 +42,9 @@ export default function LeftPanel() {
                     className="fixed inset-0 z-70 flex items-center justify-center"
                     onClick={handleClosePopup}
                 >
-                    <PopUp
-                        className="flex flex-col gap-4 shadow-lg"
-                        onClose={handleClosePopup}
-                        onClick={(e) => e.stopPropagation()}
-                    >
+                    <PopupOverlay onClose={handleClosePopup}>
                         <CreateCalendarPage onClose={handleClosePopup} />
-                    </PopUp>
+                    </PopupOverlay>
                 </div>
             )}
 

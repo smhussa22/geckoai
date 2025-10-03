@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useRef, useEffect } from "react";
-import { Plus, Send, Mic } from "lucide-react";
+import { Plus, Send } from "lucide-react";
 import { Tooltip } from "react-tooltip";
 import { AnimatePresence, motion } from "framer-motion";
 import FilePickerPopup from "./FilePickerPopup";
@@ -60,7 +60,7 @@ export default function Chatbox({
     const handleSend = () => {
         const text = value.trim();
         if (!text) return;
-        console.log("[ChatBox] Picked files: ", text);
+        console.log("[ChatBox] Sending text:", text);
         onSend?.(text);
         setValue("");
     };
@@ -93,7 +93,7 @@ export default function Chatbox({
                             role="status"
                             aria-live="polite"
                         >
-                            <div className="rounded-md border border-red-500/50 bg-red-500/15 px-3 py-2 text-sm text-red-200 shadow-lg backdrop-blur">
+                            <div className="rounded-md border border-red-500/50 bg-red-500/15 px-3 py-2 text-sm text-red-200 shadow-lg">
                                 <span className="font-semibold">Upload error: </span>
                                 <span className="whitespace-pre-line">{toastMessage}</span>
                             </div>
@@ -145,26 +145,22 @@ export default function Chatbox({
                     </div>
 
                     <button
-                        data-tooltip-id={hasText ? "send" : "mic"}
-                        data-tooltip-content={hasText ? "Send Prompt" : "Dictate Mode"}
-                        onClick={hasText ? handleSend : undefined}
-                        className="relative flex h-10 w-10 items-center justify-center rounded-full text-neutral-400 transition-colors duration-200 hover:bg-neutral-700/40 hover:text-neutral-100"
+                        data-tooltip-id="send"
+                        data-tooltip-content="Send Prompt"
+                        onClick={handleSend}
+                        disabled={!hasText}
+                        className={`relative flex h-10 w-10 items-center justify-center rounded-full transition-colors duration-200 ${
+                            hasText
+                                ? "text-neutral-400 hover:bg-neutral-700/40 hover:text-neutral-100"
+                                : "text-neutral-600 cursor-not-allowed"
+                        }`}
                     >
-                        {hasText ? (
-                            <span className="absolute">
-                                <Send size={20} />
-                            </span>
-                        ) : (
-                            <span className="absolute">
-                                <Mic size={18} />
-                            </span>
-                        )}
+                        <Send size={20} />
                     </button>
                 </div>
             </div>
 
             <Tooltip noArrow opacity={100} place="right" id="plus" />
-            <Tooltip noArrow opacity={100} place="left" id="mic" />
             <Tooltip noArrow opacity={100} place="left" id="send" />
         </div>
     );
