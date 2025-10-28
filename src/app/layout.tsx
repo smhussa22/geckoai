@@ -22,11 +22,21 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 />
 
                 <UserProvider>
+
                     <CalendarProvider>
-                        <LoadingWrapper>{children}</LoadingWrapper>
+
+                        <LoadingWrapper>
+                            
+                            {children}
+
+                        </LoadingWrapper>
+
                     </CalendarProvider>
+
                 </UserProvider>
+
             </body>
+
         </html>
     );
 }
